@@ -151,10 +151,18 @@ void Controller::lowerTemp() {
 
 void Controller::updateRelay() {
     bool active = isActive();
-    bool pump = (active && (mode == MODE_BREW || mode == MODE_WATER));
-    bool valve = (active && mode == MODE_BREW);
+    int pumpValue = 0;
 
-    clientController.sendPumpControl(pump);
+    // Set pump value based on the mode
+    if (active) {
+        if (mode == MODE_BREW || mode == MODE_WATER) {
+            pumpValue = 100;
+        } else if (mode == MODE_STEAM) {
+            pumpValue = 4;
+        }
+    }
+
+    clientController.sendPumpControl(pumpValue);
     clientController.sendValveControl(valve);
 }
 
