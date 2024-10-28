@@ -62,47 +62,48 @@ void setup() {
 }
 
 void loop() {
-    // Check the ping timeout for safety
-    unsigned long now = millis();
-    if ((now - last_ping_time) / 1000 > PING_TIMEOUT_SECONDS) {
-        handle_ping_timeout();
-    }
-
-    // Handle PID control if system is active and not autotuning
-    if (setpoint > 0 || is_autotuning) {
-        if (is_autotuning) {
-            // Execute autotuning
-            if (aTune.Runtime() < 0) { // Check if tuning is complete
-                printf("Finished autotune: %f, %f, %f\n", aTune.GetKp(), aTune.GetKi(), aTune.GetKd());
-                myPID.SetTunings(aTune.GetKp(), aTune.GetKi(), aTune.GetKd());
-                stop_pid_autotune(); // Stop autotuning after completion
-            }
-        } else {
-            myPID.Compute(); // Perform PID computation
+    while (1) {
+        // Check the ping timeout for safety
+        unsigned long now = millis();
+        if ((now - last_ping_time) / 1000 > PING_TIMEOUT_SECONDS) {
+            handle_ping_timeout();
         }
-        control_heater(output); // Control the heater based on the PID output
-    } else {
-        control_heater(0);
+
+        // Handle PID control if system is active and not autotuning
+        if (setpoint > 0 || is_autotuning) {
+            if (is_autotuning) {
+                // Execute autotuning
+                if (aTune.Runtime() < 0) { // Check if tuning is complete
+                    printf("Finished autotune: %f, %f, %f\n", aTune.GetKp(), aTune.GetKi(), aTune.GetKd());
+                    myPID.SetTunings(aTune.GetKp(), aTune.GetKi(), aTune.GetKd());
+                    stop_pid_autotune(); // Stop autotuning after completion
+                }
+            } else {
+                myPID.Compute(); // Perform PID computation
+            }
+            control_heater(output); // Control the heater based on the PID output
+        } else {
+            control_heater(0);
+        }
+
+        // Check for thermal runaway
+        if (input > MAX_SAFE_TEMP) {
+            thermal_runaway_shutdown();
+        }
+
+        if (lastTempUpdate + TEMP_UPDATE_INTERVAL_MS < now) {
+            input = read_temperature(); // Read the current boiler temperature
+            // Update UI with temperature
+            serverController.sendTemperature(input);
+            lastTempUpdate = millis();
+        }
+
+        // Execute pump modulation
+        control_pump(); // Pass the flow percentage variable here
+
+        delay(50); // Minimal delay to prevent overloading the loop, compatible with 50 ms intervals
     }
-
-    // Check for thermal runaway
-    input = read_temperature(); // Read the current boiler temperature
-    if (input > MAX_SAFE_TEMP) {
-        thermal_runaway_shutdown();
-    }
-
-    if (lastTempUpdate + TEMP_UPDATE_INTERVAL_MS < now) {
-    	// Update UI with temperature
-    	serverController.sendTemperature(input);
-        lastTempUpdate = millis();
-    }
-
-    // Execute pump modulation
-    control_pump();  // Pass the flow percentage variable here
-
-    delay(50); // Minimal delay to prevent overloading the loop, compatible with 50 ms intervals
 }
-
 
 void on_temperature_control(float temperature) {
     if (is_autotuning) {
@@ -117,7 +118,6 @@ void on_pump_control(float setpoint) {
     flowPercentage = setpoint;
     control_pump();
 }
-
 
 void on_valve_control(bool state) { control_valve(state); }
 
@@ -170,7 +170,7 @@ void control_pump() {
 
     // Turn pump ON for the first `onSteps` steps and OFF for the remainder
     if (currentCycleDuration < onTime) {
-        digitalWrite(PUMP_PIN, LOW);  // Relay on
+        digitalWrite(PUMP_PIN, LOW); // Relay on
     } else {
         digitalWrite(PUMP_PIN, HIGH); // Relay off
     }

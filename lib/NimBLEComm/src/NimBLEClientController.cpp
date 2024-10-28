@@ -109,7 +109,9 @@ void NimBLEClientController::sendTemperatureControl(float setpoint) {
 
 void NimBLEClientController::sendPumpControl(float setpoint) {
     if (pumpControlChar != nullptr && client->isConnected()) {
-        pumpControlChar->writeValue(setpoint);
+        char pumpStr[8];
+        snprintf(pumpStr, sizeof(pumpStr), "%.2f", setpoint);
+        pumpControlChar->writeValue(pumpStr);
     }
 }
 
