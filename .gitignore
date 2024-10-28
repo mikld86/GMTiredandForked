@@ -2,3 +2,5 @@
 env/
 pcb/Gaggimate-backups
 pcb/jlcpcb
+.vscode
+.idea
