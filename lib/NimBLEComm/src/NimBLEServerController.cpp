@@ -108,7 +108,7 @@ void NimBLEServerController::registerTempControlCallback(temp_control_callback_t
     tempControlCallback = callback;
 }
 
-void NimBLEServerController::registerPumpControlCallback(pin_control_callback_t callback) {
+void NimBLEServerController::registerPumpControlCallback(pump_control_callback_t callback) {
     pumpControlCallback = callback;
 }
 
