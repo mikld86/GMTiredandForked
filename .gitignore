@@ -4,3 +4,4 @@ pcb/Gaggimate-backups
 pcb/jlcpcb
 .vscode
 .idea
+node_modules/
