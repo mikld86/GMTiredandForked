@@ -17,7 +17,7 @@ lv_obj_set_width( ui_MenuScreen_tempGauge, 440);
 lv_obj_set_height( ui_MenuScreen_tempGauge, 440);
 lv_obj_set_align( ui_MenuScreen_tempGauge, LV_ALIGN_CENTER );
 lv_obj_add_state( ui_MenuScreen_tempGauge, LV_STATE_DISABLED );     /// States
-lv_arc_set_range(ui_MenuScreen_tempGauge, 0,150);
+lv_arc_set_range(ui_MenuScreen_tempGauge, 0,160);
 lv_arc_set_value(ui_MenuScreen_tempGauge, 92);
 lv_arc_set_bg_angles(ui_MenuScreen_tempGauge,110,70);
 lv_obj_set_style_arc_width(ui_MenuScreen_tempGauge, 8, LV_PART_MAIN| LV_STATE_DEFAULT);
@@ -34,7 +34,7 @@ lv_obj_set_width( ui_MenuScreen_tempTarget, 440);
 lv_obj_set_height( ui_MenuScreen_tempTarget, 440);
 lv_obj_set_align( ui_MenuScreen_tempTarget, LV_ALIGN_CENTER );
 lv_obj_add_state( ui_MenuScreen_tempTarget, LV_STATE_DISABLED );     /// States
-lv_arc_set_range(ui_MenuScreen_tempTarget, 0,150);
+lv_arc_set_range(ui_MenuScreen_tempTarget, 0,160);
 lv_arc_set_value(ui_MenuScreen_tempTarget, 90);
 lv_arc_set_bg_angles(ui_MenuScreen_tempTarget,110,70);
 lv_obj_set_style_bg_color(ui_MenuScreen_tempTarget, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT );

@@ -2,6 +2,6 @@
 end_of_line = lf
 insert_final_newline = true
 
-[{*.cpp,*.h}]
+[{*.cpp,*.h,*.c}]
 indent_style = space
 indent_size = 4

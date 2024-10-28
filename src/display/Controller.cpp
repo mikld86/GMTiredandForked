@@ -15,6 +15,9 @@ void Controller::connect() {
 
     setupBluetooth();
     setupWifi();
+#ifdef HOMEKIT_ENABLED
+    setupHomekit();
+#endif
 
     updateUiSettings();
     updateUiCurrentTemp();
@@ -59,10 +62,19 @@ void Controller::setupWifi() {
     server.begin();
     Serial.print("OTA server started");
 
+#ifndef HOMEKIT_ENABLED
     if (!MDNS.begin(MDNS_NAME)) {
         Serial.println("Error setting up MDNS responder!");
     }
+#endif
 }
+
+#ifdef HOMEKIT_ENABLED
+void Controller::setupHomekit() {
+    homekitController.initialize();
+    homekitController.setTargetTemperature(getTargetTemp());
+}
+#endif
 
 void Controller::loop() {
     server.handleClient();
@@ -97,6 +109,20 @@ void Controller::loop() {
         deactivate();
     if (mode != MODE_STANDBY && now > lastAction + STANDBY_TIMEOUT_MS)
         activateStandby();
+
+#ifdef HOMEKIT_ENABLED
+    if (homekitController.hasAction()) {
+        if (homekitController.getState() && getMode() == MODE_STANDBY) {
+            deactivate();
+            setMode(MODE_BREW);
+            _ui_screen_change(&ui_BrewScreen, LV_SCR_LOAD_ANIM_NONE, 500, 0, &ui_BrewScreen_screen_init);
+        } else if (!homekitController.getState() && getMode() != MODE_STANDBY) {
+            activateStandby();
+        }
+        setTargetTemp(homekitController.getTargetTemperature());
+        homekitController.clearAction();
+    }
+#endif
 }
 
 bool Controller::isUpdating() const { return updating; }
@@ -128,6 +154,9 @@ void Controller::setTargetTemp(int temperature) {
     }
     updateUiSettings();
     clientController.sendTemperatureControl(getTargetTemp());
+#ifdef HOMEKIT_ENABLED
+    homekitController.setTargetTemperature(getTargetTemp());
+#endif
 }
 
 int Controller::getTargetDuration() { return targetDuration; }
@@ -177,6 +206,7 @@ void Controller::updateUiSettings() {
     lv_arc_set_value(ui_StatusScreen_tempTarget, setTemp);
     lv_arc_set_value(ui_MenuScreen_tempTarget, setTemp);
     lv_arc_set_value(ui_SteamScreen_tempTarget, setTemp);
+    lv_arc_set_value(ui_WaterScreen_tempTarget, setTemp);
 
     lv_label_set_text_fmt(ui_StatusScreen_targetTemp, "%d°C", targetBrewTemp);
     lv_label_set_text_fmt(ui_BrewScreen_targetTemp, "%d°C", targetBrewTemp);
@@ -265,15 +295,28 @@ void Controller::activateStandby() {
 
 bool Controller::isActive() const { return activeUntil > millis(); }
 
+int Controller::getMode() {
+    return mode;
+}
+
 void Controller::setMode(int newMode) {
     mode = newMode;
     updateUiSettings();
     clientController.sendTemperatureControl(getTargetTemp());
+
+#ifdef HOMEKIT_ENABLED
+    homekitController.setState(mode != MODE_STANDBY);
+    homekitController.setTargetTemperature(getTargetTemp());
+#endif
 }
 
 void Controller::onTempRead(float temperature) {
     currentTemp = temperature;
     updateUiCurrentTemp();
+
+#ifdef HOMEKIT_ENABLED
+    homekitController.setCurrentTemperature(temperature);
+#endif
 }
 
 void Controller::updateLastAction() { lastAction = millis(); }

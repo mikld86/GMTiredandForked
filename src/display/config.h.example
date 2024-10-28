@@ -10,4 +10,6 @@
 #define TEMP_OFFSET   7
 #define BREW_ON_START 0
 
+#define HOMEKIT_ENABLED
+
 #endif

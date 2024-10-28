@@ -16,7 +16,8 @@ ui_WaterScreen_tempGauge = lv_arc_create(ui_WaterScreen);
 lv_obj_set_width( ui_WaterScreen_tempGauge, 440);
 lv_obj_set_height( ui_WaterScreen_tempGauge, 440);
 lv_obj_set_align( ui_WaterScreen_tempGauge, LV_ALIGN_CENTER );
-lv_arc_set_range(ui_WaterScreen_tempGauge, 0,150);
+lv_obj_add_state( ui_WaterScreen_tempGauge, LV_STATE_DISABLED );     /// States
+lv_arc_set_range(ui_WaterScreen_tempGauge, 0,160);
 lv_arc_set_value(ui_WaterScreen_tempGauge, 92);
 lv_arc_set_bg_angles(ui_WaterScreen_tempGauge,110,70);
 lv_obj_set_style_arc_width(ui_WaterScreen_tempGauge, 8, LV_PART_MAIN| LV_STATE_DEFAULT);
@@ -32,7 +33,8 @@ ui_WaterScreen_tempTarget = lv_arc_create(ui_WaterScreen);
 lv_obj_set_width( ui_WaterScreen_tempTarget, 440);
 lv_obj_set_height( ui_WaterScreen_tempTarget, 440);
 lv_obj_set_align( ui_WaterScreen_tempTarget, LV_ALIGN_CENTER );
-lv_arc_set_range(ui_WaterScreen_tempTarget, 0,150);
+lv_obj_add_state( ui_WaterScreen_tempTarget, LV_STATE_DISABLED );     /// States
+lv_arc_set_range(ui_WaterScreen_tempTarget, 0,160);
 lv_arc_set_value(ui_WaterScreen_tempTarget, 80);
 lv_arc_set_bg_angles(ui_WaterScreen_tempTarget,110,70);
 lv_obj_set_style_bg_color(ui_WaterScreen_tempTarget, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT );

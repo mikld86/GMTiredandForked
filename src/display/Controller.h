@@ -18,6 +18,10 @@
 #include <WiFi.h>
 #include <WiFiClient.h>
 
+#ifdef HOMEKIT_ENABLED
+#include "homekit.h"
+#endif
+
 #define PING_INTERVAL                   1000
 #define PROGRESS_INTERVAL                250
 #define HOT_WATER_SAFETY_DURATION_MS   30000
@@ -68,6 +72,7 @@ private:
     void setupPanel();
     void setupWifi();
     void setupBluetooth();
+    void setupHomekit();
 
     // Functional methods
     void updateRelay();
@@ -86,6 +91,9 @@ private:
     LilyGo_RGBPanel panel;
     NimBLEClientController clientController;
     hw_timer_t* timer;
+    #ifdef HOMEKIT_ENABLED
+    HomekitController homekitController;
+    #endif
 
     int mode;
     int targetBrewTemp;
