@@ -101,12 +101,6 @@ private:
     bool loaded;
     bool updating;
 
-    // Pump tricle while steaming
-    unsigned long steamPumpLastActivated = 0;       // Last activation timestamp for the pump in steam mode
-    bool steamPumpOn = false;                       // State of the pump (whether it's currently on or off)
-    unsigned long pumpOnDuration = 500;             // Pump "on" duration in milliseconds
-    unsigned long pumpCycleInterval = 2000;         // Total cycle interval in milliseconds
-
 };
 
 
