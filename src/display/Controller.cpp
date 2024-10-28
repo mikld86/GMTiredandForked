@@ -269,7 +269,8 @@ void Controller::updateStandby() {
 }
 
 void Controller::activate() {
-    if (isActive()) return;
+    if (isActive())
+        return;
     unsigned long duration = 0;
     switch (mode) {
     case MODE_BREW:
@@ -303,9 +304,7 @@ void Controller::activateStandby() {
 
 bool Controller::isActive() const { return activeUntil > millis(); }
 
-int Controller::getMode() {
-    return mode;
-}
+int Controller::getMode() { return mode; }
 
 void Controller::setMode(int newMode) {
     mode = newMode;
