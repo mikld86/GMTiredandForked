@@ -20,6 +20,8 @@
 
 #define PWM_FREQUENCY 20
 
+#define TEMP_UPDATE_INTERVAL_MS 1000
+
 #define I2C_DEV_ADDR 0x55
 
 #define PUMP_CYCLE_TIME 5000
@@ -34,7 +36,7 @@ void control_pump();
 void control_valve(bool state);
 float read_temperature(void);
 void on_temperature_control(float temperature);
-void on_pump_control(uint8_t setpoint);
+void on_pump_control(float setpoint);
 void on_valve_control(bool state);
 void on_ping();
 void on_autotune();

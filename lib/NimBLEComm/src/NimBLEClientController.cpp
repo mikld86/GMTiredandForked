@@ -107,9 +107,9 @@ void NimBLEClientController::sendTemperatureControl(float setpoint) {
     }
 }
 
-void NimBLEClientController::sendPumpControl(uint8_t pinState) {
+void NimBLEClientController::sendPumpControl(float setpoint) {
     if (pumpControlChar != nullptr && client->isConnected()) {
-        pumpControlChar->writeValue(pinState ? "1" : "0");
+        pumpControlChar->writeValue(setpoint);
     }
 }
 

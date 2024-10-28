@@ -27,7 +27,7 @@
 
 typedef std::function<void (float temperature)> temp_read_callback_t;
 typedef void (*temp_control_callback_t)(float setpoint);
-typedef void (*pump_control_callback_t)(uint8_t setpoint);
+typedef void (*pump_control_callback_t)(float setpoint);
 typedef void (*pin_control_callback_t)(bool isActive);
 typedef void (*ping_callback_t)();
 typedef void (*remote_err_callback_t)(int errorCode);

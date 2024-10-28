@@ -149,8 +149,8 @@ void NimBLEServerController::onWrite(NimBLECharacteristic* pCharacteristic) {
         }
     }
     else if (pCharacteristic->getUUID().equals(NimBLEUUID(PUMP_CONTROL_CHAR_UUID))) {
-        uint8_t setpoint = atoi(pCharacteristic->getValue().c_str());
-        Serial.printf("Received pump control: %d\n", setpoint);
+        float setpoint = atof(pCharacteristic->getValue().c_str());
+        Serial.printf("Received pump control: %.2f\n", setpoint);
         if (pumpControlCallback != nullptr) {
             pumpControlCallback(setpoint);
         }

@@ -13,7 +13,8 @@ long last_ping_time;                      // Last time a ping was received
 const double PING_TIMEOUT_SECONDS = 10.0; // Timeout for ping
 bool is_autotuning = false;               // Flag for whether we are in autotune mode
 unsigned long lastCycleStart = 0;         // Tracks the start time of the pump cycle
-int flowPercentage = 0;                   // Declare flowPercentage with an initial value
+float flowPercentage = 0;                 // Declare flowPercentage with an initial value
+unsigned long lastTempUpdate = 0;
 
 NimBLEServerController serverController;
 
@@ -55,6 +56,7 @@ void setup() {
     serverController.registerPingCallback(on_ping);
     serverController.registerAutotuneCallback(on_autotune);
     lastCycleStart = millis();
+    lastTempUpdate = millis();
 
     printf("Initialization done\n");
 }
@@ -89,8 +91,11 @@ void loop() {
         thermal_runaway_shutdown();
     }
 
-    // Update UI with temperature
-    serverController.sendTemperature(input);
+    if (lastTempUpdate + TEMP_UPDATE_INTERVAL_MS < now) {
+    	// Update UI with temperature
+    	serverController.sendTemperature(input);
+        lastTempUpdate = millis();
+    }
 
     // Execute pump modulation
     control_pump();  // Pass the flow percentage variable here
@@ -108,7 +113,7 @@ void on_temperature_control(float temperature) {
     printf("Setpoint updated to: %f\n", setpoint);
 }
 
-void on_pump_control(uint8_t setpoint) {
+void on_pump_control(float setpoint) {
     flowPercentage = setpoint;
     control_pump();
 }
@@ -151,7 +156,12 @@ void control_heater(int out) {
 
 void control_pump() {
     unsigned long currentMillis = millis();
-    
+
+    // Reset the cycle every PUMP_CYCLE_DURATION milliseconds
+    if ((currentMillis - lastCycleStart) >= PUMP_CYCLE_TIME) {
+        lastCycleStart = currentMillis;
+    }
+
     // Calculate the time the pump should stay on for
     unsigned long onTime = flowPercentage * PUMP_CYCLE_TIME / 100;
 
@@ -161,15 +171,8 @@ void control_pump() {
     // Turn pump ON for the first `onSteps` steps and OFF for the remainder
     if (currentCycleDuration < onTime) {
         digitalWrite(PUMP_PIN, LOW);  // Relay on
-        printf("Pump ON (Step %d/%d)\n", onTime, PUMP_CYCLE_TIME);
     } else {
         digitalWrite(PUMP_PIN, HIGH); // Relay off
-        printf("Pump OFF (Step %d/%d)\n", onTime, PUMP_CYCLE_TIME);
-    }
-
-    // Reset the cycle every PUMP_CYCLE_DURATION milliseconds
-    if ((currentMillis - lastCycleStart) >= PUMP_CYCLE_TIME) {
-        lastCycleStart = currentMillis;
     }
 }
 

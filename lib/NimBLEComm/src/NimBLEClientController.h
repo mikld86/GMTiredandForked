@@ -13,7 +13,7 @@ public:
     void initClient();
     bool connectToServer();
     void sendTemperatureControl(float setpoint);
-    void sendPumpControl(uint8_t pinState);
+    void sendPumpControl(float setpoint);
     void sendValveControl(bool pinState);
     void sendPing();
     void sendAutotune();
