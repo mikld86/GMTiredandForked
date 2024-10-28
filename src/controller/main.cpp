@@ -13,7 +13,6 @@ long last_ping_time;                      // Last time a ping was received
 const double PING_TIMEOUT_SECONDS = 10.0; // Timeout for ping
 bool is_autotuning = false;               // Flag for whether we are in autotune mode
 unsigned long lastCycleStart = 0;         // Tracks the start time of the pump cycle
-int onSteps = 0;                          // Number of 50 ms steps pump should be ON in each cycle
 int flowPercentage = 0;                   // Declare flowPercentage with an initial value
 
 NimBLEServerController serverController;
@@ -42,7 +41,7 @@ void setup() {
     pinMode(PUMP_PIN, OUTPUT);
     pinMode(VALVE_PIN, OUTPUT);
     control_heater(0);
-    control_pump(false);
+    control_pump();
     control_valve(false);
 
     aTune.SetOutputStep(10);  // Set the output step size for autotuning
@@ -94,7 +93,7 @@ void loop() {
     serverController.sendTemperature(input);
 
     // Execute pump modulation
-    control_pump(flowPercentage);  // Pass the flow percentage variable here
+    control_pump();  // Pass the flow percentage variable here
 
     delay(50); // Minimal delay to prevent overloading the loop, compatible with 50 ms intervals
 }
@@ -109,8 +108,9 @@ void on_temperature_control(float temperature) {
     printf("Setpoint updated to: %f\n", setpoint);
 }
 
-void on_pump_control(int flowPercentage) {
-    control_pump(flowPercentage);
+void on_pump_control(uint8_t setpoint) {
+    flowPercentage = setpoint;
+    control_pump();
 }
 
 
@@ -129,7 +129,7 @@ void handle_ping_timeout() {
     printf("Ping timeout detected. Turning off heater and pump for safety.\n");
     // Turn off the heater and pump as a safety measure
     control_heater(0);
-    control_pump(0);
+    on_pump_control(0);
     setpoint = 0;
     serverController.sendError(ERROR_CODE_TIMEOUT);
 }
@@ -138,7 +138,7 @@ void thermal_runaway_shutdown() {
     printf("Thermal runaway detected! Turning off heater and pump!\n");
     // Turn off the heater and pump immediately
     control_heater(0);
-    control_pump(0);
+    on_pump_control(0);
     setpoint = 0;
     serverController.sendError(ERROR_CODE_RUNAWAY);
 }
@@ -149,26 +149,26 @@ void control_heater(int out) {
     printf("Sending heater output: %d\n", out);
 }
 
-void control_pump(int flowPercentage) {
+void control_pump() {
     unsigned long currentMillis = millis();
     
-    // Calculate the number of 50 ms steps the pump should be ON in the cycle
-    onSteps = (flowPercentage * PUMP_STEPS) / 100;
+    // Calculate the time the pump should stay on for
+    unsigned long onTime = flowPercentage * PUMP_CYCLE_TIME / 100;
 
     // Determine the current step in the cycle
-    int currentStep = (currentMillis - lastCycleStart) / PUMP_STEP_DURATION;
+    int currentCycleDuration = (currentMillis - lastCycleStart);
 
     // Turn pump ON for the first `onSteps` steps and OFF for the remainder
-    if (currentStep < onSteps) {
+    if (currentCycleDuration < onTime) {
         digitalWrite(PUMP_PIN, LOW);  // Relay on
-        printf("Pump ON (Step %d/%d)\n", currentStep + 1, PUMP_STEPS);
+        printf("Pump ON (Step %d/%d)\n", onTime, PUMP_CYCLE_TIME);
     } else {
         digitalWrite(PUMP_PIN, HIGH); // Relay off
-        printf("Pump OFF (Step %d/%d)\n", currentStep + 1, PUMP_STEPS);
+        printf("Pump OFF (Step %d/%d)\n", onTime, PUMP_CYCLE_TIME);
     }
 
     // Reset the cycle every PUMP_CYCLE_DURATION milliseconds
-    if ((currentMillis - lastCycleStart) >= PUMP_CYCLE_DURATION) {
+    if ((currentMillis - lastCycleStart) >= PUMP_CYCLE_TIME) {
         lastCycleStart = currentMillis;
     }
 }

@@ -22,17 +22,19 @@
 
 #define I2C_DEV_ADDR 0x55
 
+#define PUMP_CYCLE_TIME 5000
+
 // Function prototypes for initialization
 void setup(void);
 void loop(void);
 
 // Function Prototypes
 void control_heater(int signal);
-void control_pump(bool state);
+void control_pump();
 void control_valve(bool state);
 float read_temperature(void);
 void on_temperature_control(float temperature);
-void on_pump_control(bool state);
+void on_pump_control(uint8_t setpoint);
 void on_valve_control(bool state);
 void on_ping();
 void on_autotune();

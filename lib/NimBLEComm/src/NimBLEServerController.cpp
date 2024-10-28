@@ -149,10 +149,10 @@ void NimBLEServerController::onWrite(NimBLECharacteristic* pCharacteristic) {
         }
     }
     else if (pCharacteristic->getUUID().equals(NimBLEUUID(PUMP_CONTROL_CHAR_UUID))) {
-        bool pinState = (pCharacteristic->getValue()[0] == '1');
-        Serial.printf("Received pump control: %s\n", pinState ? "ON" : "OFF");
+        uint8_t setpoint = atoi(pCharacteristic->getValue().c_str());
+        Serial.printf("Received pump control: %d\n", setpoint);
         if (pumpControlCallback != nullptr) {
-            pumpControlCallback(pinState);
+            pumpControlCallback(setpoint);
         }
     }
     else if (pCharacteristic->getUUID().equals(NimBLEUUID(VALVE_CONTROL_CHAR_UUID))) {

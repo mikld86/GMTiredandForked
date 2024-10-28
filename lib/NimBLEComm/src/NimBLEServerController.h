@@ -14,7 +14,7 @@ public:
     void sendTemperature(float temperature);
     void sendError(int errorCode);
     void registerTempControlCallback(temp_control_callback_t callback);
-    void registerPumpControlCallback(pin_control_callback_t callback);
+    void registerPumpControlCallback(pump_control_callback_t callback);
     void registerValveControlCallback(pin_control_callback_t callback);
     void registerPingCallback(ping_callback_t callback);
     void registerAutotuneCallback(autotune_callback_t callback);
@@ -30,7 +30,7 @@ private:
     NimBLECharacteristic* autotuneChar;
 
     temp_control_callback_t tempControlCallback;
-    pin_control_callback_t pumpControlCallback;
+    pump_control_callback_t pumpControlCallback;
     pin_control_callback_t valveControlCallback;
     ping_callback_t pingCallback;
     autotune_callback_t autotuneCallback;
