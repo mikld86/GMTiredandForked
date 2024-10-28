@@ -17,6 +17,7 @@
 #include <WebServer.h>
 #include <WiFi.h>
 #include <WiFiClient.h>
+#include <Preferences.h>
 
 #ifdef HOMEKIT_ENABLED
 #include "homekit.h"
@@ -81,6 +82,7 @@ private:
     void updateUiCurrentTemp();
     void updateBrewProgress();
     void updateStandby();
+    void savePreferences();
 
     // Event handlers
     void onOTAUpdate();
@@ -94,6 +96,7 @@ private:
     #ifdef HOMEKIT_ENABLED
     HomekitController homekitController;
     #endif
+    Preferences preferences;
 
     int mode;
     int targetBrewTemp;

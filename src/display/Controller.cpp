@@ -8,6 +8,12 @@ Controller::Controller()
 void Controller::setup() {
     mode = BREW_ON_START ? MODE_BREW : MODE_STANDBY;
     setupPanel();
+    preferences.begin("controller", false);
+    targetBrewTemp = preferences.getInt("targetBrewTemp", 90);
+    targetSteamTemp = preferences.getInt("targetSteamTemp", 145);
+    targetWaterTemp = preferences.getInt("targetWaterTemp", 80);
+    targetDuration = preferences.getInt("targetDuration", 90);
+    preferences.end();
 }
 
 void Controller::connect() {
@@ -154,6 +160,7 @@ void Controller::setTargetTemp(int temperature) {
     }
     updateUiSettings();
     clientController.sendTemperatureControl(getTargetTemp());
+    savePreferences();
 #ifdef HOMEKIT_ENABLED
     homekitController.setTargetTemperature(getTargetTemp());
 #endif
@@ -164,6 +171,7 @@ int Controller::getTargetDuration() { return targetDuration; }
 void Controller::setTargetDuration(int duration) {
     targetDuration = duration;
     updateUiSettings();
+    savePreferences();
 }
 
 void Controller::raiseTemp() {
@@ -324,4 +332,13 @@ void Controller::updateLastAction() { lastAction = millis(); }
 void Controller::onOTAUpdate() {
     activateStandby();
     updating = true;
+}
+
+void Controller::savePreferences() {
+    preferences.begin("controller", false);
+    preferences.putInt("targetBrewTemp", targetBrewTemp);
+    preferences.putInt("targetSteamTemp", targetSteamTemp);
+    preferences.putInt("targetWaterTemp", targetWaterTemp);
+    preferences.putInt("targetDuration", targetDuration);
+    preferences.end();
 }
