@@ -13,8 +13,8 @@ This project upgrades a Gaggia espresso machine with smart controls to improve y
 
 ## Screenshots
 
-![](docs/assets/standby-screen.png)
-![](docs/assets/brew-screen.png)
+<img src="docs/assets/standby-screen.png" alt="Standby Screen" width="250px" />
+<img src="docs/assets/brew-screen.png" alt="Brew Screen" width="250px" />
 
 ## Hardware
 
