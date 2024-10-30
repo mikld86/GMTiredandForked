@@ -67,24 +67,28 @@ void Controller::setupWifi() {
     server.on("/", [this]() { server.send(200, "text/html", index_html); });
     server.on("/settings", [this]() {
         if (server.method() == HTTP_POST) {
-        	if (server.hasArg("startupMode")) startupMode = server.arg("startupMode") == "brew" ? MODE_BREW : MODE_STANDBY;
-        	if (server.hasArg("targetBrewTemp")) targetBrewTemp = server.arg("targetBrewTemp").toInt();
-        	if (server.hasArg("targetSteamTemp")) targetSteamTemp = server.arg("targetSteamTemp").toInt();
-        	if (server.hasArg("targetWaterTemp")) targetWaterTemp = server.arg("targetWaterTemp").toInt();
-        	if (server.hasArg("targetDuration")) targetDuration = server.arg("targetDuration").toInt() * 1000;
-        	if (server.hasArg("temperatureOffset")) temperatureOffset = server.arg("temperatureOffset").toInt();
+            if (server.hasArg("startupMode"))
+                startupMode = server.arg("startupMode") == "brew" ? MODE_BREW : MODE_STANDBY;
+            if (server.hasArg("targetBrewTemp"))
+                targetBrewTemp = server.arg("targetBrewTemp").toInt();
+            if (server.hasArg("targetSteamTemp"))
+                targetSteamTemp = server.arg("targetSteamTemp").toInt();
+            if (server.hasArg("targetWaterTemp"))
+                targetWaterTemp = server.arg("targetWaterTemp").toInt();
+            if (server.hasArg("targetDuration"))
+                targetDuration = server.arg("targetDuration").toInt() * 1000;
+            if (server.hasArg("temperatureOffset"))
+                temperatureOffset = server.arg("temperatureOffset").toInt();
             setTargetTemp(getTargetTemp());
         }
 
-        std::map<String, String> variables = {
-        	{"standbySelected", startupMode == MODE_STANDBY ? "selected" : ""},
-        	{"brewSelected", startupMode == MODE_BREW ? "selected" : ""},
-        	{"targetBrewTemp", String(targetBrewTemp)},
-       		{"targetSteamTemp", String(targetSteamTemp)},
-        	{"targetWaterTemp", String(targetWaterTemp)},
-        	{"targetDuration", String(targetDuration / 1000)},
-            {"temperatureOffset", String(temperatureOffset)}
-    	};
+        std::map<String, String> variables = {{"standbySelected", startupMode == MODE_STANDBY ? "selected" : ""},
+                                              {"brewSelected", startupMode == MODE_BREW ? "selected" : ""},
+                                              {"targetBrewTemp", String(targetBrewTemp)},
+                                              {"targetSteamTemp", String(targetSteamTemp)},
+                                              {"targetWaterTemp", String(targetWaterTemp)},
+                                              {"targetDuration", String(targetDuration / 1000)},
+                                              {"temperatureOffset", String(temperatureOffset)}};
         server.send(200, "text/html", TemplateTango::render(settings_html, variables));
     });
     ElegantOTA.begin(&server);
@@ -114,8 +118,9 @@ void Controller::loop() {
         clientController.connectToServer();
         if (!loaded) {
             loaded = true;
-            startupMode == MODE_BREW ? _ui_screen_change(&ui_BrewScreen, LV_SCR_LOAD_ANIM_NONE, 500, 0, &ui_BrewScreen_screen_init)
-                          : activateStandby();
+            startupMode == MODE_BREW
+                ? _ui_screen_change(&ui_BrewScreen, LV_SCR_LOAD_ANIM_NONE, 500, 0, &ui_BrewScreen_screen_init)
+                : activateStandby();
         }
     }
 
