@@ -260,17 +260,18 @@ void Controller::updateUiSettings() {
 }
 
 void Controller::updateUiCurrentTemp() {
-    lv_arc_set_value(ui_BrewScreen_tempGauge, currentTemp);
-    lv_arc_set_value(ui_StatusScreen_tempGauge, currentTemp);
-    lv_arc_set_value(ui_MenuScreen_tempGauge, currentTemp);
-    lv_arc_set_value(ui_SteamScreen_tempGauge, currentTemp);
-    lv_arc_set_value(ui_WaterScreen_tempGauge, currentTemp);
+    int temp = currentTemp - temperatureOffset;
+    lv_arc_set_value(ui_BrewScreen_tempGauge, temp);
+    lv_arc_set_value(ui_StatusScreen_tempGauge, temp);
+    lv_arc_set_value(ui_MenuScreen_tempGauge, temp);
+    lv_arc_set_value(ui_SteamScreen_tempGauge, temp);
+    lv_arc_set_value(ui_WaterScreen_tempGauge, temp);
 
-    lv_label_set_text_fmt(ui_BrewScreen_tempText, "%d°C", currentTemp);
-    lv_label_set_text_fmt(ui_StatusScreen_tempText, "%d°C", currentTemp);
-    lv_label_set_text_fmt(ui_MenuScreen_tempText, "%d°C", currentTemp);
-    lv_label_set_text_fmt(ui_SteamScreen_tempText, "%d°C", currentTemp);
-    lv_label_set_text_fmt(ui_WaterScreen_tempText, "%d°C", currentTemp);
+    lv_label_set_text_fmt(ui_BrewScreen_tempText, "%d°C", temp);
+    lv_label_set_text_fmt(ui_StatusScreen_tempText, "%d°C", temp);
+    lv_label_set_text_fmt(ui_MenuScreen_tempText, "%d°C", temp);
+    lv_label_set_text_fmt(ui_SteamScreen_tempText, "%d°C", temp);
+    lv_label_set_text_fmt(ui_WaterScreen_tempText, "%d°C", temp);
 }
 
 void Controller::updateBrewProgress() {
@@ -355,7 +356,7 @@ void Controller::onTempRead(float temperature) {
     updateUiCurrentTemp();
 
 #ifdef HOMEKIT_ENABLED
-    homekitController.setCurrentTemperature(temperature);
+    homekitController.setCurrentTemperature(temperature - temperatureOffset);
 #endif
 }
 
