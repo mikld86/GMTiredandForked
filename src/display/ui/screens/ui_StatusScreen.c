@@ -102,7 +102,7 @@ lv_bar_set_start_value(ui_StatusScreen_progressBar, 0, LV_ANIM_OFF);
 lv_obj_set_width( ui_StatusScreen_progressBar, 180);
 lv_obj_set_height( ui_StatusScreen_progressBar, 10);
 lv_obj_set_x( ui_StatusScreen_progressBar, 0 );
-lv_obj_set_y( ui_StatusScreen_progressBar, 100 );
+lv_obj_set_y( ui_StatusScreen_progressBar, 60 );
 lv_obj_set_align( ui_StatusScreen_progressBar, LV_ALIGN_CENTER );
 ui_object_set_themeable_style_property(ui_StatusScreen_progressBar, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_BG_COLOR, _ui_theme_color_Transparent);
 ui_object_set_themeable_style_property(ui_StatusScreen_progressBar, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_BG_OPA, _ui_theme_alpha_Transparent);
@@ -118,7 +118,7 @@ ui_StatusScreen_progressLabel = lv_label_create(ui_StatusScreen_contentPanel2);
 lv_obj_set_width( ui_StatusScreen_progressLabel, LV_SIZE_CONTENT);  /// 1
 lv_obj_set_height( ui_StatusScreen_progressLabel, LV_SIZE_CONTENT);   /// 1
 lv_obj_set_x( ui_StatusScreen_progressLabel, 0 );
-lv_obj_set_y( ui_StatusScreen_progressLabel, 135 );
+lv_obj_set_y( ui_StatusScreen_progressLabel, 30 );
 lv_obj_set_align( ui_StatusScreen_progressLabel, LV_ALIGN_CENTER );
 lv_label_set_text(ui_StatusScreen_progressLabel,"0:15 / 0:30");
 ui_object_set_themeable_style_property(ui_StatusScreen_progressLabel, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_TEXT_COLOR, _ui_theme_color_NiceWhite);
@@ -173,7 +173,7 @@ lv_imgbtn_set_src(ui_StatusScreen_pauseButton, LV_IMGBTN_STATE_RELEASED, NULL, &
 lv_obj_set_width( ui_StatusScreen_pauseButton, 40);
 lv_obj_set_height( ui_StatusScreen_pauseButton, 40);
 lv_obj_set_x( ui_StatusScreen_pauseButton, 0 );
-lv_obj_set_y( ui_StatusScreen_pauseButton, 60 );
+lv_obj_set_y( ui_StatusScreen_pauseButton, 110 );
 lv_obj_set_align( ui_StatusScreen_pauseButton, LV_ALIGN_CENTER );
 ui_object_set_themeable_style_property(ui_StatusScreen_pauseButton, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR, _ui_theme_color_NiceWhite);
 ui_object_set_themeable_style_property(ui_StatusScreen_pauseButton, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR_OPA, _ui_theme_alpha_NiceWhite);

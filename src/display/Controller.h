@@ -18,6 +18,7 @@
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <Preferences.h>
+#include "TemplateTango.h"
 
 #ifdef HOMEKIT_ENABLED
 #include "homekit.h"
@@ -32,6 +33,7 @@
 #define STANDBY_TIMEOUT_MS            900000
 #define MIN_TEMP                           0
 #define MAX_TEMP                         160
+#define DEFAULT_TEMPERATURE_OFFSET         0
 
 #define MODE_STANDBY 0
 #define MODE_BREW    1
@@ -102,8 +104,10 @@ private:
     int targetBrewTemp;
     int targetSteamTemp;
     int targetWaterTemp;
+    int temperatureOffset;
     int targetDuration;
     int currentTemp;
+    int startupMode;
 
     unsigned long activeUntil;
     unsigned long lastPing;

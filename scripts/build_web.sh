@@ -11,6 +11,6 @@ settings_html=$(npx inliner -i ./web/settings.html)
   echo "$index_html"
   echo ")***\";"
   echo "const char settings_html[] PROGMEM = R\"***("
-  echo "$index_html"
+  echo "$settings_html"
   echo ")***\";"
 } > ./src/display/html.h

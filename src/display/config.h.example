@@ -5,10 +5,7 @@
 #define WIFI_PASS "TBD"
 
 // Check https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv for valid zones
-#define TIMEZONE "CET-1CEST,M3.5.0,M10.5.0/3"
-
-#define TEMP_OFFSET   7
-#define BREW_ON_START 0
+#define TIMEZONE "CET-1CEST,M3.5.0/02,M10.5.0/03"
 
 #define HOMEKIT_ENABLED
 

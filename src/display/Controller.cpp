@@ -3,17 +3,19 @@
 Controller::Controller()
     : server(80), timer(nullptr), mode(MODE_BREW), targetBrewTemp(90), targetSteamTemp(145), targetWaterTemp(80),
       targetDuration(25000), currentTemp(0), activeUntil(0), lastPing(0), lastProgress(0), lastAction(0), loaded(false),
-      updating(false) {}
+      updating(false), temperatureOffset(0), startupMode(MODE_STANDBY) {}
 
 void Controller::setup() {
-    mode = BREW_ON_START ? MODE_BREW : MODE_STANDBY;
-    setupPanel();
-    preferences.begin("controller", false);
-    targetBrewTemp = preferences.getInt("targetBrewTemp", 90);
-    targetSteamTemp = preferences.getInt("targetSteamTemp", 145);
-    targetWaterTemp = preferences.getInt("targetWaterTemp", 80);
-    targetDuration = preferences.getInt("targetDuration", 90);
+    preferences.begin("controller", true);
+    startupMode = preferences.getInt("sm", MODE_STANDBY);
+    targetBrewTemp = preferences.getInt("tb", 90);
+    targetSteamTemp = preferences.getInt("ts", 145);
+    targetWaterTemp = preferences.getInt("tw", 80);
+    targetDuration = preferences.getInt("td", 25000);
+    temperatureOffset = preferences.getInt("to", DEFAULT_TEMPERATURE_OFFSET);
     preferences.end();
+    mode = startupMode;
+    setupPanel();
 }
 
 void Controller::connect() {
@@ -63,6 +65,28 @@ void Controller::setupWifi() {
 
     configTzTime(TIMEZONE, NTP_SERVER);
     server.on("/", [this]() { server.send(200, "text/html", index_html); });
+    server.on("/settings", [this]() {
+        if (server.method() == HTTP_POST) {
+        	if (server.hasArg("startupMode")) startupMode = server.arg("startupMode") == "brew" ? MODE_BREW : MODE_STANDBY;
+        	if (server.hasArg("targetBrewTemp")) targetBrewTemp = server.arg("targetBrewTemp").toInt();
+        	if (server.hasArg("targetSteamTemp")) targetSteamTemp = server.arg("targetSteamTemp").toInt();
+        	if (server.hasArg("targetWaterTemp")) targetWaterTemp = server.arg("targetWaterTemp").toInt();
+        	if (server.hasArg("targetDuration")) targetDuration = server.arg("targetDuration").toInt() * 1000;
+        	if (server.hasArg("temperatureOffset")) temperatureOffset = server.arg("temperatureOffset").toInt();
+            setTargetTemp(getTargetTemp());
+        }
+
+        std::map<String, String> variables = {
+        	{"standbySelected", startupMode == MODE_STANDBY ? "selected" : ""},
+        	{"brewSelected", startupMode == MODE_BREW ? "selected" : ""},
+        	{"targetBrewTemp", String(targetBrewTemp)},
+       		{"targetSteamTemp", String(targetSteamTemp)},
+        	{"targetWaterTemp", String(targetWaterTemp)},
+        	{"targetDuration", String(targetDuration / 1000)},
+            {"temperatureOffset", String(temperatureOffset)}
+    	};
+        server.send(200, "text/html", TemplateTango::render(settings_html, variables));
+    });
     ElegantOTA.begin(&server);
     ElegantOTA.onStart([this]() { onOTAUpdate(); });
     server.begin();
@@ -90,7 +114,7 @@ void Controller::loop() {
         clientController.connectToServer();
         if (!loaded) {
             loaded = true;
-            BREW_ON_START ? _ui_screen_change(&ui_BrewScreen, LV_SCR_LOAD_ANIM_NONE, 500, 0, &ui_BrewScreen_screen_init)
+            startupMode == MODE_BREW ? _ui_screen_change(&ui_BrewScreen, LV_SCR_LOAD_ANIM_NONE, 500, 0, &ui_BrewScreen_screen_init)
                           : activateStandby();
         }
     }
@@ -106,7 +130,7 @@ void Controller::loop() {
             updateBrewProgress();
         else if (mode == MODE_STANDBY)
             updateStandby();
-        clientController.sendTemperatureControl(getTargetTemp());
+        clientController.sendTemperatureControl(getTargetTemp() + temperatureOffset);
         updateRelay();
         lastProgress = now;
     }
@@ -159,7 +183,7 @@ void Controller::setTargetTemp(int temperature) {
         break;
     }
     updateUiSettings();
-    clientController.sendTemperatureControl(getTargetTemp());
+    clientController.sendTemperatureControl(getTargetTemp() + temperatureOffset);
     savePreferences();
 #ifdef HOMEKIT_ENABLED
     homekitController.setTargetTemperature(getTargetTemp());
@@ -309,7 +333,7 @@ int Controller::getMode() { return mode; }
 void Controller::setMode(int newMode) {
     mode = newMode;
     updateUiSettings();
-    clientController.sendTemperatureControl(getTargetTemp());
+    clientController.sendTemperatureControl(getTargetTemp() + temperatureOffset);
 
 #ifdef HOMEKIT_ENABLED
     homekitController.setState(mode != MODE_STANDBY);
@@ -335,9 +359,11 @@ void Controller::onOTAUpdate() {
 
 void Controller::savePreferences() {
     preferences.begin("controller", false);
-    preferences.putInt("targetBrewTemp", targetBrewTemp);
-    preferences.putInt("targetSteamTemp", targetSteamTemp);
-    preferences.putInt("targetWaterTemp", targetWaterTemp);
-    preferences.putInt("targetDuration", targetDuration);
+    preferences.putInt("sm", startupMode);
+    preferences.putInt("tb", targetBrewTemp);
+    preferences.putInt("ts", targetSteamTemp);
+    preferences.putInt("tw", targetWaterTemp);
+    preferences.putInt("td", targetDuration);
+    preferences.putInt("to", temperatureOffset);
     preferences.end();
 }
