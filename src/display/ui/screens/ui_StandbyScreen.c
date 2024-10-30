@@ -44,6 +44,30 @@ ui_object_set_themeable_style_property(ui_StandbyScreen_time, LV_PART_MAIN| LV_S
 lv_obj_set_style_text_align(ui_StandbyScreen_time, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN| LV_STATE_DEFAULT);
 lv_obj_set_style_text_font(ui_StandbyScreen_time, &lv_font_montserrat_34, LV_PART_MAIN| LV_STATE_DEFAULT);
 
+ui_StandbyScreen_bluetoothIcon = lv_img_create(ui_StandbyScreen);
+lv_img_set_src(ui_StandbyScreen_bluetoothIcon, &ui_img_bluetooth_png);
+lv_obj_set_width( ui_StandbyScreen_bluetoothIcon, LV_SIZE_CONTENT);  /// 1
+lv_obj_set_height( ui_StandbyScreen_bluetoothIcon, LV_SIZE_CONTENT);   /// 1
+lv_obj_set_x( ui_StandbyScreen_bluetoothIcon, -20 );
+lv_obj_set_y( ui_StandbyScreen_bluetoothIcon, -100 );
+lv_obj_set_align( ui_StandbyScreen_bluetoothIcon, LV_ALIGN_CENTER );
+lv_obj_add_flag( ui_StandbyScreen_bluetoothIcon, LV_OBJ_FLAG_ADV_HITTEST );   /// Flags
+lv_obj_clear_flag( ui_StandbyScreen_bluetoothIcon, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
+ui_object_set_themeable_style_property(ui_StandbyScreen_bluetoothIcon, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR, _ui_theme_color_NiceWhite);
+ui_object_set_themeable_style_property(ui_StandbyScreen_bluetoothIcon, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR_OPA, _ui_theme_alpha_NiceWhite);
+
+ui_StandbyScreen_wifiIcon = lv_img_create(ui_StandbyScreen);
+lv_img_set_src(ui_StandbyScreen_wifiIcon, &ui_img_wifi_png);
+lv_obj_set_width( ui_StandbyScreen_wifiIcon, LV_SIZE_CONTENT);  /// 1
+lv_obj_set_height( ui_StandbyScreen_wifiIcon, LV_SIZE_CONTENT);   /// 1
+lv_obj_set_x( ui_StandbyScreen_wifiIcon, 20 );
+lv_obj_set_y( ui_StandbyScreen_wifiIcon, -100 );
+lv_obj_set_align( ui_StandbyScreen_wifiIcon, LV_ALIGN_CENTER );
+lv_obj_add_flag( ui_StandbyScreen_wifiIcon, LV_OBJ_FLAG_ADV_HITTEST );   /// Flags
+lv_obj_clear_flag( ui_StandbyScreen_wifiIcon, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
+ui_object_set_themeable_style_property(ui_StandbyScreen_wifiIcon, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR, _ui_theme_color_NiceWhite);
+ui_object_set_themeable_style_property(ui_StandbyScreen_wifiIcon, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR_OPA, _ui_theme_alpha_NiceWhite);
+
 lv_obj_add_event_cb(ui_StandbyScreen, ui_event_StandbyScreen, LV_EVENT_ALL, NULL);
 
 }

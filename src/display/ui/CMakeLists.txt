@@ -25,6 +25,8 @@ SET(SOURCES components/ui_comp_piebutton.c
     images/ui_img_646127855.c
     images/ui_img_1138440778.c
     images/ui_img_2106667244.c
-    images/ui_img_980971367.c)
+    images/ui_img_980971367.c
+    images/ui_img_bluetooth_png.c
+    images/ui_img_wifi_png.c)
 
 add_library(ui ${SOURCES})

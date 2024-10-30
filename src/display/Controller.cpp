@@ -295,6 +295,10 @@ void Controller::updateStandby() {
         strftime(time, 6, "%H:%M", &timeinfo);
         lv_label_set_text(ui_StandbyScreen_time, time);
     }
+    ui_object_set_themeable_style_property(ui_StandbyScreen_bluetoothIcon, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR,
+                                           clientController.isConnected() ? _ui_theme_color_NiceWhite : _ui_theme_color_SemiDark);
+    ui_object_set_themeable_style_property(ui_StandbyScreen_wifiIcon, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR,
+                                           WiFi.status() == WL_CONNECTED ? _ui_theme_color_NiceWhite : _ui_theme_color_SemiDark);
 }
 
 void Controller::activate() {

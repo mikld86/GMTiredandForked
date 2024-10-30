@@ -161,6 +161,8 @@ lv_obj_t *ui_StandbyScreen;
 lv_obj_t *ui_StandbyScreen_Image1;
 lv_obj_t *ui_StandbyScreen_text1;
 lv_obj_t *ui_StandbyScreen_time;
+lv_obj_t *ui_StandbyScreen_bluetoothIcon;
+lv_obj_t *ui_StandbyScreen_wifiIcon;
 lv_obj_t *ui____initial_actions0;
 const lv_img_dsc_t *ui_imgset_257442185[1] = {&ui_img_2106667244};
 const lv_img_dsc_t *ui_imgset_1543159247[1] = {&ui_img_2056842146};

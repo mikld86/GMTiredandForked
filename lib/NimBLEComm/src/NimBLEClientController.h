@@ -18,6 +18,7 @@ public:
     void sendPing();
     void sendAutotune();
     bool isReadyForConnection();
+    bool isConnected();
     void scan();
     void registerTempReadCallback(temp_read_callback_t callback);
     void registerRemoteErrorCallback(remote_err_callback_t callback);

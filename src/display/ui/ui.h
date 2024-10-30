@@ -165,6 +165,8 @@ extern lv_obj_t *ui_StandbyScreen;
 extern lv_obj_t *ui_StandbyScreen_Image1;
 extern lv_obj_t *ui_StandbyScreen_text1;
 extern lv_obj_t *ui_StandbyScreen_time;
+extern lv_obj_t *ui_StandbyScreen_bluetoothIcon;
+extern lv_obj_t *ui_StandbyScreen_wifiIcon;
 extern lv_obj_t *ui____initial_actions0;
 
 LV_IMG_DECLARE( ui_img_gaggimate_png);   // assets/gaggimate.png
@@ -178,6 +180,8 @@ LV_IMG_DECLARE( ui_img_646127855);   // assets/pause-solid.png
 LV_IMG_DECLARE( ui_img_1138440778);   // assets/weight-hanging-solid.png
 LV_IMG_DECLARE( ui_img_2106667244);   // assets/play-40.png
 LV_IMG_DECLARE( ui_img_980971367);   // assets/chevron-down-solid.png
+LV_IMG_DECLARE( ui_img_bluetooth_png);   // assets/bluetooth.png
+LV_IMG_DECLARE( ui_img_wifi_png);   // assets/wifi.png
 
 
 

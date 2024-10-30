@@ -137,6 +137,10 @@ bool NimBLEClientController::isReadyForConnection() {
     return readyForConnection;
 }
 
+bool NimBLEClientController::isConnected() {
+    return client->isConnected();
+}
+
 // BLEAdvertisedDeviceCallbacks override
 void NimBLEClientController::onResult(NimBLEAdvertisedDevice* advertisedDevice) {
     Serial.printf("Advertised Device found: %s \n", advertisedDevice->toString().c_str());
