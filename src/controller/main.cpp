@@ -4,7 +4,7 @@
 double setpoint = 0.0;                                        // Desired temperature
 double input = 0.0;                                           // Current temperature input from the thermocouple
 double output = 0.0;                                          // PID output to control heater
-PID myPID(&input, &output, &setpoint, 2.0, 5.0, 1.0, DIRECT); // PID tuning parameters
+PID myPID(&input, &output, &setpoint, 0, 0, 0, DIRECT);       // PID parameters
 PID_ATune aTune(&input, &output);                             // PID autotune instance
 
 // System control variables
@@ -53,6 +53,7 @@ void setup() {
     serverController.registerTempControlCallback(on_temperature_control);
     serverController.registerPumpControlCallback(on_pump_control);
     serverController.registerValveControlCallback(on_valve_control);
+    serverController.registerPidControlCallback(on_pid_control);
     serverController.registerPingCallback(on_ping);
     serverController.registerAutotuneCallback(on_autotune);
     lastCycleStart = millis();
@@ -121,6 +122,10 @@ void on_pump_control(float setpoint) {
 
 void on_valve_control(bool state) { control_valve(state); }
 
+void on_pid_control(float Kp, float Ki, float Kd) {
+    myPID.SetTunings(Kp, Ki, Kd);
+}
+
 void on_ping() {
     // Update the last ping time
     last_ping_time = millis();
@@ -151,7 +156,6 @@ void thermal_runaway_shutdown() {
 void control_heater(int out) {
     analogWriteFrequency(PWM_FREQUENCY);
     analogWrite(HEATER_PIN, out);
-    printf("Sending heater output: %d\n", out);
 }
 
 void control_pump() {

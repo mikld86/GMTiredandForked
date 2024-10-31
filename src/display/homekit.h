@@ -29,7 +29,7 @@ private:
 class HomekitController {
 public:
     HomekitController();
-    void initialize();
+    void initialize(String wifiSsid, String wifiPassword);
     boolean hasAction();
     boolean getState();
     void clearAction();

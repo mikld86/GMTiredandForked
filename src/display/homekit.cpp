@@ -41,11 +41,11 @@ float HomekitAccessory::getTargetTemperature() { return targetTemperature->getVa
 
 HomekitController::HomekitController() : accessory(nullptr), actionRequired(false) {}
 
-void HomekitController::initialize() {
+void HomekitController::initialize(String wifiSsid, String wifiPassword) {
     homeSpan.setHostNameSuffix("");
     homeSpan.setPortNum(HOMESPAN_PORT);
     homeSpan.begin(Category::Thermostats, "GaggiMate", "gaggia");
-    homeSpan.setWifiCredentials(WIFI_SSID, WIFI_PASS);
+    homeSpan.setWifiCredentials(wifiSsid.c_str(), wifiPassword.c_str());
     new SpanAccessory();
     new Service::AccessoryInformation();
     new Characteristic::Identify();

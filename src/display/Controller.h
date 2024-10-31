@@ -34,6 +34,7 @@
 #define MIN_TEMP                           0
 #define MAX_TEMP                         160
 #define DEFAULT_TEMPERATURE_OFFSET         0
+#define DEFAULT_PID             "4.5,128,32"
 
 #define MODE_STANDBY 0
 #define MODE_BREW    1
@@ -41,6 +42,8 @@
 #define MODE_WATER   3
 
 #define MDNS_NAME "gaggia"
+#define WIFI_SSID "GaggiMate"
+#define WIFI_CONNECT_ATTEMPTS 10
 #define NTP_SERVER "pool.ntp.org"
 
 class Controller {
@@ -108,6 +111,9 @@ private:
     int targetDuration;
     int currentTemp;
     int startupMode;
+    String pid;
+    String wifiSsid;
+    String wifiPassword;
 
     unsigned long activeUntil;
     unsigned long lastPing;

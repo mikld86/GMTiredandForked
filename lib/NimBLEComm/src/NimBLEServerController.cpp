@@ -14,6 +14,8 @@ NimBLEServerController::NimBLEServerController() :
     tempControlCallback(nullptr),
     pumpControlCallback(nullptr),
     valveControlCallback(nullptr),
+    pidControlChar(nullptr),
+    pidControlCallback(nullptr),
     pingCallback(nullptr),
     autotuneCallback(nullptr) {}
 
@@ -62,6 +64,13 @@ void NimBLEServerController::initServer() {
                  NIMBLE_PROPERTY::WRITE
                );
     pingChar->setCallbacks(this);  // Use this class as the callback handler
+
+    // PID control Characteristic (Client writes PID settings, Server reads)
+    pidControlChar = pService->createCharacteristic(
+                 PID_CONTROL_CHAR_UUID,
+                 NIMBLE_PROPERTY::WRITE
+               );
+    pidControlChar->setCallbacks(this);  // Use this class as the callback handler
 
     // Error Characteristic (Server writes error, Client reads)
     errorChar = pService->createCharacteristic(
@@ -124,6 +133,10 @@ void NimBLEServerController::registerAutotuneCallback(autotune_callback_t callba
     autotuneCallback = callback;
 }
 
+void NimBLEServerController::registerPidControlCallback(pid_control_callback_t callback) {
+    pidControlCallback = callback;
+}
+
 // BLEServerCallbacks override
 void NimBLEServerController::onConnect(NimBLEServer* pServer) {
     Serial.println("Client connected.");
@@ -135,6 +148,31 @@ void NimBLEServerController::onDisconnect(NimBLEServer* pServer) {
     Serial.println("Client disconnected.");
     deviceConnected = false;
     pServer->startAdvertising();  // Restart advertising so clients can reconnect
+}
+
+String get_token(String &from, uint8_t index, char separator)
+{
+    uint16_t start = 0, idx = 0;
+    uint8_t cur = 0;
+    while (idx < from.length())
+    {
+        if (from.charAt(idx) == separator)
+        {
+            if (cur == index)
+            {
+                return from.substring(start, idx);
+            }
+            cur++;
+            while (idx < from.length() - 1 && from.charAt(idx + 1) == separator) idx++;
+            start = idx + 1;
+        }
+        idx++;
+    }
+    if ((cur == index) && (start < from.length()))
+    {
+        return from.substring(start, from.length());
+    }
+    return "";
 }
 
 // BLECharacteristicCallbacks override
@@ -172,6 +210,16 @@ void NimBLEServerController::onWrite(NimBLECharacteristic* pCharacteristic) {
         Serial.printf("Received autotune\n");
         if (autotuneCallback != nullptr) {
             autotuneCallback();
+        }
+    }
+    else if (pCharacteristic->getUUID().equals(NimBLEUUID(PID_CONTROL_CHAR_UUID))) {
+        String pid = String(pCharacteristic->getValue().c_str());
+        float Kp = get_token(pid, 0, ',').toFloat();
+        float Ki = get_token(pid, 1, ',').toFloat();
+        float Kd = get_token(pid, 2, ',').toFloat();
+        Serial.printf("Received PID settings: %.2f, %.2f, %.2f\n", Kp, Ki, Kd);
+        if (pidControlCallback != nullptr) {
+            pidControlCallback(Kp, Ki, Kd);
         }
     }
 }

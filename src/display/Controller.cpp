@@ -3,7 +3,7 @@
 Controller::Controller()
     : server(80), timer(nullptr), mode(MODE_BREW), targetBrewTemp(90), targetSteamTemp(145), targetWaterTemp(80),
       targetDuration(25000), currentTemp(0), activeUntil(0), lastPing(0), lastProgress(0), lastAction(0), loaded(false),
-      updating(false), temperatureOffset(0), startupMode(MODE_STANDBY) {}
+      updating(false), temperatureOffset(0), startupMode(MODE_STANDBY), pid(DEFAULT_PID), wifiSsid(""), wifiPassword("") {}
 
 void Controller::setup() {
     preferences.begin("controller", true);
@@ -13,6 +13,9 @@ void Controller::setup() {
     targetWaterTemp = preferences.getInt("tw", 80);
     targetDuration = preferences.getInt("td", 25000);
     temperatureOffset = preferences.getInt("to", DEFAULT_TEMPERATURE_OFFSET);
+    pid = preferences.getString("pid", DEFAULT_PID);
+    wifiSsid = preferences.getString("ws", "");
+    wifiPassword = preferences.getString("wp", "");
     preferences.end();
     mode = startupMode;
     setupPanel();
@@ -23,9 +26,6 @@ void Controller::connect() {
 
     setupBluetooth();
     setupWifi();
-#ifdef HOMEKIT_ENABLED
-    setupHomekit();
-#endif
 
     updateUiSettings();
     updateUiCurrentTemp();
@@ -50,20 +50,46 @@ void Controller::setupPanel() {
 }
 
 void Controller::setupWifi() {
-    WiFi.mode(WIFI_STA);
-    WiFi.begin(WIFI_SSID, WIFI_PASS);
+    if (wifiSsid != "" && wifiPassword != "") {
+        WiFi.mode(WIFI_STA);
+        WiFi.begin(wifiSsid, wifiPassword);
+        for (int attempts = 0; attempts < WIFI_CONNECT_ATTEMPTS; attempts++) {
+            if (WiFi.status() == WL_CONNECTED) {
+                break;
+            }
+            delay(500);
+            Serial.print(".");
+        }
+        if (WiFi.status() == WL_CONNECTED) {
+            Serial.println("");
+            Serial.print("Connected to ");
+            Serial.println(wifiSsid);
+            Serial.print("IP address: ");
+            Serial.println(WiFi.localIP());
 
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.print(".");
+            configTzTime(TIMEZONE, NTP_SERVER);
+
+#ifdef HOMEKIT_ENABLED
+            setupHomekit();
+#else
+            if (!MDNS.begin(MDNS_NAME)) {
+                Serial.println("Error setting up MDNS responder!");
+            }
+#endif
+        } else {
+            Serial.println("Timed out while connecting to WiFi");
+        }
     }
-    Serial.println("");
-    Serial.print("Connected to ");
-    Serial.println(WIFI_SSID);
-    Serial.print("IP address: ");
-    Serial.println(WiFi.localIP());
+    if (WiFi.status() != WL_CONNECTED) {
+        WiFi.mode(WIFI_AP);
+        WiFi.softAP(WIFI_SSID);
+        Serial.println("Started in AP mode");
+        Serial.print("Connect to:");
+        Serial.println(WIFI_SSID);
+        Serial.print("IP address: ");
+        Serial.println(WiFi.localIP());
+    }
 
-    configTzTime(TIMEZONE, NTP_SERVER);
     server.on("/", [this]() { server.send(200, "text/html", index_html); });
     server.on("/settings", [this]() {
         if (server.method() == HTTP_POST) {
@@ -79,6 +105,12 @@ void Controller::setupWifi() {
                 targetDuration = server.arg("targetDuration").toInt() * 1000;
             if (server.hasArg("temperatureOffset"))
                 temperatureOffset = server.arg("temperatureOffset").toInt();
+            if (server.hasArg("pid"))
+                pid = server.arg("pid");
+            if (server.hasArg("wifiSsid"))
+                wifiSsid = server.arg("wifiSsid");
+            if (server.hasArg("wifiPassword"))
+                wifiPassword = server.arg("wifiPassword");
             setTargetTemp(getTargetTemp());
         }
 
@@ -88,24 +120,26 @@ void Controller::setupWifi() {
                                               {"targetSteamTemp", String(targetSteamTemp)},
                                               {"targetWaterTemp", String(targetWaterTemp)},
                                               {"targetDuration", String(targetDuration / 1000)},
+                                              {"pid", pid},
+                                              {"wifiSsid", wifiSsid},
+                                              {"wifiPassword", wifiPassword},
+                                              {"build_version", BUILD_GIT_VERSION},
+                                              {"build_timestamp", BUILD_TIMESTAMP},
                                               {"temperatureOffset", String(temperatureOffset)}};
         server.send(200, "text/html", TemplateTango::render(settings_html, variables));
+        if (server.method() == HTTP_POST && server.hasArg("restart"))
+            ESP.restart();
     });
     ElegantOTA.begin(&server);
     ElegantOTA.onStart([this]() { onOTAUpdate(); });
     server.begin();
     Serial.print("OTA server started");
 
-#ifndef HOMEKIT_ENABLED
-    if (!MDNS.begin(MDNS_NAME)) {
-        Serial.println("Error setting up MDNS responder!");
-    }
-#endif
 }
 
 #ifdef HOMEKIT_ENABLED
 void Controller::setupHomekit() {
-    homekitController.initialize();
+    homekitController.initialize(wifiSsid, wifiPassword);
     homekitController.setTargetTemperature(getTargetTemp());
 }
 #endif
@@ -136,6 +170,7 @@ void Controller::loop() {
         else if (mode == MODE_STANDBY)
             updateStandby();
         clientController.sendTemperatureControl(getTargetTemp() + temperatureOffset);
+        clientController.sendPidSettings(pid);
         updateRelay();
         lastProgress = now;
     }
@@ -188,6 +223,7 @@ void Controller::setTargetTemp(int temperature) {
         break;
     }
     updateUiSettings();
+    clientController.sendPidSettings(pid);
     clientController.sendTemperatureControl(getTargetTemp() + temperatureOffset);
     savePreferences();
 #ifdef HOMEKIT_ENABLED
@@ -375,5 +411,8 @@ void Controller::savePreferences() {
     preferences.putInt("tw", targetWaterTemp);
     preferences.putInt("td", targetDuration);
     preferences.putInt("to", temperatureOffset);
+    preferences.putString("pid", pid);
+    preferences.putString("ws", wifiSsid);
+    preferences.putString("wp", wifiPassword);
     preferences.end();
 }

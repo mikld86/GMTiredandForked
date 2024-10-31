@@ -38,6 +38,7 @@ float read_temperature(void);
 void on_temperature_control(float temperature);
 void on_pump_control(float setpoint);
 void on_valve_control(bool state);
+void on_pid_control(float Kp, float Ki, float Kd);
 void on_ping();
 void on_autotune();
 void on_error(int error_code);

@@ -17,6 +17,7 @@
 #define PING_CHAR_UUID          "9731755e-29ce-41a8-91d9-7a244f49859b"
 #define ERROR_CHAR_UUID         "d6676ec7-820c-41de-820d-95620749003b"
 #define AUTOTUNE_CHAR_UUID      "d54df381-69b6-4531-b1cc-dde7766bbaf4"
+#define PID_CONTROL_CHAR_UUID   "d448c469-3e1d-4105-b5b8-75bf7d492fad"
 
 #define ERROR_CODE_COMM_SEND 1
 #define ERROR_CODE_COMM_RCV 2
@@ -29,6 +30,7 @@ typedef std::function<void (float temperature)> temp_read_callback_t;
 typedef void (*temp_control_callback_t)(float setpoint);
 typedef void (*pump_control_callback_t)(float setpoint);
 typedef void (*pin_control_callback_t)(bool isActive);
+typedef void (*pid_control_callback_t)(float Kp, float Ki, float Kd);
 typedef void (*ping_callback_t)();
 typedef void (*remote_err_callback_t)(int errorCode);
 typedef void (*autotune_callback_t)();

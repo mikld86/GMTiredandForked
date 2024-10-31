@@ -17,6 +17,7 @@ public:
     void sendValveControl(bool pinState);
     void sendPing();
     void sendAutotune();
+    void sendPidSettings(const String& pid);
     bool isReadyForConnection();
     bool isConnected();
     void scan();
@@ -31,6 +32,7 @@ private:
     NimBLERemoteCharacteristic* valveControlChar;
     NimBLERemoteCharacteristic* tempReadChar;
     NimBLERemoteCharacteristic* pingChar;
+    NimBLERemoteCharacteristic* pidControlChar;
     NimBLERemoteCharacteristic* errorChar;
     NimBLERemoteCharacteristic* autotuneChar;
     NimBLEAdvertisedDevice* serverDevice;

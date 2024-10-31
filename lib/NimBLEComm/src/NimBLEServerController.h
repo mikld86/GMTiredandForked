@@ -16,6 +16,7 @@ public:
     void registerTempControlCallback(temp_control_callback_t callback);
     void registerPumpControlCallback(pump_control_callback_t callback);
     void registerValveControlCallback(pin_control_callback_t callback);
+    void registerPidControlCallback(pid_control_callback_t callback);
     void registerPingCallback(ping_callback_t callback);
     void registerAutotuneCallback(autotune_callback_t callback);
 
@@ -26,12 +27,14 @@ private:
     NimBLECharacteristic* valveControlChar;
     NimBLECharacteristic* tempReadChar;
     NimBLECharacteristic* pingChar;
+    NimBLECharacteristic* pidControlChar;
     NimBLECharacteristic* errorChar;
     NimBLECharacteristic* autotuneChar;
 
     temp_control_callback_t tempControlCallback;
     pump_control_callback_t pumpControlCallback;
     pin_control_callback_t valveControlCallback;
+    pid_control_callback_t pidControlCallback;
     ping_callback_t pingCallback;
     autotune_callback_t autotuneCallback;
 

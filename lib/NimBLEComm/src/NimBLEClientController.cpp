@@ -17,6 +17,7 @@ NimBLEClientController::NimBLEClientController() :
     serverDevice(nullptr),
     readyForConnection(false),
     remoteErrorCallback(nullptr),
+    pidControlChar(nullptr),
     tempReadCallback(nullptr),
     client(nullptr) {}
 
@@ -81,6 +82,7 @@ bool NimBLEClientController::connectToServer() {
     valveControlChar = pRemoteService->getCharacteristic(NimBLEUUID(VALVE_CONTROL_CHAR_UUID));
     autotuneChar = pRemoteService->getCharacteristic(NimBLEUUID(AUTOTUNE_CHAR_UUID));
     pingChar = pRemoteService->getCharacteristic(NimBLEUUID(PING_CHAR_UUID));
+    pidControlChar = pRemoteService->getCharacteristic(NimBLEUUID(PID_CONTROL_CHAR_UUID));
 
     // Obtain the remote notify characteristic and subscribe to it
     tempReadChar = pRemoteService->getCharacteristic(NimBLEUUID(TEMP_READ_CHAR_UUID));
@@ -104,6 +106,12 @@ void NimBLEClientController::sendTemperatureControl(float setpoint) {
         char tempStr[8];
         snprintf(tempStr, sizeof(tempStr), "%.2f", setpoint);
         tempControlChar->writeValue(tempStr);
+    }
+}
+
+void NimBLEClientController::sendPidSettings(const String& pid) {
+    if (pidControlChar != nullptr && client->isConnected()) {
+        pidControlChar->writeValue(pid);
     }
 }
 
