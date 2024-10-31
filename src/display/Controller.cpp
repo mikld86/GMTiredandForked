@@ -3,7 +3,8 @@
 Controller::Controller()
     : server(80), timer(nullptr), mode(MODE_BREW), targetBrewTemp(90), targetSteamTemp(145), targetWaterTemp(80),
       targetDuration(25000), currentTemp(0), activeUntil(0), lastPing(0), lastProgress(0), lastAction(0), loaded(false),
-      updating(false), temperatureOffset(0), startupMode(MODE_STANDBY), pid(DEFAULT_PID), wifiSsid(""), wifiPassword("") {}
+      updating(false), temperatureOffset(0), startupMode(MODE_STANDBY), pid(DEFAULT_PID), wifiSsid(""), wifiPassword(""),
+      homekit(false) {}
 
 void Controller::setup() {
     preferences.begin("controller", true);
@@ -16,6 +17,7 @@ void Controller::setup() {
     pid = preferences.getString("pid", DEFAULT_PID);
     wifiSsid = preferences.getString("ws", "");
     wifiPassword = preferences.getString("wp", "");
+    homekit = preferences.getBool("hk", false);
     preferences.end();
     mode = startupMode;
     setupPanel();
@@ -69,23 +71,23 @@ void Controller::setupWifi() {
 
             configTzTime(TIMEZONE, NTP_SERVER);
 
-#ifdef HOMEKIT_ENABLED
-            setupHomekit();
-#else
-            if (!MDNS.begin(MDNS_NAME)) {
-                Serial.println("Error setting up MDNS responder!");
+            if (homekit) {
+                setupHomekit();
+            } else {
+                if (!MDNS.begin(MDNS_NAME)) {
+                    Serial.println("Error setting up MDNS responder!");
+                }
             }
-#endif
         } else {
             Serial.println("Timed out while connecting to WiFi");
         }
     }
     if (WiFi.status() != WL_CONNECTED) {
         WiFi.mode(WIFI_AP);
-        WiFi.softAP(WIFI_SSID);
+        WiFi.softAP(WIFI_AP_SSID);
         Serial.println("Started in AP mode");
         Serial.print("Connect to:");
-        Serial.println(WIFI_SSID);
+        Serial.println(WIFI_AP_SSID);
         Serial.print("IP address: ");
         Serial.println(WiFi.localIP());
     }
@@ -114,6 +116,7 @@ void Controller::setupWifi() {
                 wifiSsid = server.arg("wifiSsid");
             if (server.hasArg("wifiPassword"))
                 wifiPassword = server.arg("wifiPassword");
+            homekit = server.hasArg("homekit");
             setTargetTemp(getTargetTemp());
         }
 
@@ -123,6 +126,7 @@ void Controller::setupWifi() {
                                               {"targetSteamTemp", String(targetSteamTemp)},
                                               {"targetWaterTemp", String(targetWaterTemp)},
                                               {"targetDuration", String(targetDuration / 1000)},
+                                              {"homekitChecked", homekit ? "checked" : ""},
                                               {"pid", pid},
                                               {"wifiSsid", wifiSsid},
                                               {"wifiPassword", wifiPassword},
@@ -139,12 +143,10 @@ void Controller::setupWifi() {
     Serial.print("OTA server started");
 }
 
-#ifdef HOMEKIT_ENABLED
 void Controller::setupHomekit() {
     homekitController.initialize(wifiSsid, wifiPassword);
     homekitController.setTargetTemperature(getTargetTemp());
 }
-#endif
 
 void Controller::loop() {
     server.handleClient();
@@ -182,8 +184,7 @@ void Controller::loop() {
     if (mode != MODE_STANDBY && now > lastAction + STANDBY_TIMEOUT_MS)
         activateStandby();
 
-#ifdef HOMEKIT_ENABLED
-    if (homekitController.hasAction()) {
+    if (homekit && homekitController.hasAction()) {
         if (homekitController.getState() && getMode() == MODE_STANDBY) {
             deactivate();
             setMode(MODE_BREW);
@@ -194,7 +195,6 @@ void Controller::loop() {
         setTargetTemp(homekitController.getTargetTemperature());
         homekitController.clearAction();
     }
-#endif
 }
 
 bool Controller::isUpdating() const { return updating; }
@@ -228,9 +228,8 @@ void Controller::setTargetTemp(int temperature) {
     clientController.sendPidSettings(pid);
     clientController.sendTemperatureControl(getTargetTemp() + temperatureOffset);
     savePreferences();
-#ifdef HOMEKIT_ENABLED
-    homekitController.setTargetTemperature(getTargetTemp());
-#endif
+    if (homekit)
+        homekitController.setTargetTemperature(getTargetTemp());
 }
 
 int Controller::getTargetDuration() { return targetDuration; }
@@ -383,19 +382,19 @@ void Controller::setMode(int newMode) {
     updateUiSettings();
     clientController.sendTemperatureControl(getTargetTemp() + temperatureOffset);
 
-#ifdef HOMEKIT_ENABLED
-    homekitController.setState(mode != MODE_STANDBY);
-    homekitController.setTargetTemperature(getTargetTemp());
-#endif
+    if (homekit) {
+        homekitController.setState(mode != MODE_STANDBY);
+        homekitController.setTargetTemperature(getTargetTemp());
+    }
 }
 
 void Controller::onTempRead(float temperature) {
     currentTemp = temperature;
     updateUiCurrentTemp();
 
-#ifdef HOMEKIT_ENABLED
-    homekitController.setCurrentTemperature(temperature - temperatureOffset);
-#endif
+    if (homekit) {
+        homekitController.setCurrentTemperature(temperature - temperatureOffset);
+    }
 }
 
 void Controller::updateLastAction() { lastAction = millis(); }
@@ -416,5 +415,6 @@ void Controller::savePreferences() {
     preferences.putString("pid", pid);
     preferences.putString("ws", wifiSsid);
     preferences.putString("wp", wifiPassword);
+    preferences.putBool("hk", wifiPassword);
     preferences.end();
 }

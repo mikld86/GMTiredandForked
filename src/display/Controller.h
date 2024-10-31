@@ -19,10 +19,7 @@
 #include <WiFiClient.h>
 #include <Preferences.h>
 #include "TemplateTango.h"
-
-#ifdef HOMEKIT_ENABLED
 #include "homekit.h"
-#endif
 
 #define PING_INTERVAL                   1000
 #define PROGRESS_INTERVAL                250
@@ -34,17 +31,14 @@
 #define MIN_TEMP                           0
 #define MAX_TEMP                         160
 #define DEFAULT_TEMPERATURE_OFFSET         0
-#define DEFAULT_PID             "4.5,128,32"
+#define DEFAULT_PID              "2.4,40,10"
 
 #define MODE_STANDBY 0
 #define MODE_BREW    1
 #define MODE_STEAM   2
 #define MODE_WATER   3
 
-#define MDNS_NAME "gaggia"
-#define WIFI_SSID "GaggiMate"
 #define WIFI_CONNECT_ATTEMPTS 10
-#define NTP_SERVER "pool.ntp.org"
 
 class Controller {
 public:
@@ -98,9 +92,7 @@ private:
     LilyGo_RGBPanel panel;
     NimBLEClientController clientController;
     hw_timer_t* timer;
-    #ifdef HOMEKIT_ENABLED
     HomekitController homekitController;
-    #endif
     Preferences preferences;
 
     int mode;
@@ -114,6 +106,7 @@ private:
     String pid;
     String wifiSsid;
     String wifiPassword;
+    bool homekit;
 
     unsigned long activeUntil;
     unsigned long lastPing;

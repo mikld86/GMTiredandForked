@@ -5,6 +5,7 @@
 #include "HomeSpan.h"
 
 #define HOMESPAN_PORT 8080
+#define DEVICE_NAME "GaggiMate"
 
 typedef std::function<void ()> change_callback_t;
 

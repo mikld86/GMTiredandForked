@@ -44,7 +44,7 @@ HomekitController::HomekitController() : accessory(nullptr), actionRequired(fals
 void HomekitController::initialize(String wifiSsid, String wifiPassword) {
     homeSpan.setHostNameSuffix("");
     homeSpan.setPortNum(HOMESPAN_PORT);
-    homeSpan.begin(Category::Thermostats, "GaggiMate", "gaggia");
+    homeSpan.begin(Category::Thermostats, DEVICE_NAME, MDNS_NAME);
     homeSpan.setWifiCredentials(wifiSsid.c_str(), wifiPassword.c_str());
     new SpanAccessory();
     new Service::AccessoryInformation();

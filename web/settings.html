@@ -58,6 +58,18 @@
         </div>
 
         <div>
+            <b>Integrations</b>
+        </div>
+
+        <div class="flex flex-row items-center gap-4">
+            <label class="relative inline-flex items-center cursor-pointer">
+                <input id="homekit" name="homekit" type="checkbox" class="sr-only peer" {{homekitChecked}}>
+                <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+            </label>
+            <p>Homekit</p>
+        </div>
+
+        <div>
             <b>System Settings</b>
         </div>
 <!--
@@ -85,6 +97,10 @@
         <div>
             <label for="pid" class="block font-medium text-[#333333]">PID Values (Kp, Ki, Kd)</label>
             <input id="pid" name="pid" type="text" class="input-field" placeholder="2.0, 0.1, 0.01" value="{{pid}}" />
+        </div>
+
+        <div class="text-sm text-[#666666]">
+            Some options like WiFi, NTP or integrations require a restart.
         </div>
 
         <!-- Submit Button -->
