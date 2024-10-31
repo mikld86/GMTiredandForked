@@ -8,7 +8,7 @@ PID myPID(&input, &output, &setpoint, 0, 0, 0, DIRECT);       // PID parameters
 PID_ATune aTune(&input, &output);                             // PID autotune instance
 
 // System control variables
-const double MAX_SAFE_TEMP = 150.0;       // Max temperature for thermal runaway protection
+const double MAX_SAFE_TEMP = 170.0;       // Max temperature for thermal runaway protection
 long last_ping_time;                      // Last time a ping was received
 const double PING_TIMEOUT_SECONDS = 10.0; // Timeout for ping
 bool is_autotuning = false;               // Flag for whether we are in autotune mode
