@@ -90,7 +90,10 @@ void Controller::setupWifi() {
         Serial.println(WiFi.localIP());
     }
 
-    server.on("/", [this]() { server.send(200, "text/html", index_html); });
+    server.on("/", [this]() {
+        std::map<String, String> variables = {{"build_version", BUILD_GIT_VERSION}, {"build_timestamp", BUILD_TIMESTAMP}};
+        server.send(200, "text/html", TemplateTango::render(index_html, variables));
+    });
     server.on("/settings", [this]() {
         if (server.method() == HTTP_POST) {
             if (server.hasArg("startupMode"))
@@ -134,7 +137,6 @@ void Controller::setupWifi() {
     ElegantOTA.onStart([this]() { onOTAUpdate(); });
     server.begin();
     Serial.print("OTA server started");
-
 }
 
 #ifdef HOMEKIT_ENABLED
