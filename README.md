@@ -16,14 +16,29 @@ This project upgrades a Gaggia espresso machine with smart controls to improve y
 <img src="docs/assets/standby-screen.png" alt="Standby Screen" width="250px" />
 <img src="docs/assets/brew-screen.png" alt="Brew Screen" width="250px" />
 
-## Hardware
+## BOM
 
-- **Gaggia Espresso Machine**
-- **LilyGo T-RGB 2.1" Display**: Runs the user interface and communicates with the system.
-- **ESP-WROOM32 DevKit**: Handles the machine’s low-level control.
-- **K-Type M4 Thermocouple with MAX6675**: Reads the temperature of the boiler.
-- **AC SSR**: Controls the heating element (boiler).
-- **2-Channel 5V Relay**: Controls the pump and valve.
+AliExpress links provided are affiliate links and supporting the project.
+
+### PCB Build
+
+The recommended way to build this machine is to use the PCB designed for this project. There's currently a group buy started for this.
+
+https://forms.gle/KEXdpgJGCZbsFdKD7
+
+### Lego Build
+
+If you do not want to use the PCB you can buy the components on their own:
+
+- **LilyGo T-RGB 2.1" Display** https://s.click.aliexpress.com/e/_Eju6rYD (Full Circle)
+- **ESP-S3 DevKit** https://s.click.aliexpress.com/e/_EzXyAvP (N8R8)
+- **2-Channel 5V Relay** https://s.click.aliexpress.com/e/_ExUVY9J (2 or 3 channel if you want the Grinder integration)
+- **MAX6675 Temperature sensor board** https://s.click.aliexpress.com/e/_EG1t3V7 (Module)
+
+### General components
+
+- **AC SSR** https://s.click.aliexpress.com/e/_EvPScvr (SSR-40DA)
+- **K-Type M4 Thermocouple** https://s.click.aliexpress.com/e/_Exzhqx7 (K-Type M4 0.5m)
 
 ## How It Works
 
