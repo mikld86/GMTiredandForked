@@ -35,9 +35,9 @@ jobs:
           mv .pio/build/controller/firmware.bin out/controller-firmware.bin
           mv .pio/build/controller/partitions.bin out/controller-partitions.bin
           mv .pio/build/controller/bootloader.bin out/controller-bootloader.bin
-          mv .pio/build/display/firmware.bin out/display-firmware.bin
-          mv .pio/build/display/partitions.bin out/display-partitions.bin
-          mv .pio/build/display/bootloader.bin out/display-bootloader.bin
+        #  mv .pio/build/display/firmware.bin out/display-firmware.bin
+        #  mv .pio/build/display/partitions.bin out/display-partitions.bin
+        #  mv .pio/build/display/bootloader.bin out/display-bootloader.bin
       - name: Archive Firmware Files
         uses: actions/upload-artifact@v4
         with:
@@ -82,6 +82,6 @@ jobs:
           tag_name: nightly
           name: 'Nightly Release $$'
           prerelease: true
-          body: 'chore: Update nightly release'
+          body: 'Latest nightly release, use the nightly channel in the UI to download this firmware.'
           files: |
             release/*.bin
