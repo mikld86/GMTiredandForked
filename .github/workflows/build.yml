@@ -71,7 +71,8 @@ jobs:
           path: release
 
       - name: Build controller
-        run: pio run -e controller
+        run: |
+          ls -lah
       - name: Update Nightly Release
         uses: andelf/nightly-release@main
         env:
