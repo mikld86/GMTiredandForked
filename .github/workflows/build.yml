@@ -29,18 +29,27 @@ jobs:
         run: pio run -e controller
       - name: Build display
         run: pio run -e display
+      - name: Rename firmware files
+        run: |
+          mkdir -p out
+          mv .pio/build/controller/firmware.bin out/controller-firmware.bin
+          mv .pio/build/controller/partitions.bin out/controller-partitions.bin
+          mv .pio/build/controller/bootloader.bin out/controller-bootloader.bin
+          mv .pio/build/display/firmware.bin out/display-firmware.bin
+          mv .pio/build/display/partitions.bin out/display-partitions.bin
+          mv .pio/build/display/bootloader.bin out/display-bootloader.bin
       - name: Archive Firmware Files
         uses: actions/upload-artifact@v3
         with:
           name: gaggimate-firmware
-          path: ".pio/build/*/*.bin"
+          path: "out/*.bin"
 
   release:
     needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Download Firmware Files
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           path: release
       - name: Release Firmware
@@ -57,7 +66,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download Firmware Files
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           path: release
       - name: Update Nightly Release
