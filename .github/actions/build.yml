@@ -1,0 +1,73 @@
+on:
+  push:
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: write
+name: Build
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.platformio/.cache
+          key: ${{ runner.os }}-pio
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install PlatformIO Core
+        run: pip install --upgrade platformio
+      - name: Build controller
+        run: pio run -e controller
+      - name: Build display
+        run: pio run -e display
+      - name: Archive Firmware Files
+        uses: actions/upload-artifact@v3
+        with:
+          name: gaggimate-firmware
+          path: ".pio/build/*/*.bin"
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Firmware Files
+        uses: actions/download-artifact@v2
+        with:
+          path: release
+      - name: Release Firmware
+        uses: ncipollo/release-action@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          artifacts: release/**/*.bin
+          generateReleaseNotes: true
+          allowUpdates: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  release-nightly:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Firmware Files
+        uses: actions/download-artifact@v2
+        with:
+          path: release
+      - name: Update Nightly Release
+        uses: andelf/nightly-release@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: nightly
+          name: 'Nightly Release $$'
+          prerelease: true
+          body: 'chore: Update nightly release'
+          files: |
+            release/**/*.bin
