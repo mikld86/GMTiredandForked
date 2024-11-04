@@ -30,13 +30,13 @@ https://forms.gle/KEXdpgJGCZbsFdKD7
 
 If you do not want to use the PCB you can buy the components on their own:
 
-- **LilyGo T-RGB 2.1" Display** https://s.click.aliexpress.com/e/_Eju6rYD (Full Circle)
 - **ESP-S3 DevKit** https://s.click.aliexpress.com/e/_EzXyAvP (N8R8)
 - **2-Channel 5V Relay** https://s.click.aliexpress.com/e/_ExUVY9J (2 or 3 channel if you want the Grinder integration)
 - **MAX6675 Temperature sensor board** https://s.click.aliexpress.com/e/_EG1t3V7 (Module)
 
 ### General components
 
+- **LilyGo T-RGB 2.1" Display** https://s.click.aliexpress.com/e/_Eju6rYD (Full Circle)
 - **AC SSR** https://s.click.aliexpress.com/e/_EvPScvr (SSR-40DA)
 - **K-Type M4 Thermocouple** https://s.click.aliexpress.com/e/_Exzhqx7 (K-Type M4 0.5m)
 
