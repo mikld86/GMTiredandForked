@@ -27,8 +27,8 @@ jobs:
         run: pip install --upgrade platformio
       - name: Build controller
         run: pio run -e controller
-      - name: Build display
-        run: pio run -e display
+      #- name: Build display
+      #  run: pio run -e display
       - name: Rename firmware files
         run: |
           mkdir -p out
@@ -39,7 +39,7 @@ jobs:
           mv .pio/build/display/partitions.bin out/display-partitions.bin
           mv .pio/build/display/bootloader.bin out/display-bootloader.bin
       - name: Archive Firmware Files
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: gaggimate-firmware
           path: "out/*.bin"
@@ -51,6 +51,7 @@ jobs:
       - name: Download Firmware Files
         uses: actions/download-artifact@v4
         with:
+          name: gaggimate-firmware
           path: release
       - name: Release Firmware
         uses: ncipollo/release-action@v1
@@ -68,8 +69,8 @@ jobs:
       - name: Download Firmware Files
         uses: actions/download-artifact@v4
         with:
+          name: gaggimate-firmware
           path: release
-
       - name: Build controller
         run: |
           ls -lah
