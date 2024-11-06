@@ -46,9 +46,11 @@ The display allows you to control the espresso machine and see live temperature 
 
 ## Installation
 
-1. Connect the ESP32-S3 Display, ESP-WROOM32 DevKit, and other components to the Gaggia.
-2. Upload the firmware to both microcontrollers.
-3. Enjoy your smarter coffee-making experience!
+The installation process of this mod consists of purely electrical changes. You will have to wire up the 3-Way valve and pump to the relays provided on the board.
+The existing thermostats of your machine have to be removed and bridged while connecting the heater to the SSR instead. The M4 thermistor goes into the screw hole where the brew
+thermostat would usually sit.
+
+I will soon update this with detailed instructions.
 
 ## License
 
