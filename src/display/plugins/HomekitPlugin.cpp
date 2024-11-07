@@ -31,18 +31,18 @@ boolean HomekitAccessory::update() {
     return true;
 }
 
-boolean HomekitAccessory::getState() { return targetState->getVal() == 1; }
+boolean HomekitAccessory::getState() const { return targetState->getVal() == 1; }
 
-void HomekitAccessory::setState(bool active) {
+void HomekitAccessory::setState(bool active) const {
     this->targetState->setVal(active ? 1 : 0, true);
     this->state->setVal(active ? 1 : 0, true);
 }
 
-void HomekitAccessory::setCurrentTemperature(float temperatureValue) { currentTemperature->setVal(temperatureValue, true); }
+void HomekitAccessory::setCurrentTemperature(float temperatureValue) const { currentTemperature->setVal(temperatureValue, true); }
 
-void HomekitAccessory::setTargetTemperature(float temperatureValue) { targetTemperature->setVal(temperatureValue, true); }
+void HomekitAccessory::setTargetTemperature(float temperatureValue) const { targetTemperature->setVal(temperatureValue, true); }
 
-float HomekitAccessory::getTargetTemperature() { return targetTemperature->getVal(); }
+float HomekitAccessory::getTargetTemperature() const { return targetTemperature->getVal(); }
 
 HomekitPlugin::HomekitPlugin(String wifiSsid, String wifiPassword) : accessory(nullptr), actionRequired(false), controller(nullptr) {
     this->wifiSsid = std::move(wifiSsid);

@@ -19,9 +19,12 @@ public:
         for (auto& plugin : plugins) {
             plugin->setup(controller, this);
         }
+        initialized = true;
     }
 
     void loop() {
+        if (!initialized)
+            return;
         for (auto& plugin : plugins) {
             plugin->loop();
         }
@@ -69,6 +72,7 @@ public:
     }
 
 private:
+    bool initialized = false;
     std::vector<Plugin*> plugins;
     std::map<String, std::vector<EventCallback>> listeners;
 };

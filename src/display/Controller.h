@@ -89,7 +89,7 @@ private:
     NimBLEClientController clientController;
     hw_timer_t* timer;
     Preferences preferences;
-    PluginManager *pluginManager;
+    PluginManager *pluginManager{};
 
     int mode;
     int targetBrewTemp;

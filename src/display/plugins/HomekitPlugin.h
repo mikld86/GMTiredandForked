@@ -11,12 +11,12 @@ typedef std::function<void ()> change_callback_t;
 class HomekitAccessory : public Service::Thermostat {
 public:
     HomekitAccessory(change_callback_t callback);
-    boolean getState();
-    void setState(bool active);
+    boolean getState() const;
+    void setState(bool active) const;
     boolean update() override;
-    void setCurrentTemperature(float temperatureValue);
-    void setTargetTemperature(float temperatureValue);
-    float getTargetTemperature();
+    void setCurrentTemperature(float temperatureValue) const;
+    void setTargetTemperature(float temperatureValue) const;
+    float getTargetTemperature() const;
 private:
     change_callback_t callback;
     SpanCharacteristic *state;

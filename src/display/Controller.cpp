@@ -4,7 +4,7 @@ Controller::Controller()
     : server(80), timer(nullptr), mode(MODE_BREW), targetBrewTemp(90), targetSteamTemp(145), targetWaterTemp(80),
       targetDuration(25000), currentTemp(0), activeUntil(0), lastPing(0), lastProgress(0), lastAction(0), loaded(false),
       updating(false), temperatureOffset(0), startupMode(MODE_STANDBY), pid(DEFAULT_PID), wifiSsid(""), wifiPassword(""),
-      homekit(false) {}
+      homekit(false), pluginManager(nullptr) {}
 
 void Controller::setup() {
     preferences.begin("controller", true);
