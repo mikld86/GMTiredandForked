@@ -23,7 +23,8 @@ void Controller::setup() {
     setupPanel();
 
     pluginManager = new PluginManager();
-    pluginManager->registerPlugin(new HomekitPlugin(wifiSsid, wifiPassword));
+    if (homekit)
+        pluginManager->registerPlugin(new HomekitPlugin(wifiSsid, wifiPassword));
 }
 
 void Controller::connect() {
