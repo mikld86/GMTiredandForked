@@ -1,7 +1,3 @@
-//
-// Created by Jochen Ullrich on 22.10.24.
-//
-
 #ifndef NIMBLECOMM_H
 #define NIMBLECOMM_H
 

@@ -1,7 +1,3 @@
-//
-// Created by Jochen Ullrich on 22.10.24.
-//
-
 #ifndef NIMBLESERVERCONTROLLER_H
 #define NIMBLESERVERCONTROLLER_H
 

@@ -1,12 +1,8 @@
-//
-// Created by Jochen Ullrich on 26.10.24.
-//
-
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#include "LV_Helper.h"
-#include "LilyGo_RGBPanel.h"
+#include "drivers/LilyGo-T-RGB/LV_Helper.h"
+#include "drivers/LilyGo-T-RGB/LilyGo_RGBPanel.h"
 #include "NimBLEClientController.h"
 #include "config.h"
 #include "html.h"

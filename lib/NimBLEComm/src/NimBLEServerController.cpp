@@ -1,5 +1,3 @@
-// BLEServerController.cpp
-
 #include "NimBLEServerController.h"
 
 NimBLEServerController::NimBLEServerController() :

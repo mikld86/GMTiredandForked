@@ -1,5 +1,3 @@
-// BLEClientController.cpp
-
 #include "NimBLEClientController.h"
 #include "esp_log.h"
 
