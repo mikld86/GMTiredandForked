@@ -15,7 +15,8 @@
 #include <WiFiClient.h>
 #include <Preferences.h>
 #include "TemplateTango.h"
-#include "homekit.h"
+#include "PluginManager.h"
+#include "plugins/HomekitPlugin.h"
 
 #define PING_INTERVAL                   1000
 #define PROGRESS_INTERVAL                250
@@ -68,7 +69,6 @@ private:
     void setupPanel();
     void setupWifi();
     void setupBluetooth();
-    void setupHomekit();
 
     // Functional methods
     void updateRelay();
@@ -88,8 +88,8 @@ private:
     LilyGo_RGBPanel panel;
     NimBLEClientController clientController;
     hw_timer_t* timer;
-    HomekitController homekitController;
     Preferences preferences;
+    PluginManager *pluginManager;
 
     int mode;
     int targetBrewTemp;

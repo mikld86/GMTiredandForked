@@ -21,6 +21,9 @@ void Controller::setup() {
     preferences.end();
     mode = startupMode;
     setupPanel();
+
+    pluginManager = new PluginManager();
+    pluginManager->registerPlugin(new HomekitPlugin(wifiSsid, wifiPassword));
 }
 
 void Controller::connect() {
@@ -31,6 +34,8 @@ void Controller::connect() {
 
     updateUiSettings();
     updateUiCurrentTemp();
+
+    pluginManager->setup(this);
 }
 
 void Controller::setupBluetooth() {
@@ -71,9 +76,7 @@ void Controller::setupWifi() {
 
             configTzTime(TIMEZONE, NTP_SERVER);
 
-            if (homekit) {
-                setupHomekit();
-            } else {
+            if (!homekit) {
                 if (!MDNS.begin(MDNS_NAME)) {
                     Serial.println("Error setting up MDNS responder!");
                 }
@@ -143,14 +146,10 @@ void Controller::setupWifi() {
     Serial.print("OTA server started");
 }
 
-void Controller::setupHomekit() {
-    homekitController.initialize(wifiSsid, wifiPassword);
-    homekitController.setTargetTemperature(getTargetTemp());
-}
-
 void Controller::loop() {
     server.handleClient();
     ElegantOTA.loop();
+    pluginManager->loop();
 
     if (clientController.isReadyForConnection()) {
         clientController.connectToServer();
@@ -183,18 +182,6 @@ void Controller::loop() {
         deactivate();
     if (mode != MODE_STANDBY && now > lastAction + STANDBY_TIMEOUT_MS)
         activateStandby();
-
-    if (homekit && homekitController.hasAction()) {
-        if (homekitController.getState() && getMode() == MODE_STANDBY) {
-            deactivate();
-            setMode(MODE_BREW);
-            _ui_screen_change(&ui_BrewScreen, LV_SCR_LOAD_ANIM_NONE, 500, 0, &ui_BrewScreen_screen_init);
-        } else if (!homekitController.getState() && getMode() != MODE_STANDBY) {
-            activateStandby();
-        }
-        setTargetTemp(homekitController.getTargetTemperature());
-        homekitController.clearAction();
-    }
 }
 
 bool Controller::isUpdating() const { return updating; }
@@ -228,8 +215,7 @@ void Controller::setTargetTemp(int temperature) {
     clientController.sendPidSettings(pid);
     clientController.sendTemperatureControl(getTargetTemp() + temperatureOffset);
     savePreferences();
-    if (homekit)
-        homekitController.setTargetTemperature(getTargetTemp());
+    pluginManager->trigger("boiler.targetTemperature.change", "value", getTargetTemp());
 }
 
 int Controller::getTargetDuration() { return targetDuration; }
@@ -382,19 +368,16 @@ void Controller::setMode(int newMode) {
     updateUiSettings();
     clientController.sendTemperatureControl(getTargetTemp() + temperatureOffset);
 
-    if (homekit) {
-        homekitController.setState(mode != MODE_STANDBY);
-        homekitController.setTargetTemperature(getTargetTemp());
-    }
+    pluginManager->trigger("controller.mode.change", "value", newMode);
+    pluginManager->trigger("boiler.targetTemperature.change", "value", getTargetTemp());
 }
 
 void Controller::onTempRead(float temperature) {
     currentTemp = temperature;
     updateUiCurrentTemp();
 
-    if (homekit) {
-        homekitController.setCurrentTemperature(temperature - temperatureOffset);
-    }
+    pluginManager->trigger("boiler.currentTemperature.change", "value", temperature - temperatureOffset);
+
 }
 
 void Controller::updateLastAction() { lastAction = millis(); }

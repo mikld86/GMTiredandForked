@@ -1,14 +1,13 @@
-#ifndef HOMEKIT_H
-#define HOMEKIT_H
-
-#include "config.h"
+#ifndef HOMEKITPLUGIN_H
+#define HOMEKITPLUGIN_H
+#include "../config.h"
+#include "../Plugin.h"
 #include "HomeSpan.h"
 
 #define HOMESPAN_PORT 8080
 #define DEVICE_NAME "GaggiMate"
 
 typedef std::function<void ()> change_callback_t;
-
 class HomekitAccessory : public Service::Thermostat {
 public:
     HomekitAccessory(change_callback_t callback);
@@ -27,21 +26,23 @@ private:
     SpanCharacteristic *displayUnits;
 };
 
-class HomekitController {
-public:
-    HomekitController();
-    void initialize(String wifiSsid, String wifiPassword);
-    boolean hasAction();
-    boolean getState();
+class HomekitPlugin : public Plugin {
+  public:
+    HomekitPlugin(String wifiSsid, String wifiPassword);
+    void setup(Controller *controller, PluginManager *pluginManager) override;
+    void loop() override;
+
+    boolean hasAction() const;
     void clearAction();
-    void setState(bool active);
-    void setCurrentTemperature(float temperatureValue);
-    void setTargetTemperature(float temperatureValue);
-    float getTargetTemperature();
 
 private:
+    String wifiSsid;
+    String wifiPassword;
     HomekitAccessory* accessory;
     bool actionRequired;
+    Controller* controller;
 };
 
-#endif
+
+
+#endif //HOMEKITPLUGIN_H
