@@ -1,10 +1,5 @@
 #include "HomekitPlugin.h"
 
-#include <utility>
-
-#include "display/Controller.h"
-#include "display/PluginManager.h"
-
 HomekitAccessory::HomekitAccessory(change_callback_t callback)
     : callback(nullptr), state(nullptr), targetState(nullptr), targetTemperature(nullptr), currentTemperature(nullptr),
       displayUnits(nullptr) {

@@ -1,7 +1,7 @@
 #ifndef MAIN_H
 #define MAIN_H
-#include "Controller.h"
+#include "core/Controller.h"
 
 extern Controller controller;
 
-#endif //MAIN_H
+#endif // MAIN_H

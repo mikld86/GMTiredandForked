@@ -1,30 +1,21 @@
 #include "Controller.h"
 
+#include "../plugins/HomekitPlugin.h"
+#include "../plugins/mDNSPlugin.h"
+
 Controller::Controller()
-    : server(80), timer(nullptr), mode(MODE_BREW), targetBrewTemp(90), targetSteamTemp(145), targetWaterTemp(80),
-      targetDuration(25000), currentTemp(0), activeUntil(0), lastPing(0), lastProgress(0), lastAction(0), loaded(false),
-      updating(false), temperatureOffset(0), startupMode(MODE_STANDBY), pid(DEFAULT_PID), wifiSsid(""), wifiPassword(""),
-      homekit(false), pluginManager(nullptr) {}
+    : server(80), timer(nullptr), mode(MODE_BREW), currentTemp(0), activeUntil(0), lastPing(0), lastProgress(0), lastAction(0),
+      loaded(false), updating(false) {}
 
 void Controller::setup() {
-    preferences.begin("controller", true);
-    startupMode = preferences.getInt("sm", MODE_STANDBY);
-    targetBrewTemp = preferences.getInt("tb", 90);
-    targetSteamTemp = preferences.getInt("ts", 145);
-    targetWaterTemp = preferences.getInt("tw", 80);
-    targetDuration = preferences.getInt("td", 25000);
-    temperatureOffset = preferences.getInt("to", DEFAULT_TEMPERATURE_OFFSET);
-    pid = preferences.getString("pid", DEFAULT_PID);
-    wifiSsid = preferences.getString("ws", "");
-    wifiPassword = preferences.getString("wp", "");
-    homekit = preferences.getBool("hk", false);
-    preferences.end();
-    mode = startupMode;
+    mode = settings.getStartupMode();
     setupPanel();
 
     pluginManager = new PluginManager();
-    if (homekit)
-        pluginManager->registerPlugin(new HomekitPlugin(wifiSsid, wifiPassword));
+    if (settings.isHomekit())
+        pluginManager->registerPlugin(new HomekitPlugin(settings.getWifiSsid(), settings.getWifiPassword()));
+    else
+        pluginManager->registerPlugin(new mDNSPlugin());
 }
 
 void Controller::connect() {
@@ -47,10 +38,11 @@ void Controller::setupBluetooth() {
 void Controller::setupPanel() {
     // Initialize T-RGB, if the initialization fails, false will be returned.
     if (!panel.begin()) {
-        while (1) {
+        for (uint8_t i = 0; i < 20; i++) {
             Serial.println("Error, failed to initialize T-RGB");
             delay(1000);
         }
+        ESP.restart();
     }
     beginLvglHelper(panel);
     panel.setBrightness(16);
@@ -58,9 +50,9 @@ void Controller::setupPanel() {
 }
 
 void Controller::setupWifi() {
-    if (wifiSsid != "" && wifiPassword != "") {
+    if (settings.getWifiSsid() != "" && settings.getWifiPassword() != "") {
         WiFi.mode(WIFI_STA);
-        WiFi.begin(wifiSsid, wifiPassword);
+        WiFi.begin(settings.getWifiSsid(), settings.getWifiPassword());
         for (int attempts = 0; attempts < WIFI_CONNECT_ATTEMPTS; attempts++) {
             if (WiFi.status() == WL_CONNECTED) {
                 break;
@@ -71,17 +63,11 @@ void Controller::setupWifi() {
         if (WiFi.status() == WL_CONNECTED) {
             Serial.println("");
             Serial.print("Connected to ");
-            Serial.println(wifiSsid);
+            Serial.println(settings.getWifiSsid());
             Serial.print("IP address: ");
             Serial.println(WiFi.localIP());
 
             configTzTime(TIMEZONE, NTP_SERVER);
-
-            if (!homekit) {
-                if (!MDNS.begin(MDNS_NAME)) {
-                    Serial.println("Error setting up MDNS responder!");
-                }
-            }
         } else {
             Serial.println("Timed out while connecting to WiFi");
         }
@@ -102,41 +88,43 @@ void Controller::setupWifi() {
     });
     server.on("/settings", [this]() {
         if (server.method() == HTTP_POST) {
-            if (server.hasArg("startupMode"))
-                startupMode = server.arg("startupMode") == "brew" ? MODE_BREW : MODE_STANDBY;
-            if (server.hasArg("targetBrewTemp"))
-                targetBrewTemp = server.arg("targetBrewTemp").toInt();
-            if (server.hasArg("targetSteamTemp"))
-                targetSteamTemp = server.arg("targetSteamTemp").toInt();
-            if (server.hasArg("targetWaterTemp"))
-                targetWaterTemp = server.arg("targetWaterTemp").toInt();
-            if (server.hasArg("targetDuration"))
-                targetDuration = server.arg("targetDuration").toInt() * 1000;
-            if (server.hasArg("temperatureOffset"))
-                temperatureOffset = server.arg("temperatureOffset").toInt();
-            if (server.hasArg("pid"))
-                pid = server.arg("pid");
-            if (server.hasArg("wifiSsid"))
-                wifiSsid = server.arg("wifiSsid");
-            if (server.hasArg("wifiPassword"))
-                wifiPassword = server.arg("wifiPassword");
-            homekit = server.hasArg("homekit");
+            settings.batchUpdate([this](Settings *settings) {
+                if (server.hasArg("startupMode"))
+                    settings->setStartupMode(server.arg("startupMode") == "brew" ? MODE_BREW : MODE_STANDBY);
+                if (server.hasArg("targetBrewTemp"))
+                    settings->setTargetBrewTemp(server.arg("targetBrewTemp").toInt());
+                if (server.hasArg("targetSteamTemp"))
+                    settings->setTargetSteamTemp(server.arg("targetSteamTemp").toInt());
+                if (server.hasArg("targetWaterTemp"))
+                    settings->setTargetWaterTemp(server.arg("targetWaterTemp").toInt());
+                if (server.hasArg("targetDuration"))
+                    settings->setTargetDuration(server.arg("targetDuration").toInt() * 1000);
+                if (server.hasArg("temperatureOffset"))
+                    settings->setTemperatureOffset(server.arg("temperatureOffset").toInt());
+                if (server.hasArg("pid"))
+                    settings->setPid(server.arg("pid"));
+                if (server.hasArg("wifiSsid"))
+                    settings->setWifiSsid(server.arg("wifiSsid"));
+                if (server.hasArg("wifiPassword"))
+                    settings->setWifiPassword(server.arg("wifiPassword"));
+                settings->setHomekit(server.hasArg("homekit"));
+            });
             setTargetTemp(getTargetTemp());
         }
 
-        std::map<String, String> variables = {{"standbySelected", startupMode == MODE_STANDBY ? "selected" : ""},
-                                              {"brewSelected", startupMode == MODE_BREW ? "selected" : ""},
-                                              {"targetBrewTemp", String(targetBrewTemp)},
-                                              {"targetSteamTemp", String(targetSteamTemp)},
-                                              {"targetWaterTemp", String(targetWaterTemp)},
-                                              {"targetDuration", String(targetDuration / 1000)},
-                                              {"homekitChecked", homekit ? "checked" : ""},
-                                              {"pid", pid},
-                                              {"wifiSsid", wifiSsid},
-                                              {"wifiPassword", wifiPassword},
+        std::map<String, String> variables = {{"standbySelected", settings.getStartupMode() == MODE_STANDBY ? "selected" : ""},
+                                              {"brewSelected", settings.getStartupMode() == MODE_BREW ? "selected" : ""},
+                                              {"targetBrewTemp", String(settings.getTargetBrewTemp())},
+                                              {"targetSteamTemp", String(settings.getTargetSteamTemp())},
+                                              {"targetWaterTemp", String(settings.getTargetWaterTemp())},
+                                              {"targetDuration", String(settings.getTargetDuration() / 1000)},
+                                              {"homekitChecked", settings.isHomekit() ? "checked" : ""},
+                                              {"pid", settings.getPid()},
+                                              {"wifiSsid", settings.getWifiSsid()},
+                                              {"wifiPassword", settings.getWifiPassword()},
                                               {"build_version", BUILD_GIT_VERSION},
                                               {"build_timestamp", BUILD_TIMESTAMP},
-                                              {"temperatureOffset", String(temperatureOffset)}};
+                                              {"temperatureOffset", String(settings.getTemperatureOffset())}};
         server.send(200, "text/html", TemplateTango::render(settings_html, variables));
         if (server.method() == HTTP_POST && server.hasArg("restart"))
             ESP.restart();
@@ -156,7 +144,7 @@ void Controller::loop() {
         clientController.connectToServer();
         if (!loaded) {
             loaded = true;
-            startupMode == MODE_BREW
+            settings.getStartupMode() == MODE_BREW
                 ? _ui_screen_change(&ui_BrewScreen, LV_SCR_LOAD_ANIM_NONE, 500, 0, &ui_BrewScreen_screen_init)
                 : activateStandby();
         }
@@ -173,8 +161,8 @@ void Controller::loop() {
             updateBrewProgress();
         else if (mode == MODE_STANDBY)
             updateStandby();
-        clientController.sendTemperatureControl(getTargetTemp() + temperatureOffset);
-        clientController.sendPidSettings(pid);
+        clientController.sendTemperatureControl(getTargetTemp() + settings.getTemperatureOffset());
+        clientController.sendPidSettings(settings.getPid());
         updateRelay();
         lastProgress = now;
     }
@@ -190,11 +178,11 @@ bool Controller::isUpdating() const { return updating; }
 int Controller::getTargetTemp() {
     switch (mode) {
     case MODE_BREW:
-        return targetBrewTemp;
+        return settings.getTargetBrewTemp();
     case MODE_STEAM:
-        return targetSteamTemp;
+        return settings.getTargetSteamTemp();
     case MODE_WATER:
-        return targetWaterTemp;
+        return settings.getTargetWaterTemp();
     default:
         return 0;
     }
@@ -203,28 +191,28 @@ int Controller::getTargetTemp() {
 void Controller::setTargetTemp(int temperature) {
     switch (mode) {
     case MODE_BREW:
-        targetBrewTemp = temperature;
+        settings.setTargetBrewTemp(temperature);
         break;
     case MODE_STEAM:
-        targetSteamTemp = temperature;
+        settings.setTargetSteamTemp(temperature);
         break;
     case MODE_WATER:
-        targetWaterTemp = temperature;
+        settings.setTargetDuration(temperature);
         break;
+    default:;
     }
     updateUiSettings();
-    clientController.sendPidSettings(pid);
-    clientController.sendTemperatureControl(getTargetTemp() + temperatureOffset);
-    savePreferences();
+    clientController.sendPidSettings(settings.getPid());
+    clientController.sendTemperatureControl(getTargetTemp() + settings.getTemperatureOffset());
     pluginManager->trigger("boiler.targetTemperature.change", "value", getTargetTemp());
 }
 
-int Controller::getTargetDuration() { return targetDuration; }
+int Controller::getTargetDuration() { return settings.getTargetDuration(); }
 
 void Controller::setTargetDuration(int duration) {
-    targetDuration = duration;
+    Event *event = pluginManager->trigger("controller.targetDuration.change", "value", duration);
+    settings.setTargetDuration(event->getInt("value"));
     updateUiSettings();
-    savePreferences();
 }
 
 void Controller::raiseTemp() {
@@ -241,24 +229,24 @@ void Controller::lowerTemp() {
 
 void Controller::updateRelay() {
     bool active = isActive();
-    float pumpValue = active ? mode == MODE_STEAM ? 4 : 100 : 0;
+    float pumpValue = active ? mode == MODE_STEAM ? 4.f : 100.f : 0.f;
     bool valve = (active && mode == MODE_BREW);
 
     clientController.sendPumpControl(pumpValue);
     clientController.sendValveControl(valve);
 }
 
-void Controller::updateUiActive() {
+void Controller::updateUiActive() const {
     bool active = isActive();
     if (mode == MODE_BREW) {
         if (!active) {
             _ui_screen_change(&ui_BrewScreen, LV_SCR_LOAD_ANIM_NONE, 500, 0, &ui_BrewScreen_screen_init);
         }
     }
-    lv_imgbtn_set_src(ui_SteamScreen_goButton, LV_IMGBTN_STATE_RELEASED, NULL, active ? &ui_img_646127855 : &ui_img_2106667244,
-                      NULL);
-    lv_imgbtn_set_src(ui_WaterScreen_goButton, LV_IMGBTN_STATE_RELEASED, NULL, active ? &ui_img_646127855 : &ui_img_2106667244,
-                      NULL);
+    lv_imgbtn_set_src(ui_SteamScreen_goButton, LV_IMGBTN_STATE_RELEASED, nullptr, active ? &ui_img_646127855 : &ui_img_2106667244,
+                      nullptr);
+    lv_imgbtn_set_src(ui_WaterScreen_goButton, LV_IMGBTN_STATE_RELEASED, nullptr, active ? &ui_img_646127855 : &ui_img_2106667244,
+                      nullptr);
 }
 
 void Controller::updateUiSettings() {
@@ -269,12 +257,12 @@ void Controller::updateUiSettings() {
     lv_arc_set_value(ui_SteamScreen_tempTarget, setTemp);
     lv_arc_set_value(ui_WaterScreen_tempTarget, setTemp);
 
-    lv_label_set_text_fmt(ui_StatusScreen_targetTemp, "%d°C", targetBrewTemp);
-    lv_label_set_text_fmt(ui_BrewScreen_targetTemp, "%d°C", targetBrewTemp);
-    lv_label_set_text_fmt(ui_SteamScreen_targetTemp, "%d°C", targetSteamTemp);
-    lv_label_set_text_fmt(ui_WaterScreen_targetTemp, "%d°C", targetWaterTemp);
+    lv_label_set_text_fmt(ui_StatusScreen_targetTemp, "%d°C", settings.getTargetBrewTemp());
+    lv_label_set_text_fmt(ui_BrewScreen_targetTemp, "%d°C", settings.getTargetBrewTemp());
+    lv_label_set_text_fmt(ui_SteamScreen_targetTemp, "%d°C", settings.getTargetSteamTemp());
+    lv_label_set_text_fmt(ui_WaterScreen_targetTemp, "%d°C", settings.getTargetWaterTemp());
 
-    double secondsDouble = targetDuration / 1000.0;
+    double secondsDouble = settings.getTargetDuration() / 1000.0;
     int minutes = (int)(secondsDouble / 60.0 - 0.5);
     int seconds = (int)secondsDouble % 60;
     lv_label_set_text_fmt(ui_BrewScreen_targetDuration, "%2d:%02d", minutes, seconds);
@@ -283,8 +271,8 @@ void Controller::updateUiSettings() {
     updateLastAction();
 }
 
-void Controller::updateUiCurrentTemp() {
-    int temp = currentTemp - temperatureOffset;
+void Controller::updateUiCurrentTemp() const {
+    int temp = currentTemp;
     lv_arc_set_value(ui_BrewScreen_tempGauge, temp);
     lv_arc_set_value(ui_StatusScreen_tempGauge, temp);
     lv_arc_set_value(ui_MenuScreen_tempGauge, temp);
@@ -298,10 +286,10 @@ void Controller::updateUiCurrentTemp() {
     lv_label_set_text_fmt(ui_WaterScreen_tempText, "%d°C", temp);
 }
 
-void Controller::updateBrewProgress() {
+void Controller::updateBrewProgress() const {
     unsigned long now = millis();
-    unsigned long progress = now - (activeUntil - targetDuration);
-    double secondsDouble = targetDuration / 1000.0;
+    unsigned long progress = now - (activeUntil - settings.getTargetDuration());
+    double secondsDouble = settings.getTargetDuration() / 1000.0;
     int minutes = (int)(secondsDouble / 60.0 - 0.5);
     int seconds = (int)secondsDouble % 60;
     double progressSecondsDouble = progress / 1000.0;
@@ -332,7 +320,7 @@ void Controller::activate() {
     unsigned long duration = 0;
     switch (mode) {
     case MODE_BREW:
-        duration = targetDuration;
+        duration = settings.getTargetDuration();
         break;
     case MODE_STEAM:
         duration = STEAM_SAFETY_DURATION_MS;
@@ -362,23 +350,20 @@ void Controller::activateStandby() {
 
 bool Controller::isActive() const { return activeUntil > millis(); }
 
-int Controller::getMode() { return mode; }
+int Controller::getMode() const { return mode; }
 
 void Controller::setMode(int newMode) {
-    mode = newMode;
+    Event *modeEvent = pluginManager->trigger("controller.mode.change", "value", newMode);
+    mode = modeEvent->getInt("value");
     updateUiSettings();
-    clientController.sendTemperatureControl(getTargetTemp() + temperatureOffset);
-
-    pluginManager->trigger("controller.mode.change", "value", newMode);
-    pluginManager->trigger("boiler.targetTemperature.change", "value", getTargetTemp());
+    setTargetTemp(getTargetTemp());
 }
 
 void Controller::onTempRead(float temperature) {
-    currentTemp = temperature;
+    float temp = temperature - settings.getTemperatureOffset();
+    Event *event = pluginManager->trigger("boiler.currentTemperature.change", "value", temp);
+    currentTemp = event->getFloat("value");
     updateUiCurrentTemp();
-
-    pluginManager->trigger("boiler.currentTemperature.change", "value", temperature - temperatureOffset);
-
 }
 
 void Controller::updateLastAction() { lastAction = millis(); }
@@ -386,19 +371,4 @@ void Controller::updateLastAction() { lastAction = millis(); }
 void Controller::onOTAUpdate() {
     activateStandby();
     updating = true;
-}
-
-void Controller::savePreferences() {
-    preferences.begin("controller", false);
-    preferences.putInt("sm", startupMode);
-    preferences.putInt("tb", targetBrewTemp);
-    preferences.putInt("ts", targetSteamTemp);
-    preferences.putInt("tw", targetWaterTemp);
-    preferences.putInt("td", targetDuration);
-    preferences.putInt("to", temperatureOffset);
-    preferences.putString("pid", pid);
-    preferences.putString("ws", wifiSsid);
-    preferences.putString("wp", wifiPassword);
-    preferences.putBool("hk", wifiPassword);
-    preferences.end();
 }

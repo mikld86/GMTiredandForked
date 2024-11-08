@@ -5,12 +5,7 @@
 #include <map>
 #include <utility>
 
-enum EventType {
-    EVENT_TYPE_INT,
-    EVENT_TYPE_FLOAT,
-    EVENT_TYPE_STRING,
-    EVENT_TYPE_NONE
-};
+enum EventType { EVENT_TYPE_INT, EVENT_TYPE_FLOAT, EVENT_TYPE_STRING, EVENT_TYPE_NONE };
 
 struct EventDataEntry {
     EventType type;
@@ -36,29 +31,17 @@ struct Event {
     EventData data;
     bool stopPropagation = false;
 
-    void setInt(const String& key, int value) {
-        data[key] = EventDataEntry(value);
-    }
+    void setInt(const String &key, int value) { data[key] = EventDataEntry(value); }
 
-    void setFloat(const String& key, float value) {
-        data[key] = EventDataEntry(value);
-    }
+    void setFloat(const String &key, float value) { data[key] = EventDataEntry(value); }
 
-    void setString(const String& key, const String& value) {
-        data[key] = EventDataEntry(value);
-    }
+    void setString(const String &key, const String &value) { data[key] = EventDataEntry(value); }
 
-    int getInt(const String& key) const {
-        return data.at(key).asInt();
-    }
+    int getInt(const String &key) const { return data.at(key).asInt(); }
 
-    float getFloat(const String& key) const {
-        return data.at(key).asFloat();
-    }
+    float getFloat(const String &key) const { return data.at(key).asFloat(); }
 
-    String getString(const String& key) const {
-        return data.at(key).asString();
-    }
+    String getString(const String &key) const { return data.at(key).asString(); }
 };
 
 #endif // EVENT_H

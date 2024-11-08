@@ -4,9 +4,6 @@
 #include <Arduino.h>
 #include <map>
 #include <regex>
-#include <sstream>
-#include <cmath>
-#include <stack>
 
 class TemplateTango {
 public:
