@@ -1,7 +1,7 @@
 #include "Settings.h"
 
 Settings::Settings() {
-    preferences.begin("controller", true);
+    preferences.begin(PREFERENCES_KEY, true);
     startupMode = preferences.getInt("sm", MODE_STANDBY);
     targetBrewTemp = preferences.getInt("tb", 90);
     targetSteamTemp = preferences.getInt("ts", 145);
@@ -24,7 +24,7 @@ void Settings::batchUpdate(const SettingsCallback &callback) {
 void Settings::save() {
     if (inBatch)
         return;
-    preferences.begin("controller", false);
+    preferences.begin(PREFERENCES_KEY, false);
     preferences.putInt("sm", startupMode);
     preferences.putInt("tb", targetBrewTemp);
     preferences.putInt("ts", targetSteamTemp);

@@ -6,6 +6,8 @@
 #include <Arduino.h>
 #include <Preferences.h>
 
+#define PREFERENCES_KEY "controller"
+
 class Settings;
 using SettingsCallback = std::function<void(Settings *)>;
 
