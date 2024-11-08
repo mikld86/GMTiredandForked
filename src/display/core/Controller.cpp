@@ -328,6 +328,7 @@ void Controller::activate() {
     case MODE_WATER:
         duration = HOT_WATER_SAFETY_DURATION_MS;
         break;
+    default: ;
     }
     activeUntil = millis() + duration;
     updateUiActive();
