@@ -1,4 +1,11 @@
-<p align="center"><img src="docs/assets/logo.png" alt="Logo" width="250px" /></p>
+<p align="center"><img src="docs/assets/logo.png" alt="Logo" width="250px" />
+<br />
+  
+[![](https://dcbadge.vercel.app/api/server/APw7rgPGPf)](https://discord.gg/APw7rgPGPf)
+[![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
+
+
+</p>
 
 
 This project upgrades a Gaggia espresso machine with smart controls to improve your coffee-making experience. By adding a display and custom electronics, you can monitor and control the machine more easily.
@@ -51,6 +58,10 @@ The existing thermostats of your machine have to be removed and bridged while co
 thermostat would usually sit.
 
 I will soon update this with detailed instructions.
+
+[cc-by-nc-sa]: http://creativecommons.org/licenses/by-nc-sa/4.0/
+[cc-by-nc-sa-image]: https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png
+[cc-by-nc-sa-shield]: https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg?style=for-the-badge
 
 ## License
 
