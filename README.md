@@ -11,10 +11,11 @@ This project upgrades a Gaggia espresso machine with smart controls to improve y
 - **Safety Features**: Automatic shutoff if the system becomes unresponsive or overheats.
 - **User Interface**: Simple, intuitive display to control and monitor the machine.
 
-## Screenshots
+## Screenshots and Images
 
 <img src="docs/assets/standby-screen.png" alt="Standby Screen" width="250px" />
 <img src="docs/assets/brew-screen.png" alt="Brew Screen" width="250px" />
+<img src="docs/assets/pcb_render.jpg" alt="Brew Screen" width="250" />
 
 ## BOM
 
