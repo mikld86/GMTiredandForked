@@ -1,4 +1,5 @@
-<p align="center"><img src="docs/assets/logo.png" alt="Logo" width="250px" />
+<p align="center">
+<img src="docs/assets/logo.png" alt="Logo" width="250px" />
 <br />
   
 [![](https://dcbadge.vercel.app/api/server/APw7rgPGPf)](https://discord.gg/APw7rgPGPf)
@@ -9,6 +10,8 @@
 
 
 This project upgrades a Gaggia espresso machine with smart controls to improve your coffee-making experience. By adding a display and custom electronics, you can monitor and control the machine more easily.
+
+<img src="docs/assets/gaggimate-render.png" alt="Gaggia Classic Installation" width="500" />
 
 ## Features
 
