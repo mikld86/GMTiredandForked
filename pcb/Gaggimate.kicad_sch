@@ -11911,6 +11911,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC" "C916372"
+			(at 236.22 167.6399 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "c212cc72-5964-4cf7-83d1-e5e57742ffc2")
 		)
@@ -14814,6 +14823,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC" "C916372"
+			(at 360.68 166.3699 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "d7a35a67-b6fd-4a81-96e2-b0f2e63ad66a")
 		)
@@ -15426,6 +15444,15 @@
 		)
 		(property "Description" "600mA Ic, 40V Vce, NPN Transistor, SOT-23"
 			(at 294.64 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C916372"
+			(at 299.72 166.3699 0)
 			(effects
 				(font
 					(size 1.27 1.27)
