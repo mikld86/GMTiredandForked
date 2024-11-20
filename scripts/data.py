@@ -8,29 +8,117 @@ legend = [
 
 # Pinlabels
 
-left_header = [
+temp_sensor = [
     [
-        ("VCC", "pwr"),
-        ("HE1 24V", "doc"),
+        ("T-", "temp"),
     ],
     [
-        ("GND", "gnd"),
-        ("HE1 GND", "doc"),
-    ],
-    [
-        ("PWM", "pwm"),
-        ("LED PWM", "doc"),
+        ("T+", "temp"),
     ],
 ]
 
-lower_header = [
+uart = [
     [
-        ("GND", "gnd"),
-        ("4010 FAN", "doc"),
+        ("+5V", "pwr"),
     ],
     [
-        ("VCC", "pwr"),
-        ("4010 FAN", "doc"),
+        ("TX", "comms"),
+        ("gpio43", "doc"),
+    ],
+    [
+        ("RX", "comms"),
+        ("gpio44", "doc"),
+    ],
+    [
+        ("GND", "gnd"),
+    ],
+]
+
+i2c = [
+    [
+        ("+5V", "pwr"),
+    ],
+    [
+        ("SCL", "comms"),
+        ("gpio17", "doc"),
+    ],
+    [
+        ("SDA", "comms"),
+        ("gpio18", "doc"),
+    ],
+    [
+        ("GND", "gnd"),
+    ],
+]
+
+buttons = [
+    [
+        ("Brew", "gpio"),
+        ("gpio38", "doc"),
+    ],
+    [
+        ("Steam", "gpio"),
+        ("gpio39", "doc"),
+    ],
+    [
+        ("GND", "gnd"),
+    ],
+    [
+        ("GND", "gnd"),
+    ],
+]
+
+ext = [
+    [
+        ("GND", "gnd"),
+    ],
+    [
+        ("GND", "gnd"),
+    ],
+    [
+        ("gpio1", "doc"),
+    ],
+    [
+        ("gpio2", "doc"),
+    ],
+    [
+        ("gpio8", "doc"),
+    ],
+    [
+        ("gpio12", "doc"),
+    ],
+    [
+        ("gpio13", "doc"),
+    ],
+    [
+        ("+3.3V", "pwr"),
+    ],
+    [
+        ("+5V", "pwr"),
+    ],
+    [
+        ("+5V", "pwr"),
+    ],
+]
+
+screen = [
+    [
+        ("GND", "gnd"),
+        ("Screen", "doc"),
+    ],
+    [
+        ("+3.3V", "pwr"),
+        ("Screen", "doc"),
+    ],
+]
+
+ssr = [
+    [
+        ("GND", "gnd"),
+    ],
+    [
+        ("SSR", "pwm"),
+        ("gpio14", "doc"),
     ],
 ]
 

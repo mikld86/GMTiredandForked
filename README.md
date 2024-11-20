@@ -25,7 +25,7 @@ This project upgrades a Gaggia espresso machine with smart controls to improve y
 
 <img src="docs/assets/standby-screen.png" alt="Standby Screen" width="250px" />
 <img src="docs/assets/brew-screen.png" alt="Brew Screen" width="250px" />
-<img src="docs/assets/pcb_render.jpg" alt="Brew Screen" width="250" />
+<img src="docs/assets/pcb_render.jpg" alt="PCB Render" width="250px" />
 
 ## BOM
 
@@ -36,6 +36,12 @@ AliExpress links provided are affiliate links and supporting the project.
 The recommended way to build this machine is to use the PCB designed for this project. There's currently a group buy started for this.
 
 https://forms.gle/KEXdpgJGCZbsFdKD7
+
+#### Pinout
+
+Here you can see where to connect which components. This is also printed on the back of the PCB.
+
+<img src="docs/assets/pinout.png" alt="PCB Pinout" width="500px" />
 
 ### Lego Build
 

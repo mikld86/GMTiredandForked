@@ -14,7 +14,6 @@ import data
 diagram = Diagram(1600, 1100, "diagram")
 
 # Add a stylesheet
-diagram.add_stylesheet("styles_auto.css", True)
 diagram.add_stylesheet("styles.css", True)
 
 # Create a group to hold the pinout-diagram components.
@@ -24,48 +23,116 @@ graphic = diagram.add(Group(169, 42))
 hardware = graphic.add(Image("../docs/assets/pcb_top.png", embed=True))
 
 # Measure and record key locations with the hardware Image instance
-hardware.add_coord("in_vcc", 324, 54)
 hardware.add_coord("ac_in", 1015, 65)
 hardware.add_coord("relais_out", 1015, 205)
-hardware.add_coord("fan_gnd", 340, 630)
+hardware.add_coord("screen", 445, 506)
+hardware.add_coord("ssr", 445, 403)
+hardware.add_coord("uart", 275, 403)
+hardware.add_coord("temp_sensor", 133, 198)
+hardware.add_coord("buttons", 113, 320)
+hardware.add_coord("i2c", 113, 403)
+hardware.add_coord("ext", 97, 470)
 # Other (x,y) pairs can also be stored here
 hardware.add_coord("pin_pitch_v", 0, 30)
+hardware.add_coord("pin_pitch_v_35", 0, 40)
 hardware.add_coord("pin_pitch_v_ac", 0, 60)
 hardware.add_coord("pin_pitch_h", 30, 0)
 
-# Create pinlabels on the left header
+
 graphic.add(
     PinLabelGroup(
-        x=hardware.coord("in_vcc").x,
-        y=hardware.coord("in_vcc").y,
-        pin_pitch=hardware.coord("pin_pitch_h", raw=True),
-        label_start=(284, 10),
-        label_pitch=(0, 30),
+        x=hardware.coord("uart").x,
+        y=hardware.coord("uart").y,
         scale=(-1, -1),
-        labels=data.left_header,
+        pin_pitch=hardware.coord("pin_pitch_h", raw=True),
+        label_start=(222, 280),
+        label_pitch=hardware.coord("pin_pitch_v", raw=True),
+        labels=data.uart,
         leaderline=lline.Curved(direction="vh"),
     )
 )
 
-# Create pinlabels on the lower header
 graphic.add(
     PinLabelGroup(
-        x=hardware.coord("fan_gnd").x,
-        y=hardware.coord("fan_gnd").y,
+        x=hardware.coord("temp_sensor").x,
+        y=hardware.coord("temp_sensor").y,
+        scale=(-1, 1),
+        pin_pitch=hardware.coord("pin_pitch_v_35", raw=True),
+        label_start=(80, -40),
+        label_pitch=hardware.coord("pin_pitch_v", raw=True),
+        labels=data.temp_sensor,
+        leaderline=lline.Curved(),
+    )
+)
+
+graphic.add(
+    PinLabelGroup(
+        x=hardware.coord("buttons").x,
+        y=hardware.coord("buttons").y,
+        scale=(-1, -1),
+        pin_pitch=hardware.coord("pin_pitch_h", raw=True),
+        label_start=(60, 10),
+        label_pitch=hardware.coord("pin_pitch_v", raw=True),
+        labels=data.buttons,
+        leaderline=lline.Straight(),
+    )
+)
+
+graphic.add(
+    PinLabelGroup(
+        x=hardware.coord("i2c").x,
+        y=hardware.coord("i2c").y,
+        scale=(-1, -1),
+        pin_pitch=hardware.coord("pin_pitch_h", raw=True),
+        label_start=(60, -30),
+        label_pitch=hardware.coord("pin_pitch_v", raw=True),
+        labels=data.i2c,
+        leaderline=lline.Straight(),
+    )
+)
+
+graphic.add(
+    PinLabelGroup(
+        x=hardware.coord("ext").x,
+        y=hardware.coord("ext").y,
         scale=(-1, 1),
         pin_pitch=hardware.coord("pin_pitch_h", raw=True),
-        label_start=(300, 10),
-        label_pitch=(0, 30),
-        labels=data.lower_header,
+        label_start=(44, 20),
+        label_pitch=hardware.coord("pin_pitch_v", raw=True),
+        labels=data.ext,
         leaderline=lline.Curved(direction="vh"),
     )
 )
 
-# Create pinlabels on the right header
+graphic.add(
+    PinLabelGroup(
+        x=hardware.coord("ssr").x,
+        y=hardware.coord("ssr").y,
+        scale=(1, 1),
+        pin_pitch=hardware.coord("pin_pitch_v", raw=True),
+        label_start=(630, 0),
+        label_pitch=hardware.coord("pin_pitch_v", raw=True),
+        labels=data.ssr,
+    )
+)
+
+graphic.add(
+    PinLabelGroup(
+        x=hardware.coord("screen").x,
+        y=hardware.coord("screen").y,
+        scale=(1, 1),
+        pin_pitch=hardware.coord("pin_pitch_v", raw=True),
+        label_start=(630, 0),
+        label_pitch=hardware.coord("pin_pitch_v", raw=True),
+        labels=data.screen,
+    )
+)
+
 graphic.add(
     PinLabelGroup(
         x=hardware.coord("ac_in").x,
         y=hardware.coord("ac_in").y,
+        scale=(1, 1),
         pin_pitch=hardware.coord("pin_pitch_v_ac", raw=True),
         label_start=(60, 0),
         label_pitch=hardware.coord("pin_pitch_v_ac", raw=True),
@@ -76,6 +143,7 @@ graphic.add(
     PinLabelGroup(
         x=hardware.coord("relais_out").x,
         y=hardware.coord("relais_out").y,
+        scale=(1, 1),
         pin_pitch=hardware.coord("pin_pitch_v_ac", raw=True),
         label_start=(60, 0),
         label_pitch=hardware.coord("pin_pitch_v_ac", raw=True),
