@@ -15,5 +15,9 @@ jobs:
   kiri-delete:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: jniebuhr/kiri-github-action
+          path: ./kiri-action
       - name: Kiri
-        uses: jniebuhr/kiri-github-action@v1
+        uses: ./kiri-action
