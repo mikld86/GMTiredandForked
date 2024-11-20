@@ -16,4 +16,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Kiri
-        uses: usa-reddragon/kiri-github-action@v1
+        uses: jniebuhr/kiri-github-action@v1
