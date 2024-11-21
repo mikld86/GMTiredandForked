@@ -37,7 +37,7 @@ void Settings::save() {
     preferences.putString("ws", wifiSsid);
     preferences.putString("wp", wifiPassword);
     preferences.putString("mn", mdnsName);
-    preferences.putBool("hk", wifiPassword);
+    preferences.putBool("hk", homekit);
     preferences.end();
 }
 
