@@ -1,7 +1,17 @@
-<p align="center"><img src="docs/assets/logo.png" alt="Logo" width="250px" /></p>
+<p align="center">
+<img src="docs/assets/logo.png" alt="Logo" width="250px" />
+<br />
+  
+[![](https://dcbadge.vercel.app/api/server/APw7rgPGPf)](https://discord.gg/APw7rgPGPf)
+[![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
+
+
+</p>
 
 
 This project upgrades a Gaggia espresso machine with smart controls to improve your coffee-making experience. By adding a display and custom electronics, you can monitor and control the machine more easily.
+
+<img src="docs/assets/gaggimate-render.png" alt="Gaggia Classic Installation" width="500" />
 
 ## Features
 
@@ -11,10 +21,11 @@ This project upgrades a Gaggia espresso machine with smart controls to improve y
 - **Safety Features**: Automatic shutoff if the system becomes unresponsive or overheats.
 - **User Interface**: Simple, intuitive display to control and monitor the machine.
 
-## Screenshots
+## Screenshots and Images
 
 <img src="docs/assets/standby-screen.png" alt="Standby Screen" width="250px" />
 <img src="docs/assets/brew-screen.png" alt="Brew Screen" width="250px" />
+<img src="docs/assets/pcb_render.jpg" alt="PCB Render" width="250px" />
 
 ## BOM
 
@@ -25,6 +36,12 @@ AliExpress links provided are affiliate links and supporting the project.
 The recommended way to build this machine is to use the PCB designed for this project. There's currently a group buy started for this.
 
 https://forms.gle/KEXdpgJGCZbsFdKD7
+
+#### Pinout
+
+Here you can see where to connect which components. This is also printed on the back of the PCB.
+
+<img src="docs/assets/pinout.png" alt="PCB Pinout" width="500px" />
 
 ### Lego Build
 
@@ -51,6 +68,14 @@ The existing thermostats of your machine have to be removed and bridged while co
 thermostat would usually sit.
 
 I will soon update this with detailed instructions.
+
+[cc-by-nc-sa]: http://creativecommons.org/licenses/by-nc-sa/4.0/
+[cc-by-nc-sa-image]: https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png
+[cc-by-nc-sa-shield]: https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg?style=for-the-badge
+
+## Docs
+
+The docs were moved to https://github.com/jniebuhr/gaggimate-docs
 
 ## License
 
