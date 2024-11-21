@@ -1,22 +1,12 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#include "../drivers/LilyGo-T-RGB/LV_Helper.h"
 #include "../drivers/LilyGo-T-RGB/LilyGo_RGBPanel.h"
-#include "../ui/ui.h"
-#include "../web/TemplateTango.h"
-#include "../web/html.h"
 #include "NimBLEClientController.h"
 #include "PluginManager.h"
 #include "Settings.h"
-#include "config.h"
-#include "constants.h"
-#include <ElegantOTA.h>
-#include <Preferences.h>
-#include <WebServer.h>
 #include <WiFi.h>
-#include <WiFiClient.h>
-#include <ctime>
+
 
 class Controller {
   public:
@@ -36,6 +26,7 @@ class Controller {
     void setTargetDuration(int duration);
     bool isActive() const;
     bool isUpdating() const;
+    Settings& getSettings() { return settings; }
 
     // Event callback methods
     void updateLastAction();
@@ -44,6 +35,8 @@ class Controller {
     void activate();
     void deactivate();
     void activateStandby();
+    void deactivateStandby();
+    void onOTAUpdate();
 
   private:
     // Initialization methods
@@ -60,11 +53,9 @@ class Controller {
     void updateStandby();
 
     // Event handlers
-    void onOTAUpdate();
     void onTempRead(float temperature);
 
     // Private Attributes
-    WebServer server;
     LilyGo_RGBPanel panel;
     NimBLEClientController clientController;
     hw_timer_t *timer;

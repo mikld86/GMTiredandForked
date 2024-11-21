@@ -11,9 +11,11 @@ Settings::Settings() {
     pid = preferences.getString("pid", DEFAULT_PID);
     wifiSsid = preferences.getString("ws", "");
     wifiPassword = preferences.getString("wp", "");
+    mdnsName = preferences.getString("mn", DEFAULT_MDNS_NAME);
     homekit = preferences.getBool("hk", false);
     preferences.end();
 }
+
 void Settings::batchUpdate(const SettingsCallback &callback) {
     inBatch = true;
     callback(this);
@@ -34,6 +36,7 @@ void Settings::save() {
     preferences.putString("pid", pid);
     preferences.putString("ws", wifiSsid);
     preferences.putString("wp", wifiPassword);
+    preferences.putString("mn", mdnsName);
     preferences.putBool("hk", wifiPassword);
     preferences.end();
 }
@@ -80,6 +83,11 @@ void Settings::setWifiSsid(const String &wifiSsid) {
 
 void Settings::setWifiPassword(const String &wifiPassword) {
     this->wifiPassword = wifiPassword;
+    save();
+}
+
+void Settings::setMdnsName(const String &mdnsName) {
+    this->mdnsName = mdnsName;
     save();
 }
 

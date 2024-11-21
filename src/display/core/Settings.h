@@ -28,6 +28,7 @@ class Settings {
     String getPid() const { return pid; }
     String getWifiSsid() const { return wifiSsid; }
     String getWifiPassword() const { return wifiPassword; }
+    String getMdnsName() const { return mdnsName; }
     bool isHomekit() const { return homekit; }
     void setTargetBrewTemp(int target_brew_temp);
     void setTargetSteamTemp(int target_steam_temp);
@@ -38,6 +39,7 @@ class Settings {
     void setPid(const String &pid);
     void setWifiSsid(const String &wifiSsid);
     void setWifiPassword(const String &wifiPassword);
+    void setMdnsName(const String &mdnsName);
     void setHomekit(bool homekit);
 
   private:
@@ -53,6 +55,7 @@ class Settings {
     String pid = DEFAULT_PID;
     String wifiSsid = "";
     String wifiPassword = "";
+    String mdnsName = DEFAULT_MDNS_NAME;
     bool homekit = false;
 };
 

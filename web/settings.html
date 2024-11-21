@@ -4,8 +4,8 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>GaggiMate - Settings</title>
-    <link rel="stylesheet" type="text/css" href="style.tailwind.css"/>
-    <link rel="shortcut icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='318' height='318' viewBox='0 0 318 145' xmlns='http://www.w3.org/2000/svg'%3E%3Cg stroke-linecap='round' fill-rule='nonzero' font-size='9pt' stroke='%23000' stroke-width='0.25mm' fill='%23000' style='stroke:%23000;stroke-width:0.25mm;fill:%23000'%3E%3Cpath d='M 178.005 141.006 L 168.005 141.006 L 168.005 1.006 L 176.605 1.006 L 241.605 113.206 L 237.005 113.206 L 301.805 1.006 L 310.205 1.006 L 310.405 141.006 L 300.405 141.006 L 300.205 16.406 L 303.005 16.406 L 241.605 122.406 L 236.605 122.406 L 175.005 16.406 L 178.005 16.406 L 178.005 141.006 Z' id='1' vector-effect='non-scaling-stroke'/%3E%3Cpath d='M 132.004 22.809 Q 122.204 11.609 107.904 5.809 Q 93.604 0.009 75.804 0.009 Q 59.404 0.009 45.604 5.309 Q 31.804 10.609 21.504 20.309 Q 11.204 30.009 5.604 43.209 Q 0.004 56.409 0.004 72.009 Q 0.004 87.609 5.604 100.809 Q 11.204 114.009 21.404 123.709 Q 31.604 133.409 45.304 138.709 Q 59.004 144.009 75.404 144.009 Q 90.204 144.009 104.704 139.509 Q 119.204 135.009 130.204 126.209 L 130.204 70.409 L 105.604 70.409 L 105.604 122.809 L 130.204 126.209 L 115.404 106.809 Q 106.604 114.609 96.904 117.909 Q 87.204 121.209 76.804 121.209 Q 65.604 121.209 56.404 117.609 Q 47.204 114.009 40.404 107.309 Q 33.604 100.609 29.904 91.609 Q 26.204 82.609 26.204 72.009 Q 26.204 61.209 29.904 52.209 Q 33.604 43.209 40.404 36.609 Q 47.204 30.009 56.604 26.409 Q 66.004 22.809 77.004 22.809 Q 88.404 22.809 97.904 26.709 Q 107.404 30.609 115.604 38.809 L 132.004 22.809 Z' id='0' vector-effect='non-scaling-stroke'/%3E%3C/g%3E%3C/svg%3E" />
+    <link rel="stylesheet" type="text/css" href="style.min.css"/>
+    <link rel="shortcut icon" type="image/svg+xml" href="gm.svg" />
 </head>
 <body class="bg-white px-6">
 <div class="flex flex-col items-center mt-12 mb-16">
@@ -22,39 +22,39 @@
         <div>
             <label for="startup-mode" class="block font-medium text-[#333333]">Startup Mode</label>
             <select id="startup-mode" name="startupMode" class="input-field">
-                <option value="standby" {{standbySelected}}>Standby</option>
-                <option value="brew" {{brewSelected}}>Brew</option>
+                <option value="standby" %STANDBY_SELECTED%>Standby</option>
+                <option value="brew" %BREW_SELECTED%>Brew</option>
             </select>
         </div>
 
         <!-- Default Duration -->
         <div>
             <label for="targetDuration" class="block font-medium text-[#333333]">Default Duration (sec)</label>
-            <input id="targetDuration" name="targetDuration" type="number" class="input-field" placeholder="30" value="{{targetDuration}}" />
+            <input id="targetDuration" name="targetDuration" type="number" class="input-field" placeholder="30" value="%TARGET_DURATION%" />
         </div>
 
         <!-- Default Brew Temperature -->
         <div>
             <label for="targetBrewTemp" class="block font-medium text-[#333333]">Default Brew Temperature (°C)</label>
-            <input id="targetBrewTemp" name="targetBrewTemp" type="number" class="input-field" placeholder="93" value="{{targetBrewTemp}}" />
+            <input id="targetBrewTemp" name="targetBrewTemp" type="number" class="input-field" placeholder="93" value="%TARGET_BREW_TEMP%" />
         </div>
 
         <!-- Default Steam Temperature -->
         <div>
             <label for="targetSteamTemp" class="block font-medium text-[#333333]">Default Steam Temperature (°C)</label>
-            <input id="targetSteamTemp" name="targetSteamTemp" type="number" class="input-field" placeholder="135" value="{{targetSteamTemp}}" />
+            <input id="targetSteamTemp" name="targetSteamTemp" type="number" class="input-field" placeholder="135" value="%TARGET_STEAM_TEMP%" />
         </div>
 
         <!-- Default Water Temperature -->
         <div>
             <label for="targetWaterTemp" class="block font-medium text-[#333333]">Default Water Temperature (°C)</label>
-            <input id="targetWaterTemp" name="targetWaterTemp" type="number" class="input-field" placeholder="80" value="{{targetWaterTemp}}" />
+            <input id="targetWaterTemp" name="targetWaterTemp" type="number" class="input-field" placeholder="80" value="%TARGET_WATER_TEMP%" />
         </div>
 
         <!-- Temperature Offset -->
         <div>
             <label for="temperatureOffset" class="block font-medium text-[#333333]">Temperature Offset (°C)</label>
-            <input id="temperatureOffset" name="temperatureOffset" type="number" class="input-field" placeholder="0" value="{{temperatureOffset}}" />
+            <input id="temperatureOffset" name="temperatureOffset" type="number" class="input-field" placeholder="0" value="%TEMPERATURE_OFFSET%" />
         </div>
 
         <div>
@@ -63,7 +63,7 @@
 
         <div class="flex flex-row items-center gap-4">
             <label class="relative inline-flex items-center cursor-pointer">
-                <input id="homekit" name="homekit" type="checkbox" class="sr-only peer" {{homekitChecked}}>
+                <input id="homekit" name="homekit" type="checkbox" class="sr-only peer" %HOMEKIT_CHECKED%>
                 <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
             </label>
             <p>Homekit</p>
@@ -75,28 +75,29 @@
 <!--
         <div>
             <label for="ntpServer" class="block font-medium text-[#333333]">NTP Server (needs restart)</label>
-            <input id="ntpServer" name="ntpServer" type="text" class="input-field" placeholder="pool.ntp.org" value="{{ntpServer}}" />
+            <input id="ntpServer" name="ntpServer" type="text" class="input-field" placeholder="pool.ntp.org" value="%ntpServer%" />
         </div>
 
         <div>
             <label for="timezone" class="block font-medium text-[#333333]">Timezone (needs restart)</label>
-            <input id="timezone" name="timezone" type="text" class="input-field" placeholder="CET-1CEST,M3.5.0/02,M10.5.0/03" value="{{tz}}" />
+            <input id="timezone" name="timezone" type="text" class="input-field" placeholder="CET-1CEST,M3.5.0/02,M10.5.0/03" value="%tz%" />
         </div>
 -->
-        <!-- PID Values -->
         <div>
             <label for="wifiSsid" class="block font-medium text-[#333333]">WiFi SSID</label>
-            <input id="wifiSsid" name="wifiSsid" type="text" class="input-field" placeholder="WiFi SSID" value="{{wifiSsid}}" />
+            <input id="wifiSsid" name="wifiSsid" type="text" class="input-field" placeholder="WiFi SSID" value="%WIFI_SSID%" />
         </div>
-        <!-- PID Values -->
         <div>
             <label for="wifiPassword" class="block font-medium text-[#333333]">WiFi Password</label>
-            <input id="wifiPassword" name="wifiPassword" type="password" class="input-field" placeholder="WiFi Password" value="{{wifiPassword}}" />
+            <input id="wifiPassword" name="wifiPassword" type="password" class="input-field" placeholder="WiFi Password" value="%WIFI_PASSWORD%" />
         </div>
-        <!-- PID Values -->
+        <div>
+            <label for="mdnsName" class="block font-medium text-[#333333]">Hostname</label>
+            <input id="mdnsName" name="mdnsName" type="text" class="input-field" placeholder="Hostname" value="%MDNS_NAME%" />
+        </div>
         <div>
             <label for="pid" class="block font-medium text-[#333333]">PID Values (Kp, Ki, Kd)</label>
-            <input id="pid" name="pid" type="text" class="input-field" placeholder="2.0, 0.1, 0.01" value="{{pid}}" />
+            <input id="pid" name="pid" type="text" class="input-field" placeholder="2.0, 0.1, 0.01" value="%PID%" />
         </div>
 
         <div class="text-sm text-[#666666]">
@@ -129,7 +130,7 @@
     </div>
 
     <div class="flex flex-row justify-center mt-4 gap-2 text-xs text-[#333333]">
-        Version: {{build_version}} - Build Time: {{build_timestamp}}
+        Version: %BUILD_VERSION% - Build Time: %BUILD_TIMESTAMP%
     </div>
 </div>
 

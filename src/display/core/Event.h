@@ -2,12 +2,12 @@
 #define EVENT_H
 
 #include <Arduino.h>
-#include <map>
-#include <utility>
+#include <vector>
 
 enum EventType { EVENT_TYPE_INT, EVENT_TYPE_FLOAT, EVENT_TYPE_STRING, EVENT_TYPE_NONE };
 
 struct EventDataEntry {
+    String key;
     EventType type;
     int intValue;
     float floatValue;
@@ -15,33 +15,55 @@ struct EventDataEntry {
 
     EventDataEntry() : type(EVENT_TYPE_NONE), intValue(0), floatValue(0.0f), stringValue("") {}
 
-    explicit EventDataEntry(int value) : type(EVENT_TYPE_INT), intValue(value), floatValue(0.0f), stringValue("") {}
-    explicit EventDataEntry(float value) : type(EVENT_TYPE_FLOAT), intValue(0), floatValue(value), stringValue("") {}
-    explicit EventDataEntry(String value) : type(EVENT_TYPE_STRING), intValue(0), floatValue(0.0f), stringValue(value) {}
+    EventDataEntry(const String &k, int value)
+        : key(k), type(EVENT_TYPE_INT), intValue(value), floatValue(0.0f), stringValue("") {}
 
-    int asInt() const { return (type == EVENT_TYPE_INT) ? intValue : 0; }
-    float asFloat() const { return (type == EVENT_TYPE_FLOAT) ? floatValue : 0.0f; }
-    String asString() const { return (type == EVENT_TYPE_STRING) ? stringValue : ""; }
+    EventDataEntry(const String &k, float value)
+        : key(k), type(EVENT_TYPE_FLOAT), intValue(0), floatValue(value), stringValue("") {}
+
+    EventDataEntry(const String &k, const String &value)
+        : key(k), type(EVENT_TYPE_STRING), intValue(0), floatValue(0.0f), stringValue(value) {}
 };
 
-using EventData = std::map<String, EventDataEntry>;
+using EventData = std::vector<EventDataEntry>;
 
 struct Event {
     String id;
     EventData data;
     bool stopPropagation = false;
 
-    void setInt(const String &key, int value) { data[key] = EventDataEntry(value); }
+    void setInt(const String &key, int value) { data.emplace_back(key, value); }
 
-    void setFloat(const String &key, float value) { data[key] = EventDataEntry(value); }
+    void setFloat(const String &key, float value) { data.emplace_back(key, value); }
 
-    void setString(const String &key, const String &value) { data[key] = EventDataEntry(value); }
+    void setString(const String &key, const String &value) { data.emplace_back(key, value); }
 
-    int getInt(const String &key) const { return data.at(key).asInt(); }
+    int getInt(const String &key) const {
+        for (const auto &entry : data) {
+            if (entry.key == key && entry.type == EVENT_TYPE_INT) {
+                return entry.intValue;
+            }
+        }
+        return 0;
+    }
 
-    float getFloat(const String &key) const { return data.at(key).asFloat(); }
+    float getFloat(const String &key) const {
+        for (const auto &entry : data) {
+            if (entry.key == key && entry.type == EVENT_TYPE_FLOAT) {
+                return entry.floatValue;
+            }
+        }
+        return 0.0f;
+    }
 
-    String getString(const String &key) const { return data.at(key).asString(); }
+    String getString(const String &key) const {
+        for (const auto &entry : data) {
+            if (entry.key == key && entry.type == EVENT_TYPE_STRING) {
+                return entry.stringValue;
+            }
+        }
+        return "";
+    }
 };
 
 #endif // EVENT_H

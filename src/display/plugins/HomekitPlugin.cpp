@@ -1,4 +1,7 @@
 #include "HomekitPlugin.h"
+#include "../core/Controller.h"
+#include "../core/constants.h"
+#include <utility>
 
 HomekitAccessory::HomekitAccessory(change_callback_t callback)
     : callback(nullptr), state(nullptr), targetState(nullptr), targetTemperature(nullptr), currentTemperature(nullptr),
@@ -53,29 +56,31 @@ void HomekitPlugin::clearAction() { actionRequired = false; }
 void HomekitPlugin::setup(Controller *controller, PluginManager *pluginManager) {
     this->controller = controller;
 
-    homeSpan.setHostNameSuffix("");
-    homeSpan.setPortNum(HOMESPAN_PORT);
-    homeSpan.begin(Category::Thermostats, DEVICE_NAME, MDNS_NAME);
-    homeSpan.setWifiCredentials(wifiSsid.c_str(), wifiPassword.c_str());
-    spanAccessory = new SpanAccessory();
-    accessoryInformation = new Service::AccessoryInformation();
-    identify = new Characteristic::Identify();
-    accessory = new HomekitAccessory([this]() { this->actionRequired = true; });
-    homeSpan.autoPoll();
-
-    pluginManager->on("boiler.targetTemperature.change", [this](Event &event) {
-        if (accessory == nullptr)
-            return;
-        accessory->setTargetTemperature(event.getFloat("value"));
+    pluginManager->on("controller:wifi:connect", [this](Event &event) {
+        homeSpan.setHostNameSuffix("");
+        homeSpan.setPortNum(HOMESPAN_PORT);
+        homeSpan.begin(Category::Thermostats, DEVICE_NAME, this->controller->getSettings().getMdnsName().c_str());
+        homeSpan.setWifiCredentials(wifiSsid.c_str(), wifiPassword.c_str());
+        spanAccessory = new SpanAccessory();
+        accessoryInformation = new Service::AccessoryInformation();
+        identify = new Characteristic::Identify();
+        accessory = new HomekitAccessory([this]() { this->actionRequired = true; });
+        homeSpan.autoPoll();
     });
 
-    pluginManager->on("boiler.currentTemperature.change", [this](Event &event) {
+    pluginManager->on("boiler:targetTemperature:change", [this](Event &event) {
+        if (accessory == nullptr)
+            return;
+        accessory->setTargetTemperature(event.getInt("value"));
+    });
+
+    pluginManager->on("boiler:currentTemperature:change", [this](Event &event) {
         if (accessory == nullptr)
             return;
         accessory->setCurrentTemperature(event.getFloat("value"));
     });
 
-    pluginManager->on("controller.mode.change", [this](Event &event) {
+    pluginManager->on("controller:mode:change", [this](Event &event) {
         if (accessory == nullptr)
             return;
         accessory->setState(event.getInt("value") != MODE_STANDBY);
@@ -86,9 +91,7 @@ void HomekitPlugin::loop() {
     if (!actionRequired || controller == nullptr || accessory == nullptr)
         return;
     if (accessory->getState() && controller->getMode() == MODE_STANDBY) {
-        controller->deactivate();
-        controller->setMode(MODE_BREW);
-        _ui_screen_change(&ui_BrewScreen, LV_SCR_LOAD_ANIM_NONE, 500, 0, &ui_BrewScreen_screen_init);
+        controller->deactivateStandby();
     } else if (!accessory->getState() && controller->getMode() != MODE_STANDBY) {
         controller->activateStandby();
     }

@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/jniebuhr/gaggimate#readme",
   "devDependencies": {
-    "inliner": "^1.13.1",
-    "tailwindcss": "^3.4.14"
+    "tailwindcss": "^3.4.14",
+    "minify": "^12.0.0"
   }
 }
