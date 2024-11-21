@@ -52,7 +52,7 @@ void WebUIPlugin::start() {
         request->send(200, "text/css", style_css);
     });
     server.on("/gm.svg", [this](AsyncWebServerRequest *request) {
-        request->send(200, "text/css", gm_svg);
+        request->send(200, "image/svg+xml", gm_svg);
     });
     ElegantOTA.begin(&server);
     ElegantOTA.onStart([this]() { controller->onOTAUpdate(); });
