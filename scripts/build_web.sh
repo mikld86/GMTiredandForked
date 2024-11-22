@@ -3,6 +3,7 @@
 npx tailwindcss -i ./web/style.css -o ./web/style.min.css
 index_html=$(npx minify ./web/index.html)
 settings_html=$(npx minify ./web/settings.html)
+ota_html=$(npx minify ./web/ota.html)
 gm_svg=$(cat ./web/gm.svg)
 style_css=$(npx minify ./web/style.min.css)
 {
@@ -13,6 +14,9 @@ style_css=$(npx minify ./web/style.min.css)
   echo "$index_html"
   echo ")***\";"
   echo "const char settings_html[] PROGMEM = R\"***("
+  echo "$settings_html"
+  echo ")***\";"
+  echo "const char ota_html[] PROGMEM = R\"***("
   echo "$settings_html"
   echo ")***\";"
   echo "const char style_css[] PROGMEM = R\"***("

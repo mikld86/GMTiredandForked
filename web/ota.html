@@ -3,34 +3,50 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>GaggiMate - Dashboard</title>
+    <title>GaggiMate - Updates</title>
     <link rel="stylesheet" type="text/css" href="style.min.css"/>
     <link rel="shortcut icon" type="image/svg+xml" href="gm.svg" />
 </head>
 <body class="bg-white px-6">
 <div class="flex flex-col items-center mt-12 mb-16">
-    <p class="text-6xl font-light mb-6 text-[#333333] font-logo">
+    <a href="/" class="text-6xl font-light mb-6 text-[#333333] font-logo">
         <span class="font-semibold">GAGGI</span>MATE
-    </p>
-    <!-- Upload Column -->
-    <div class="flex flex-col justify-center mt-2 mb-2">
-        Welcome to the GaggiMate Web UI. Please choose one of the options below.
-    </div>
-    <div class="flex flex-col justify-center mt-2 mb-2 gap-2 w-full max-w-md border-b border-[#CCCCCC] pb-4">
-        <a href="#" class="menu-button">
-            Profiles (coming soon)
-        </a>
-        <a href="#" class="menu-button">
-            PID Autotune (coming soon)
-        </a>
-        <a href="/settings" class="menu-button">
-            Settings
-        </a>
-        <a href="/ota" class="menu-button">
-            Updates
-        </a>
-        <a href="/update" class="text-xs text-center underline">Old OTA updater</a>
-    </div>
+    </a>
+    <h2 class="text-3xl font-semibold mb-4 text-[#333333]">Updates</h2>
+
+    <form method="post" action="/settings" class="flex flex-col gap-4 w-full max-w-md border-b border-[#CCCCCC] pb-4">
+        <!-- Default Startup Action with Select Dropdown -->
+        <div>
+            <label for="channel" class="block font-medium text-[#333333]">Startup Mode</label>
+            <select id="channel" name="channel" class="input-field">
+                <option value="stable" %STABLE_SELECTED%>Stable</option>
+                <option value="nightly" %DEV_SELECTED%>Nightly</option>
+            </select>
+        </div>
+
+        <!-- Default Duration -->
+        <div>
+            <span class="block font-medium text-[#333333]">Current version</span>
+            <span class="display-field">
+                %BUILD_VERSION%
+            </span>
+        </div>
+
+        <div>
+            <span class="block font-medium text-[#333333]">Newest version</span>
+            <span class="display-field">
+                %BUILD_VERSION% %IS_LATEST%
+            </span>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex justify-center mt-6 flex-row gap-1">
+            <a href="/" class="menu-button">Back</a>
+            <button type="submit" class="menu-button">Save Preferences</button>
+            <input type="submit" name="update" class="menu-button" value="Update" />
+        </div>
+    </form>
+
     <div class="flex flex-row justify-center mt-4 gap-2">
         <a href="https://github.com/jniebuhr/gaggimate" target="_blank" class="text-black">
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 496 512">
@@ -52,6 +68,7 @@
         Version: %BUILD_VERSION% - Build Time: %BUILD_TIMESTAMP%
     </div>
 </div>
+
 
 
 </body>

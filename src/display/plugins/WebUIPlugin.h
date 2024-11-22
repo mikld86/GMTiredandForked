@@ -5,6 +5,10 @@
 
 #include "../core/Plugin.h"
 #include <ESPAsyncWebServer.h>
+#include <GitHubOTA.h>
+#include <GitHubFsOTA.h>
+#include "LittleFS.h"
+
 
 class WebUIPlugin : public Plugin {
   public:

@@ -16,6 +16,11 @@ void WebUIPlugin::start() {
         response->addHeader("Server","GaggiMate");
         request->send(response);
     });
+    server.on("/ota", [this](AsyncWebServerRequest *request) {
+        auto *response = request->beginResponse(200, "text/html", ota_html, [this](const String& var) { return processTemplate(var); });
+        response->addHeader("Server","GaggiMate");
+        request->send(response);
+    });
     server.on("/settings", [this](AsyncWebServerRequest *request) {
         if (request->method() == HTTP_POST) {
             controller->getSettings().batchUpdate([this, request](Settings *settings) {
