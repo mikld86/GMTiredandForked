@@ -13272,7 +13272,7 @@
 				)
 			)
 		)
-		(property "Value" "10uF"
+		(property "Value" "22uF"
 			(at 0 1.68 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -13320,7 +13320,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C15850"
+		(property "LCSC" "C45783"
 			(at 141.8 225.6 0)
 			(layer "F.Fab")
 			(hide yes)
