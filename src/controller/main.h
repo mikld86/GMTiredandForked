@@ -2,8 +2,6 @@
 #define MAIN_H
 
 #include <Arduino.h>
-#include "PID_v1.h"
-#include "PID_AutoTune_v0.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -11,12 +9,12 @@
 #include "NimBLEServerController.h"
 
 // GPIO Pin Definitions
-#define HEATER_PIN       SDA
-#define PUMP_PIN         SCL
-#define VALVE_PIN        MOSI
-#define MAX6675_SCK_PIN  SCK
-#define MAX6675_CS_PIN   SS
-#define MAX6675_MISO_PIN MISO
+#define HEATER_PIN       14
+#define PUMP_PIN         9
+#define VALVE_PIN        10
+#define MAX6675_SCK_PIN  6
+#define MAX6675_CS_PIN   7
+#define MAX6675_MISO_PIN 4
 
 #define PWM_FREQUENCY 20
 
@@ -25,6 +23,8 @@
 #define I2C_DEV_ADDR 0x55
 
 #define PUMP_CYCLE_TIME 5000
+
+#define RELAY_ON HIGH
 
 // Function prototypes for initialization
 void setup(void);
