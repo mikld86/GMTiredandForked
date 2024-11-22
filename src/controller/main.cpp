@@ -1,11 +1,16 @@
 #include "main.h"
+#include "PID_v1.h"
+#include "PID_AutoTune_v0.h"
+#include <MAX31855.h>
+
 
 // PID variables
-double setpoint = 0.0;                                        // Desired temperature
-double input = 0.0;                                           // Current temperature input from the thermocouple
-double output = 0.0;                                          // PID output to control heater
-PID myPID(&input, &output, &setpoint, 0, 0, 0, DIRECT);       // PID parameters
-PID_ATune aTune(&input, &output);                             // PID autotune instance
+double setpoint = 0.0;
+double input = 0.0;
+double output = 0.0;
+PID myPID(&input, &output, &setpoint, 0, 0, 0, DIRECT);
+PID_ATune aTune(&input, &output);
+MAX31855 thermoCouple(MAX6675_CS_PIN, MAX6675_MISO_PIN, MAX6675_SCK_PIN);
 
 // System control variables
 const double MAX_SAFE_TEMP = 170.0;       // Max temperature for thermal runaway protection
@@ -20,12 +25,16 @@ NimBLEServerController serverController;
 
 void setup() {
     Serial.begin(115200);
+
     // Initialize UART and Protobuf communication
     serverController.initServer();
 
     // Initialize PID controller
     myPID.SetMode(AUTOMATIC);
     myPID.SetOutputLimits(0, 255); // Example output limits for heater control
+
+    thermoCouple.begin();
+    thermoCouple.setSPIspeed(1000000);
 
     // Register callbacks for message processing
 
@@ -64,45 +73,40 @@ void setup() {
 
 void loop() {
     while (1) {
-        // Check the ping timeout for safety
         unsigned long now = millis();
         if ((now - last_ping_time) / 1000 > PING_TIMEOUT_SECONDS) {
             handle_ping_timeout();
         }
-
-        // Handle PID control if system is active and not autotuning
         if (setpoint > 0 || is_autotuning) {
             if (is_autotuning) {
-                // Execute autotuning
-                if (aTune.Runtime() < 0) { // Check if tuning is complete
+                if (aTune.Runtime() < 0) {
                     printf("Finished autotune: %f, %f, %f\n", aTune.GetKp(), aTune.GetKi(), aTune.GetKd());
                     myPID.SetTunings(aTune.GetKp(), aTune.GetKi(), aTune.GetKd());
-                    stop_pid_autotune(); // Stop autotuning after completion
+                    stop_pid_autotune();
                 }
             } else {
-                myPID.Compute(); // Perform PID computation
+                myPID.Compute();
             }
-            control_heater(output); // Control the heater based on the PID output
+            control_heater(output);
         } else {
             control_heater(0);
         }
 
-        // Check for thermal runaway
         if (input > MAX_SAFE_TEMP) {
             thermal_runaway_shutdown();
         }
 
         if (lastTempUpdate + TEMP_UPDATE_INTERVAL_MS < now) {
-            input = read_temperature(); // Read the current boiler temperature
-            // Update UI with temperature
+            input = read_temperature();
             serverController.sendTemperature(input);
             lastTempUpdate = millis();
         }
 
-        // Execute pump modulation
-        control_pump(); // Pass the flow percentage variable here
+        printf("Temperature: %f\n", input);
 
-        delay(50); // Minimal delay to prevent overloading the loop, compatible with 50 ms intervals
+        control_pump();
+
+        delay(50);
     }
 }
 
@@ -154,7 +158,7 @@ void thermal_runaway_shutdown() {
 }
 
 void control_heater(int out) {
-    analogWriteFrequency(PWM_FREQUENCY);
+    // analogWriteFrequency(PWM_FREQUENCY);
     analogWrite(HEATER_PIN, out);
 }
 
@@ -174,47 +178,31 @@ void control_pump() {
 
     // Turn pump ON for the first `onSteps` steps and OFF for the remainder
     if (currentCycleDuration < onTime) {
-        digitalWrite(PUMP_PIN, LOW); // Relay on
+        digitalWrite(PUMP_PIN, RELAY_ON); // Relay on
     } else {
-        digitalWrite(PUMP_PIN, HIGH); // Relay off
+        digitalWrite(PUMP_PIN, !RELAY_ON); // Relay off
     }
 }
 
 void control_valve(bool state) {
     if (state) {
         // Turn on the valve
-        digitalWrite(VALVE_PIN, LOW);
+        digitalWrite(VALVE_PIN, RELAY_ON);
         printf("Setting valve relay to ON\n");
     } else {
         // Turn off the valve
-        digitalWrite(VALVE_PIN, HIGH);
+        digitalWrite(VALVE_PIN, !RELAY_ON);
         printf("Setting valve relay to OFF\n");
     }
 }
 
 float read_temperature(void) {
-    uint16_t v; // Variable to store the temperature value
-
-    // Start communication with the MAX6675
-    digitalWrite(MAX6675_CS_PIN, LOW); // Select the MAX6675
-    delay(1);                          // Allow time for the chip to select
-
-    // Read the 16-bit value from the MAX6675
-    v = SPI.transfer(0x00) << 8;        // Read the first byte
-    v |= SPI.transfer(0x00);            // Read the second byte
-    digitalWrite(MAX6675_CS_PIN, HIGH); // Deselect the MAX6675
-
-    // Check if the reading is valid
-    if (v & 0x4) { // Check if the thermocouple is connected
-        printf("Thermocouple not connected...\n");
-        return -1; // Return an error value
+    int status = thermoCouple.read();
+    if (status ==  STATUS_OK) {
+        return thermoCouple.getTemperature();
     }
-
-    // Shift the value right to get the temperature
-    v >>= 3;                       // Remove the status bits
-    float temperature = v * 0.25f; // Each unit corresponds to 0.25°C
-
-    return temperature; // Return the temperature
+    printf("Error reading temperature: %d\n", status);
+    return 0;
 }
 
 void on_autotune() {
