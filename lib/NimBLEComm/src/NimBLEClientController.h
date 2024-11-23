@@ -11,6 +11,7 @@ public:
     void sendTemperatureControl(float setpoint);
     void sendPumpControl(float setpoint);
     void sendValveControl(bool pinState);
+    void sendAltControl(bool pinState);
     void sendPing();
     void sendAutotune();
     void sendPidSettings(const String& pid);
@@ -26,6 +27,7 @@ private:
     NimBLERemoteCharacteristic* tempControlChar;
     NimBLERemoteCharacteristic* pumpControlChar;
     NimBLERemoteCharacteristic* valveControlChar;
+    NimBLERemoteCharacteristic* altControlChar;
     NimBLERemoteCharacteristic* tempReadChar;
     NimBLERemoteCharacteristic* pingChar;
     NimBLERemoteCharacteristic* pidControlChar;

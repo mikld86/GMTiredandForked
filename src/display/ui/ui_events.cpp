@@ -109,3 +109,26 @@ void onStandby(lv_event_t * e)
 {
   controller.activateStandby();
 }
+
+void onGrindToggle(lv_event_t * e)
+{
+  controller.isGrindActive() ? controller.deactivateGrind() : controller.activateGrind();
+}
+
+void onGrindTimeLower(lv_event_t * e)
+{
+  int newDuration = controller.getTargetGrindDuration() - 1000;
+  if (newDuration < BREW_MIN_DURATION_MS) {
+    newDuration = BREW_MIN_DURATION_MS;
+  }
+  controller.setTargetGrindDuration(newDuration);
+}
+
+void onGrindTimeRaise(lv_event_t * e)
+{
+  int newDuration = controller.getTargetGrindDuration() + 1000;
+  if (newDuration > BREW_MAX_DURATION_MS) {
+    newDuration = BREW_MIN_DURATION_MS;
+  }
+  controller.setTargetGrindDuration(newDuration);
+}

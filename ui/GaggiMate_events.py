@@ -70,3 +70,15 @@ def onWaterTempRaise(event_struct):
 def onWakeup(event_struct):
     return
 
+
+def onGrindToggle(event_struct):
+    return
+
+
+def onGrindTimeLower(event_struct):
+    return
+
+
+def onGrindTimeRaise(event_struct):
+    return
+

@@ -1,14 +1,12 @@
-SET(SOURCES components/ui_comp_piebutton.c
-    components/ui_comp.c
-    screens/ui_InitScreen.c
+SET(SOURCES screens/ui_InitScreen.c
     screens/ui_ProfileScreen.c
     screens/ui_MenuScreen.c
-    screens/ui_StatusScreen.c
-    screens/ui_GrindScreen.c
     screens/ui_BrewScreen.c
     screens/ui_SteamScreen.c
     screens/ui_WaterScreen.c
     screens/ui_StandbyScreen.c
+    screens/ui_StatusScreen.c
+    screens/ui_GrindScreen.c
     ui_theme_manager.cpp
     ui_themes.cpp
     ui.c
@@ -22,11 +20,10 @@ SET(SOURCES components/ui_comp_piebutton.c
     images/ui_img_2100879889.c
     images/ui_img_2056842146.c
     images/ui_img_standby_png.c
-    images/ui_img_646127855.c
-    images/ui_img_1138440778.c
     images/ui_img_2106667244.c
     images/ui_img_980971367.c
     images/ui_img_bluetooth_png.c
-    images/ui_img_wifi_png.c)
+    images/ui_img_wifi_png.c
+    images/ui_img_646127855.c)
 
 add_library(ui ${SOURCES})

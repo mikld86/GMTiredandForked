@@ -24,7 +24,10 @@ class Controller {
     void setTargetTemp(int temperature);
     int getTargetDuration();
     void setTargetDuration(int duration);
+    int getTargetGrindDuration();
+    void setTargetGrindDuration(int duration);
     bool isActive() const;
+    bool isGrindActive() const;
     bool isUpdating() const;
     Settings& getSettings() { return settings; }
 
@@ -34,6 +37,8 @@ class Controller {
     void lowerTemp();
     void activate();
     void deactivate();
+    void activateGrind();
+    void deactivateGrind();
     void activateStandby();
     void deactivateStandby();
     void onOTAUpdate();
@@ -49,7 +54,7 @@ class Controller {
     void updateUiActive() const;
     void updateUiSettings();
     void updateUiCurrentTemp() const;
-    void updateBrewProgress() const;
+    void updateProgress() const;
     void updateStandby();
 
     // Event handlers
@@ -66,6 +71,7 @@ class Controller {
     int currentTemp;
 
     unsigned long activeUntil;
+    unsigned long grindActiveUntil;
     unsigned long lastPing;
     unsigned long lastProgress;
     unsigned long lastAction;
