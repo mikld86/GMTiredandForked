@@ -8,6 +8,7 @@ NimBLEClientController::NimBLEClientController() :
     tempControlChar(nullptr),
     pumpControlChar(nullptr),
     valveControlChar(nullptr),
+    altControlChar(nullptr),
     tempReadChar(nullptr),
     pingChar(nullptr),
     errorChar(nullptr),
@@ -78,6 +79,7 @@ bool NimBLEClientController::connectToServer() {
     tempControlChar = pRemoteService->getCharacteristic(NimBLEUUID(TEMP_CONTROL_CHAR_UUID));
     pumpControlChar = pRemoteService->getCharacteristic(NimBLEUUID(PUMP_CONTROL_CHAR_UUID));
     valveControlChar = pRemoteService->getCharacteristic(NimBLEUUID(VALVE_CONTROL_CHAR_UUID));
+    altControlChar = pRemoteService->getCharacteristic(NimBLEUUID(ALT_CONTROL_CHAR_UUID));
     autotuneChar = pRemoteService->getCharacteristic(NimBLEUUID(AUTOTUNE_CHAR_UUID));
     pingChar = pRemoteService->getCharacteristic(NimBLEUUID(PING_CHAR_UUID));
     pidControlChar = pRemoteService->getCharacteristic(NimBLEUUID(PID_CONTROL_CHAR_UUID));
@@ -124,6 +126,12 @@ void NimBLEClientController::sendPumpControl(float setpoint) {
 void NimBLEClientController::sendValveControl(bool pinState) {
     if (valveControlChar != nullptr && client->isConnected()) {
         valveControlChar->writeValue(pinState ? "1" : "0");
+    }
+}
+
+void NimBLEClientController::sendAltControl(bool pinState) {
+    if (altControlChar != nullptr && client->isConnected()) {
+        altControlChar->writeValue(pinState ? "1" : "0");
     }
 }
 

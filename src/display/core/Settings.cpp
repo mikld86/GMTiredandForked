@@ -7,6 +7,7 @@ Settings::Settings() {
     targetSteamTemp = preferences.getInt("ts", 145);
     targetWaterTemp = preferences.getInt("tw", 80);
     targetDuration = preferences.getInt("td", 25000);
+    targetGrindDuration = preferences.getInt("tgd", 25000);
     temperatureOffset = preferences.getInt("to", DEFAULT_TEMPERATURE_OFFSET);
     pid = preferences.getString("pid", DEFAULT_PID);
     wifiSsid = preferences.getString("ws", "");
@@ -32,6 +33,7 @@ void Settings::save() {
     preferences.putInt("ts", targetSteamTemp);
     preferences.putInt("tw", targetWaterTemp);
     preferences.putInt("td", targetDuration);
+    preferences.putInt("tgd", targetGrindDuration);
     preferences.putInt("to", temperatureOffset);
     preferences.putString("pid", pid);
     preferences.putString("ws", wifiSsid);
@@ -63,6 +65,11 @@ void Settings::setTemperatureOffset(const int temperature_offset) {
 
 void Settings::setTargetDuration(const int target_duration) {
     targetDuration = target_duration;
+    save();
+}
+
+void Settings::setTargetGrindDuration(const int target_duration) {
+    targetGrindDuration = target_duration;
     save();
 }
 

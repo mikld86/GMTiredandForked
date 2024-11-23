@@ -50,8 +50,10 @@ void setup() {
     pinMode(HEATER_PIN, OUTPUT);
     pinMode(PUMP_PIN, OUTPUT);
     pinMode(VALVE_PIN, OUTPUT);
+    pinMode(ALT_PIN, OUTPUT);
     control_heater(0);
     control_pump();
+    control_alt(false);
     control_valve(false);
 
     aTune.SetOutputStep(10);  // Set the output step size for autotuning
@@ -62,6 +64,7 @@ void setup() {
     serverController.registerTempControlCallback(on_temperature_control);
     serverController.registerPumpControlCallback(on_pump_control);
     serverController.registerValveControlCallback(on_valve_control);
+    serverController.registerAltControlCallback(on_alt_control);
     serverController.registerPidControlCallback(on_pid_control);
     serverController.registerPingCallback(on_ping);
     serverController.registerAutotuneCallback(on_autotune);
@@ -126,6 +129,8 @@ void on_pump_control(float setpoint) {
 
 void on_valve_control(bool state) { control_valve(state); }
 
+void on_alt_control(bool state) { control_alt(state); }
+
 void on_pid_control(float Kp, float Ki, float Kd) {
     myPID.SetTunings(Kp, Ki, Kd);
 }
@@ -144,6 +149,8 @@ void handle_ping_timeout() {
     // Turn off the heater and pump as a safety measure
     control_heater(0);
     on_pump_control(0);
+    control_valve(false);
+    control_alt(false);
     setpoint = 0;
     serverController.sendError(ERROR_CODE_TIMEOUT);
 }
@@ -153,6 +160,8 @@ void thermal_runaway_shutdown() {
     // Turn off the heater and pump immediately
     control_heater(0);
     on_pump_control(0);
+    control_valve(false);
+    control_alt(false);
     setpoint = 0;
     serverController.sendError(ERROR_CODE_RUNAWAY);
 }
@@ -193,6 +202,18 @@ void control_valve(bool state) {
         // Turn off the valve
         digitalWrite(VALVE_PIN, !RELAY_ON);
         printf("Setting valve relay to OFF\n");
+    }
+}
+
+void control_alt(bool state) {
+    if (state) {
+        // Turn on the valve
+        digitalWrite(ALT_PIN, RELAY_ON);
+        printf("Setting ALT relay to ON\n");
+    } else {
+        // Turn off the valve
+        digitalWrite(ALT_PIN, !RELAY_ON);
+        printf("Setting ALT relay to OFF\n");
     }
 }
 
