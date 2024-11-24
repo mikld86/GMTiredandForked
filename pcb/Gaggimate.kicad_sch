@@ -4,6 +4,11 @@
 	(generator_version "8.0")
 	(uuid "653e9bc1-2c67-4748-9f29-a90a5e4be45f")
 	(paper "A3")
+	(title_block
+		(title "GaggiMate Controller PCB")
+		(date "2024-11-24")
+		(rev "1.0")
+	)
 	(lib_symbols
 		(symbol "Connector:USB_C_Receptacle_USB2.0"
 			(pin_names
@@ -10201,7 +10206,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C2909692"
+		(property "LCSC" "C116647"
 			(at 260.604 53.848 0)
 			(effects
 				(font
@@ -12829,7 +12834,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C2909692"
+		(property "LCSC" "C116647"
 			(at 295.656 53.848 0)
 			(effects
 				(font
@@ -17967,7 +17972,7 @@
 		(at 33.274 265.43 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
