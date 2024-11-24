@@ -21,14 +21,14 @@ D7,LED,LED_0805_2012Metric,221.9,-83.4,0.0,top
 D8,1N4148W,D_SOD-123,221.9,-79.5,180.0,top
 D9,LED,LED_0805_2012Metric,205.3,-83.4,0.0,top
 J1,USB_C_Receptacle,USB_C_Receptacle_HRO_TYPE-C-31-M-12,190.4,-88.04,0.0,top
-J10,Conn_01x02,JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical,193.65,-73.3,-90.0,top
+J10,Conn_01x02,JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical,193.4,-68.9,-90.0,top
 J2,Conn_01x02,TerminalBlock_bornier-2_P5.08mm,241.7,-33.14,90.0,top
 J3,Conn_01x03,TerminalBlock_bornier-3_P5.08mm,241.7,-47.46,90.0,top
 J4,Conn_01x04,JST_XH_B4B-XH-A_1x04_P2.50mm_Vertical,182.72,-59.0,0.0,top
 J5,Conn_01x05,JST_XH_B5B-XH-A_1x05_P2.50mm_Vertical,170.2,-51.7,0.0,top
 J6,Conn_01x10,PinHeader_1x10_P2.54mm_Vertical,175.43,-65.1,-90.0,top
 J7,Conn_01x02,"TerminalBlock_Phoenix_PT-1,5-2-3.5-H_1x02_P3.50mm_Horizontal",166.9,-43.45,-90.0,top
-J8,Conn_01x02,JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical,193.65,-64.75,-90.0,top
+J8,Conn_01x02,JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical,193.4,-60.35,-90.0,top
 J9,Conn_01x04,JST_XH_B4B-XH-A_1x04_P2.50mm_Vertical,168.95,-59.0,0.0,top
 K1,Relay_SPDT,Relay_SPDT_Finder_36.11,238.8,-66.95,90.0,top
 K2,Relay_SPDT,Relay_SPDT_Finder_36.11,222.1,-66.95,90.0,top
