@@ -4,6 +4,11 @@
 	(generator_version "8.0")
 	(uuid "653e9bc1-2c67-4748-9f29-a90a5e4be45f")
 	(paper "A3")
+	(title_block
+		(title "GaggiMate Controller PCB")
+		(date "2024-11-24")
+		(rev "1.0")
+	)
 	(lib_symbols
 		(symbol "Connector:USB_C_Receptacle_USB2.0"
 			(pin_names
@@ -1192,6 +1197,232 @@
 						)
 					)
 					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
+		(symbol "Connector_Generic:Conn_01x05"
+			(pin_names
+				(offset 1.016) hide)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "J"
+				(at 0 7.62 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "Conn_01x05"
+				(at 0 -7.62 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Generic connector, single row, 01x05, script generated (kicad-library-utils/schlib/autogen/connector/)"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "connector"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "Connector*:*_1x??_*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "Conn_01x05_1_1"
+				(rectangle
+					(start -1.27 -4.953)
+					(end 0 -5.207)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 -2.413)
+					(end 0 -2.667)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 0.127)
+					(end 0 -0.127)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 2.667)
+					(end 0 2.413)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 5.207)
+					(end 0 4.953)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 6.35)
+					(end 1.27 -6.35)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin passive line
+					(at -5.08 5.08 0)
+					(length 3.81)
+					(name "Pin_1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 2.54 0)
+					(length 3.81)
+					(name "Pin_2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 0 0)
+					(length 3.81)
+					(name "Pin_3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -2.54 0)
+					(length 3.81)
+					(name "Pin_4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -5.08 0)
+					(length 3.81)
+					(name "Pin_5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -5730,6 +5961,12 @@
 		(uuid "1023ec86-ee04-466e-9faa-678e46bc9326")
 	)
 	(junction
+		(at 261.62 50.8)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "12e6f69f-b5f1-433a-933c-87ee88c33a08")
+	)
+	(junction
 		(at 303.53 134.62)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -6227,6 +6464,16 @@
 	)
 	(wire
 		(pts
+			(xy 317.5 46.99) (xy 321.31 46.99)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "15093853-cc0a-49ee-ae63-5917e844848a")
+	)
+	(wire
+		(pts
 			(xy 303.53 146.05) (xy 304.8 146.05)
 		)
 		(stroke
@@ -6537,16 +6784,6 @@
 	)
 	(wire
 		(pts
-			(xy 315.722 44.704) (xy 321.564 44.704)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "37c5afca-b7ee-49aa-b051-5974b0d23e78")
-	)
-	(wire
-		(pts
 			(xy 348.234 208.534) (xy 350.266 208.534)
 		)
 		(stroke
@@ -6754,6 +6991,16 @@
 			(type default)
 		)
 		(uuid "4ed4c64b-38fc-4fb6-bf0f-560f46aba20d")
+	)
+	(wire
+		(pts
+			(xy 317.5 41.91) (xy 321.31 41.91)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "538341e8-f753-4c16-8569-0b0d05b1f4ce")
 	)
 	(wire
 		(pts
@@ -7087,6 +7334,16 @@
 	)
 	(wire
 		(pts
+			(xy 317.5 39.37) (xy 321.31 39.37)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "766dc51e-859b-4e70-bf0f-4d3bdf562e55")
+	)
+	(wire
+		(pts
 			(xy 251.46 50.8) (xy 261.62 50.8)
 		)
 		(stroke
@@ -7094,6 +7351,16 @@
 			(type default)
 		)
 		(uuid "78c2df20-199e-49c6-83b7-ddee389b9238")
+	)
+	(wire
+		(pts
+			(xy 238.76 53.34) (xy 243.84 53.34)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7a5e94a3-5878-4b94-a9bf-1317741862bc")
 	)
 	(wire
 		(pts
@@ -7224,6 +7491,16 @@
 			(type default)
 		)
 		(uuid "86434a36-ee70-46fb-bda0-16de540c31ee")
+	)
+	(wire
+		(pts
+			(xy 251.46 53.34) (xy 261.62 53.34)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "87ee0561-5540-434c-8c84-0478f5ae8651")
 	)
 	(wire
 		(pts
@@ -7507,6 +7784,16 @@
 	)
 	(wire
 		(pts
+			(xy 317.5 44.45) (xy 321.31 44.45)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ae27c452-c605-4f9f-95fc-a563ffc1fe3d")
+	)
+	(wire
+		(pts
 			(xy 125.73 232.41) (xy 130.81 232.41)
 		)
 		(stroke
@@ -7544,16 +7831,6 @@
 			(type default)
 		)
 		(uuid "af2b6f91-9dcf-4c3e-8208-560d45f24ed2")
-	)
-	(wire
-		(pts
-			(xy 315.722 42.164) (xy 321.564 42.164)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b0f74787-9bd8-4680-8cf3-460ea37ff2ab")
 	)
 	(wire
 		(pts
@@ -7674,16 +7951,6 @@
 			(type default)
 		)
 		(uuid "beca70fc-5aa3-438f-836a-c16180c64a1a")
-	)
-	(wire
-		(pts
-			(xy 315.722 37.084) (xy 321.564 37.084)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "bed7bb24-b2a0-43fc-bc4e-bd980a2d364b")
 	)
 	(wire
 		(pts
@@ -7824,16 +8091,6 @@
 			(type default)
 		)
 		(uuid "cdd74eb9-809b-42ad-9ba2-34b3bffff23e")
-	)
-	(wire
-		(pts
-			(xy 315.722 39.624) (xy 321.564 39.624)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "cee259b9-de19-4108-969b-158f2a302019")
 	)
 	(wire
 		(pts
@@ -8077,6 +8334,16 @@
 	)
 	(wire
 		(pts
+			(xy 317.5 36.83) (xy 321.31 36.83)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "eb550c6f-c2f0-4fdf-b55b-df42da7f0a8e")
+	)
+	(wire
+		(pts
 			(xy 273.05 71.374) (xy 252.984 71.374)
 		)
 		(stroke
@@ -8207,6 +8474,16 @@
 	)
 	(wire
 		(pts
+			(xy 261.62 53.34) (xy 261.62 50.8)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fa987854-58f6-4e56-b107-8b9cb1c7b1ff")
+	)
+	(wire
+		(pts
 			(xy 358.14 105.41) (xy 361.95 105.41)
 		)
 		(stroke
@@ -8328,6 +8605,17 @@
 		)
 		(uuid "103dcf04-1ae8-4d06-bfde-6194ff2e623d")
 	)
+	(label "SDA2"
+		(at 96.52 57.15 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "15256185-e391-4374-a9c6-89077ed81963")
+	)
 	(label "MAX_CS"
 		(at 203.2 74.93 0)
 		(fields_autoplaced yes)
@@ -8349,6 +8637,17 @@
 			(justify right bottom)
 		)
 		(uuid "21170fff-3f9b-4c0f-b184-b649323746b6")
+	)
+	(label "SDA2"
+		(at 317.5 44.45 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "215cdb97-2627-41c5-bad0-bd71826bbc76")
 	)
 	(label "UART_RX0"
 		(at 280.924 42.164 180)
@@ -8493,17 +8792,6 @@
 		)
 		(uuid "4d1eeb9d-53d3-44bf-b68f-3b39e20613f9")
 	)
-	(label "BTN_STEAM"
-		(at 96.52 57.15 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "4f77eace-ed4e-4f19-9b09-5859f827cdf4")
-	)
 	(label "LINE_GRINDER"
 		(at 384.048 158.75 0)
 		(fields_autoplaced yes)
@@ -8614,6 +8902,17 @@
 		)
 		(uuid "64bea469-9f90-457c-92f7-16976d52db11")
 	)
+	(label "SDA2"
+		(at 238.76 53.34 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "65962ff4-a43d-4d83-8552-fd81609308dc")
+	)
 	(label "BOOT"
 		(at 273.05 61.214 0)
 		(fields_autoplaced yes)
@@ -8657,17 +8956,6 @@
 			(justify left bottom)
 		)
 		(uuid "792158f1-02fe-49b4-98ed-f61d4d006456")
-	)
-	(label "SDA"
-		(at 315.722 42.164 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "7a736b74-d30e-4291-bdb1-d342ea948ca8")
 	)
 	(label "GPIO12"
 		(at 357.886 47.244 180)
@@ -8900,6 +9188,17 @@
 		)
 		(uuid "ba509d4d-59ac-4fb2-983a-485a1c6f557a")
 	)
+	(label "SDA"
+		(at 317.5 41.91 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "c34bede7-9d60-40ab-9b56-4cc446ddca89")
+	)
 	(label "USB_DN"
 		(at 203.2 52.07 0)
 		(fields_autoplaced yes)
@@ -8911,6 +9210,17 @@
 		)
 		(uuid "c3b71693-6b1c-4a2d-87c5-49a550bfc6da")
 	)
+	(label "SCL"
+		(at 317.5 39.37 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "c6f315e0-e4f0-4fee-afec-b46a1e0033b3")
+	)
 	(label "USB_UF_DP"
 		(at 57.15 143.51 0)
 		(fields_autoplaced yes)
@@ -8921,17 +9231,6 @@
 			(justify left bottom)
 		)
 		(uuid "cc61310f-d5dd-4ade-af5f-c5dd0b89d2cd")
-	)
-	(label "GPIO48"
-		(at 203.2 113.03 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "d0248d98-dd34-4ec3-9b5d-52649e2e0155")
 	)
 	(label "GPIO12"
 		(at 203.2 87.63 0)
@@ -8965,6 +9264,17 @@
 			(justify right bottom)
 		)
 		(uuid "d7683033-4ac6-49f2-854f-95f3b704e76a")
+	)
+	(label "BTN_STEAM"
+		(at 203.2 113.03 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "db5015be-434f-4516-944e-fc7ecdd0d628")
 	)
 	(label "GPIO42"
 		(at 96.52 64.77 180)
@@ -9031,17 +9341,6 @@
 			(justify left bottom)
 		)
 		(uuid "eb84bc35-787b-45af-8b2f-1ff5fe127332")
-	)
-	(label "SCL"
-		(at 315.722 39.624 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "f901313a-8487-4e06-a5af-7b7628bf3ad7")
 	)
 	(label "UART_TX0"
 		(at 203.2 41.91 0)
@@ -9647,71 +9946,6 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 315.722 44.704 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "13e67db4-f161-494a-b8c4-0a2c48c2bb1d")
-		(property "Reference" "#PWR032"
-			(at 309.372 44.704 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 310.642 44.704 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 315.722 44.704 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 315.722 44.704 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 315.722 44.704 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "28e63bd6-f596-4dd1-b87a-174eb2e31df7")
-		)
-		(instances
-			(project "Gaggimate"
-				(path "/653e9bc1-2c67-4748-9f29-a90a5e4be45f"
-					(reference "#PWR032")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:GND")
 		(at 69.85 54.61 0)
 		(unit 1)
 		(exclude_from_sim no)
@@ -9770,6 +10004,73 @@
 			(project "Gaggimate"
 				(path "/653e9bc1-2c67-4748-9f29-a90a5e4be45f"
 					(reference "#PWR011")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+5V")
+		(at 317.5 36.83 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "1e17b917-d087-4cd8-be51-02961c97409e")
+		(property "Reference" "#PWR031"
+			(at 321.31 36.83 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+5V"
+			(at 313.436 36.83 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 317.5 36.83 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 317.5 36.83 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 317.5 36.83 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "665733b1-279e-43f8-9fe8-34cc64249d6d")
+		)
+		(instances
+			(project "Gaggimate"
+				(path "/653e9bc1-2c67-4748-9f29-a90a5e4be45f"
+					(reference "#PWR031")
 					(unit 1)
 				)
 			)
@@ -9861,10 +10162,9 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "210aef22-57d7-45be-9988-a19d1ead3d80")
 		(property "Reference" "SW1"
-			(at 260.604 53.848 0)
+			(at 260.604 62.738 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9872,7 +10172,7 @@
 			)
 		)
 		(property "Value" "SW_Push"
-			(at 260.604 56.388 0)
+			(at 260.604 65.278 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9906,7 +10206,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C2909692"
+		(property "LCSC" "C116647"
 			(at 260.604 53.848 0)
 			(effects
 				(font
@@ -9925,91 +10225,6 @@
 			(project "Gaggimate"
 				(path "/653e9bc1-2c67-4748-9f29-a90a5e4be45f"
 					(reference "SW1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector_Generic:Conn_01x04")
-		(at 326.644 39.624 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "21cef75f-1fea-4d43-8580-a652ba9f49f0")
-		(property "Reference" "J5"
-			(at 328.676 39.624 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "Conn_01x04"
-			(at 328.676 42.164 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Connector_JST:JST_XH_B4B-XH-A_1x04_P2.50mm_Vertical"
-			(at 326.644 39.624 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 326.644 39.624 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 326.644 39.624 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "LCSC" "C144395"
-			(at 328.676 39.624 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "44f978b6-1c1c-451d-9774-4765bf04f45b")
-		)
-		(pin "2"
-			(uuid "38c3be09-b431-47ea-9f62-b21aad6ed923")
-		)
-		(pin "3"
-			(uuid "15081a39-4c4e-446b-9cac-fc0ea8e315e0")
-		)
-		(pin "4"
-			(uuid "a51f6031-2d80-43b9-8961-5b35511d420f")
-		)
-		(instances
-			(project "Gaggimate"
-				(path "/653e9bc1-2c67-4748-9f29-a90a5e4be45f"
-					(reference "J5")
 					(unit 1)
 				)
 			)
@@ -10424,6 +10639,82 @@
 			(project "Gaggimate"
 				(path "/653e9bc1-2c67-4748-9f29-a90a5e4be45f"
 					(reference "R12")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 247.65 53.34 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "2ae6266b-2375-4420-b265-51188a6b01fe")
+		(property "Reference" "R16"
+			(at 252.73 54.864 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10K"
+			(at 256.794 54.864 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
+			(at 247.65 51.562 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 247.65 53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 247.65 53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C17414"
+			(at 252.73 54.864 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "1c05ede7-401f-4c5c-b10a-7bc5157a0f7c")
+		)
+		(pin "2"
+			(uuid "dc92df08-9810-41cb-8451-4e80ba00fefb")
+		)
+		(instances
+			(project "Gaggimate"
+				(path "/653e9bc1-2c67-4748-9f29-a90a5e4be45f"
+					(reference "R16")
 					(unit 1)
 				)
 			)
@@ -11127,6 +11418,71 @@
 			(project "Gaggimate"
 				(path "/653e9bc1-2c67-4748-9f29-a90a5e4be45f"
 					(reference "#PWR049")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 317.5 46.99 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "3c30643e-a496-4bf5-a76e-a5297a0179cb")
+		(property "Reference" "#PWR032"
+			(at 311.15 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 312.42 46.99 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 317.5 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 317.5 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 317.5 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "887fe329-9896-411e-a0c9-4a786b4370f9")
+		)
+		(instances
+			(project "Gaggimate"
+				(path "/653e9bc1-2c67-4748-9f29-a90a5e4be45f"
+					(reference "#PWR032")
 					(unit 1)
 				)
 			)
@@ -12478,7 +12834,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C2909692"
+		(property "LCSC" "C116647"
 			(at 295.656 53.848 0)
 			(effects
 				(font
@@ -13890,73 +14246,6 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+5V")
-		(at 315.722 37.084 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "9b8c60a3-d092-4fb2-a30f-ba672495d55c")
-		(property "Reference" "#PWR031"
-			(at 319.532 37.084 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "+5V"
-			(at 311.658 37.084 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 315.722 37.084 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 315.722 37.084 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 315.722 37.084 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "aef41287-3bf7-4acc-b3ca-0dde35197734")
-		)
-		(instances
-			(project "Gaggimate"
-				(path "/653e9bc1-2c67-4748-9f29-a90a5e4be45f"
-					(reference "#PWR031")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:LED")
 		(at 214.122 232.664 90)
 		(unit 1)
@@ -14887,6 +15176,85 @@
 		)
 	)
 	(symbol
+		(lib_id "Connector_Generic:Conn_01x05")
+		(at 326.39 41.91 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "b70754b4-e0fa-4382-bf68-97a1402c0c15")
+		(property "Reference" "J5"
+			(at 328.93 40.6399 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "Conn_01x05"
+			(at 328.93 43.1799 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Connector_JST:JST_XH_B5B-XH-A_1x05_P2.50mm_Vertical"
+			(at 326.39 41.91 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 326.39 41.91 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Generic connector, single row, 01x05, script generated (kicad-library-utils/schlib/autogen/connector/)"
+			(at 326.39 41.91 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "3"
+			(uuid "26696813-bc8a-4b6b-856b-15508633cca0")
+		)
+		(pin "4"
+			(uuid "a02f139d-2b1c-41b3-85d8-3244ba2296b3")
+		)
+		(pin "5"
+			(uuid "f0c13b40-18a8-4427-8ffa-1051c3d1caa5")
+		)
+		(pin "1"
+			(uuid "1f8c061b-0581-4e20-a6c4-1af65d08836d")
+		)
+		(pin "2"
+			(uuid "dba0aa97-9dce-4a00-91ae-05ac0f76cc92")
+		)
+		(instances
+			(project ""
+				(path "/653e9bc1-2c67-4748-9f29-a90a5e4be45f"
+					(reference "J5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Connector_Generic:Conn_01x02")
 		(at 367.03 105.41 0)
 		(mirror x)
@@ -15640,6 +16008,15 @@
 		)
 		(property "Description" ""
 			(at 367.03 87.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C144395"
+			(at 369.062 87.63 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -17604,7 +17981,7 @@
 		(at 33.274 265.43 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
