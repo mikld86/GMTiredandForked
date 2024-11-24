@@ -1,7 +1,6 @@
 .pio
 env/
 pcb/**/Gaggimate-backups
-pcb/**/jlcpcb
 pcb/**/*.kicad_sch_old
 .vscode
 .idea
