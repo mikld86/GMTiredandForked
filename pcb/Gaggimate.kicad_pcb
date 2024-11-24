@@ -27248,15 +27248,6 @@
 		(uuid "361a1197-55d2-4560-bcd9-d1eb2871f7bb")
 	)
 	(via
-		(at 193 68.1)
-		(size 0.8)
-		(drill 0.4)
-		(layers "F.Cu" "B.Cu")
-		(free yes)
-		(net 3)
-		(uuid "36259707-67c1-4896-9b4a-9b652969e16f")
-	)
-	(via
 		(at 168.5 80.7)
 		(size 0.8)
 		(drill 0.4)
