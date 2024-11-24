@@ -25623,7 +25623,7 @@
 		)
 	)
 	(gr_line
-		(start 194.6 62.5)
+		(start 194.6 57.5)
 		(end 194.6 63.6)
 		(stroke
 			(width 0.15)
@@ -25633,24 +25633,14 @@
 		(uuid "4bb9c315-0214-4faa-82d1-e69c9544c417")
 	)
 	(gr_line
-		(start 194.6 63.6)
-		(end 194.6 70)
+		(start 194.6 57.5)
+		(end 193.399988 55.800009)
 		(stroke
 			(width 0.15)
 			(type dash)
 		)
 		(layer "B.SilkS")
-		(uuid "4bb9c315-0214-4faa-82d1-e69c9544c417")
-	)
-	(gr_line
-		(start 193.4 26.1)
-		(end 193.4 61.7)
-		(stroke
-			(width 0.15)
-			(type dash)
-		)
-		(layer "B.SilkS")
-		(uuid "4bb9c315-0214-4faa-82d1-e69c9544c417")
+		(uuid "4e54b1b9-4797-4043-85f0-bf7336459102")
 	)
 	(gr_line
 		(start 194.6 70)
@@ -25661,6 +25651,16 @@
 		)
 		(layer "B.SilkS")
 		(uuid "558c1bcd-2c0e-4294-a75e-ed3d92b79579")
+	)
+	(gr_line
+		(start 194.6 63.6)
+		(end 194.6 70)
+		(stroke
+			(width 0.15)
+			(type dash)
+		)
+		(layer "B.SilkS")
+		(uuid "67ca2690-aa59-4f2b-863c-0ee6cd04babb")
 	)
 	(gr_line
 		(start 209.3 70)
@@ -25732,6 +25732,16 @@
 		(fill solid)
 		(layer "B.SilkS")
 		(uuid "98522e93-d5f1-48ae-ba7c-99784124c8c7")
+	)
+	(gr_line
+		(start 193.4 55.8)
+		(end 193.4 26.1)
+		(stroke
+			(width 0.15)
+			(type dash)
+		)
+		(layer "B.SilkS")
+		(uuid "ae9d872b-848f-4408-bb0c-bdeeeb9558c3")
 	)
 	(gr_line
 		(start 226.1 70)
