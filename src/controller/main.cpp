@@ -1,8 +1,7 @@
 #include "main.h"
-#include "PID_v1.h"
 #include "PID_AutoTune_v0.h"
+#include "PID_v1.h"
 #include <MAX31855.h>
-
 
 // PID variables
 double setpoint = 0.0;
@@ -13,12 +12,12 @@ PID_ATune aTune(&input, &output);
 MAX31855 thermoCouple(MAX6675_CS_PIN, MAX6675_MISO_PIN, MAX6675_SCK_PIN);
 
 // System control variables
-const double MAX_SAFE_TEMP = 170.0;       // Max temperature for thermal runaway protection
-long last_ping_time;                      // Last time a ping was received
-const double PING_TIMEOUT_SECONDS = 10.0; // Timeout for ping
-bool is_autotuning = false;               // Flag for whether we are in autotune mode
-unsigned long lastCycleStart = 0;         // Tracks the start time of the pump cycle
-float flowPercentage = 0;                 // Declare flowPercentage with an initial value
+constexpr double MAX_SAFE_TEMP = 170.0;       // Max temperature for thermal runaway protection
+constexpr double PING_TIMEOUT_SECONDS = 10.0; // Timeout for ping
+long last_ping_time;                          // Last time a ping was received
+bool is_autotuning = false;                   // Flag for whether we are in autotune mode
+unsigned long lastCycleStart = 0;             // Tracks the start time of the pump cycle
+float flowPercentage = 0;                     // Declare flowPercentage with an initial value
 unsigned long lastTempUpdate = 0;
 
 NimBLEServerController serverController;
@@ -75,22 +74,20 @@ void setup() {
 }
 
 void loop() {
-    while (1) {
+    while (true) {
         unsigned long now = millis();
         if ((now - last_ping_time) / 1000 > PING_TIMEOUT_SECONDS) {
             handle_ping_timeout();
         }
         if (setpoint > 0 || is_autotuning) {
-            if (is_autotuning) {
-                if (aTune.Runtime() < 0) {
-                    printf("Finished autotune: %f, %f, %f\n", aTune.GetKp(), aTune.GetKi(), aTune.GetKd());
-                    myPID.SetTunings(aTune.GetKp(), aTune.GetKi(), aTune.GetKd());
-                    stop_pid_autotune();
-                }
-            } else {
+            if (!is_autotuning) {
                 myPID.Compute();
+            } else if (aTune.Runtime() < 0) {
+                printf("Finished autotune: %f, %f, %f\n", aTune.GetKp(), aTune.GetKi(), aTune.GetKd());
+                myPID.SetTunings(aTune.GetKp(), aTune.GetKi(), aTune.GetKd());
+                stop_pid_autotune();
             }
-            control_heater(output);
+            control_heater(static_cast<int>(output));
         } else {
             control_heater(0);
         }
@@ -101,7 +98,7 @@ void loop() {
 
         if (lastTempUpdate + TEMP_UPDATE_INTERVAL_MS < now) {
             input = read_temperature();
-            serverController.sendTemperature(input);
+            serverController.sendTemperature(static_cast<float>(input));
             lastTempUpdate = millis();
         }
 
@@ -122,8 +119,8 @@ void on_temperature_control(float temperature) {
     printf("Setpoint updated to: %f\n", setpoint);
 }
 
-void on_pump_control(float setpoint) {
-    flowPercentage = setpoint;
+void on_pump_control(const float flow) {
+    flowPercentage = flow;
     control_pump();
 }
 
@@ -131,9 +128,7 @@ void on_valve_control(bool state) { control_valve(state); }
 
 void on_alt_control(bool state) { control_alt(state); }
 
-void on_pid_control(float Kp, float Ki, float Kd) {
-    myPID.SetTunings(Kp, Ki, Kd);
-}
+void on_pid_control(float Kp, float Ki, float Kd) { myPID.SetTunings(Kp, Ki, Kd); }
 
 void on_ping() {
     // Update the last ping time
@@ -167,7 +162,7 @@ void thermal_runaway_shutdown() {
 }
 
 void control_heater(int out) {
-    // analogWriteFrequency(PWM_FREQUENCY);
+    analogWriteFrequency(PWM_FREQUENCY);
     analogWrite(HEATER_PIN, out);
 }
 
@@ -175,15 +170,15 @@ void control_pump() {
     unsigned long currentMillis = millis();
 
     // Reset the cycle every PUMP_CYCLE_DURATION milliseconds
-    if ((currentMillis - lastCycleStart) >= PUMP_CYCLE_TIME) {
+    if (currentMillis - lastCycleStart >= static_cast<long>(PUMP_CYCLE_TIME)) {
         lastCycleStart = currentMillis;
     }
 
     // Calculate the time the pump should stay on for
-    unsigned long onTime = flowPercentage * PUMP_CYCLE_TIME / 100;
+    unsigned long onTime = static_cast<long>(flowPercentage * PUMP_CYCLE_TIME / 100.0f);
 
     // Determine the current step in the cycle
-    int currentCycleDuration = (currentMillis - lastCycleStart);
+    unsigned long currentCycleDuration = (currentMillis - lastCycleStart);
 
     // Turn pump ON for the first `onSteps` steps and OFF for the remainder
     if (currentCycleDuration < onTime) {
@@ -217,9 +212,9 @@ void control_alt(bool state) {
     }
 }
 
-float read_temperature(void) {
+float read_temperature() {
     int status = thermoCouple.read();
-    if (status ==  STATUS_OK) {
+    if (status == STATUS_OK) {
         return thermoCouple.getTemperature();
     }
     printf("Error reading temperature: %d\n", status);
@@ -231,7 +226,7 @@ void on_autotune() {
     printf("Starting PID autotune...\n");
 }
 
-void stop_pid_autotune(void) {
+void stop_pid_autotune() {
     is_autotuning = false;
     aTune.Cancel();
     printf("PID autotune stopped.\n");
