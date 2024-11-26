@@ -40,7 +40,7 @@ void Controller::connect() {
 
 void Controller::setupBluetooth() {
     clientController.initClient();
-    clientController.registerTempReadCallback([this](float temp) { onTempRead(temp); });
+    clientController.registerTempReadCallback([this](const float temp) { onTempRead(temp); });
     pluginManager->trigger("controller:bluetooth:init");
 }
 
