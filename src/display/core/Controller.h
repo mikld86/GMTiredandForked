@@ -22,9 +22,9 @@ class Controller {
     void setMode(int newMode);
     int getTargetTemp();
     void setTargetTemp(int temperature);
-    int getTargetDuration();
+    int getTargetDuration() const;
     void setTargetDuration(int duration);
-    int getTargetGrindDuration();
+    int getTargetGrindDuration() const;
     void setTargetGrindDuration(int duration);
     bool isActive() const;
     bool isGrindActive() const;

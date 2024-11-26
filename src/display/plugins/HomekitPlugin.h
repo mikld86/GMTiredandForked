@@ -42,7 +42,7 @@ class HomekitPlugin : public Plugin {
     Service::AccessoryInformation *accessoryInformation;
     Characteristic::Identify *identify;
     HomekitAccessory *accessory;
-    bool actionRequired;
+    bool actionRequired = false;
     Controller *controller;
 };
 

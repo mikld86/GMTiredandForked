@@ -19,13 +19,13 @@
 
 #define PWM_FREQUENCY 20
 
-#define TEMP_UPDATE_INTERVAL_MS 1000
+constexpr size_t TEMP_UPDATE_INTERVAL_MS = 1000;
 
 #define I2C_DEV_ADDR 0x55
 
-#define PUMP_CYCLE_TIME 5000
-
 #define RELAY_ON HIGH
+
+constexpr float PUMP_CYCLE_TIME = 5000.0f;
 
 // Function prototypes for initialization
 void setup(void);

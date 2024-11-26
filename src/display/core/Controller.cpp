@@ -40,7 +40,7 @@ void Controller::connect() {
 
 void Controller::setupBluetooth() {
     clientController.initClient();
-    clientController.registerTempReadCallback([this](float temp) { onTempRead(temp); });
+    clientController.registerTempReadCallback([this](const float temp) { onTempRead(temp); });
     pluginManager->trigger("controller:bluetooth:init");
 }
 
@@ -167,7 +167,7 @@ void Controller::setTargetTemp(int temperature) {
     pluginManager->trigger("boiler:targetTemperature:change", "value", getTargetTemp());
 }
 
-int Controller::getTargetDuration() { return settings.getTargetDuration(); }
+int Controller::getTargetDuration() const { return settings.getTargetDuration(); }
 
 void Controller::setTargetDuration(int duration) {
     Event event = pluginManager->trigger("controller:targetDuration:change", "value", duration);
@@ -175,7 +175,7 @@ void Controller::setTargetDuration(int duration) {
     updateUiSettings();
 }
 
-int Controller::getTargetGrindDuration() { return settings.getTargetGrindDuration(); }
+int Controller::getTargetGrindDuration() const { return settings.getTargetGrindDuration(); }
 
 void Controller::setTargetGrindDuration(int duration) {
     Event event = pluginManager->trigger("controller:grindDuration:change", "value", duration);
@@ -216,7 +216,7 @@ void Controller::updateUiActive() const {
 }
 
 void Controller::updateUiSettings() {
-    int setTemp = getTargetTemp();
+    int16_t setTemp = getTargetTemp();
     lv_arc_set_value(ui_BrewScreen_tempTarget, setTemp);
     lv_arc_set_value(ui_StatusScreen_tempTarget, setTemp);
     lv_arc_set_value(ui_MenuScreen_tempTarget, setTemp);
@@ -230,8 +230,8 @@ void Controller::updateUiSettings() {
     lv_label_set_text_fmt(ui_WaterScreen_targetTemp, "%d°C", settings.getTargetWaterTemp());
 
     double secondsDouble = settings.getTargetDuration() / 1000.0;
-    int minutes = (int)(secondsDouble / 60.0 - 0.5);
-    int seconds = (int)secondsDouble % 60;
+    auto minutes = (int)(secondsDouble / 60.0 - 0.5);
+    auto seconds = (int)secondsDouble % 60;
     lv_label_set_text_fmt(ui_BrewScreen_targetDuration, "%2d:%02d", minutes, seconds);
     lv_label_set_text_fmt(ui_StatusScreen_targetDuration, "%2d:%02d", minutes, seconds);
 
@@ -264,11 +264,11 @@ void Controller::updateProgress() const {
     unsigned long now = millis();
     unsigned long progress = now - (activeUntil - settings.getTargetDuration());
     double secondsDouble = settings.getTargetDuration() / 1000.0;
-    int minutes = (int)(secondsDouble / 60.0 - 0.5);
-    int seconds = (int)secondsDouble % 60;
+    auto minutes = (int)(secondsDouble / 60.0 - 0.5);
+    auto seconds = (int)secondsDouble % 60;
     double progressSecondsDouble = progress / 1000.0;
-    int progressMinutes = (int)(progressSecondsDouble / 60.0 - 0.5);
-    int progressSeconds = (int)progressSecondsDouble % 60;
+    auto progressMinutes = (int)(progressSecondsDouble / 60.0 - 0.5);
+    auto progressSeconds = (int)progressSecondsDouble % 60;
     lv_bar_set_range(ui_StatusScreen_progressBar, 0, (int)secondsDouble);
     lv_bar_set_value(ui_StatusScreen_progressBar, progress / 1000, LV_ANIM_OFF);
     lv_label_set_text_fmt(ui_StatusScreen_progressLabel, "%2d:%02d / %2d:%02d", progressMinutes, progressSeconds, minutes,
