@@ -4,7 +4,8 @@ void PluginManager::registerPlugin(Plugin *plugin) { plugins.push_back(plugin); 
 
 void PluginManager::setup(Controller *controller) {
     printf("Setting up PluginManager\n");
-    on("system:dummy", [this](const Event &event) {});
+    // Register a dummy event so the event map is initialized properly
+    on("system:dummy", [](const Event &) {});
     for (auto &plugin : plugins) {
         plugin->setup(controller, this);
     }

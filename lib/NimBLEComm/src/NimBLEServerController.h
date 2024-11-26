@@ -4,7 +4,7 @@
 #include "NimBLEComm.h"
 
 class NimBLEServerController : public NimBLEServerCallbacks, public NimBLECharacteristicCallbacks {
-public:
+  public:
     NimBLEServerController();
     void initServer();
     void sendTemperature(float temperature);
@@ -17,17 +17,17 @@ public:
     void registerPingCallback(ping_callback_t callback);
     void registerAutotuneCallback(autotune_callback_t callback);
 
-private:
-    bool deviceConnected;
-    NimBLECharacteristic* tempControlChar;
-    NimBLECharacteristic* pumpControlChar;
-    NimBLECharacteristic* valveControlChar;
-    NimBLECharacteristic* altControlChar;
-    NimBLECharacteristic* tempReadChar;
-    NimBLECharacteristic* pingChar;
-    NimBLECharacteristic* pidControlChar;
-    NimBLECharacteristic* errorChar;
-    NimBLECharacteristic* autotuneChar;
+  private:
+    bool deviceConnected = false;
+    NimBLECharacteristic *tempControlChar;
+    NimBLECharacteristic *pumpControlChar;
+    NimBLECharacteristic *valveControlChar;
+    NimBLECharacteristic *altControlChar;
+    NimBLECharacteristic *tempReadChar;
+    NimBLECharacteristic *pingChar;
+    NimBLECharacteristic *pidControlChar;
+    NimBLECharacteristic *errorChar;
+    NimBLECharacteristic *autotuneChar;
 
     temp_control_callback_t tempControlCallback;
     pump_control_callback_t pumpControlCallback;
@@ -38,11 +38,11 @@ private:
     autotune_callback_t autotuneCallback;
 
     // BLEServerCallbacks overrides
-    void onConnect(NimBLEServer* pServer) override;
-    void onDisconnect(NimBLEServer* pServer) override;
+    void onConnect(NimBLEServer *pServer) override;
+    void onDisconnect(NimBLEServer *pServer) override;
 
     // BLECharacteristicCallbacks overrides
-    void onWrite(NimBLECharacteristic* pCharacteristic) override;
+    void onWrite(NimBLECharacteristic *pCharacteristic) override;
 };
 
-#endif //NIMBLESERVERCONTROLLER_H
+#endif // NIMBLESERVERCONTROLLER_H
