@@ -2,9 +2,7 @@
 
 NimBLEServerController::NimBLEServerController()
     : tempControlChar(nullptr), pumpControlChar(nullptr), valveControlChar(nullptr), altControlChar(nullptr),
-      tempReadChar(nullptr), pingChar(nullptr), pidControlChar(nullptr), errorChar(nullptr), autotuneChar(nullptr),
-      tempControlCallback(nullptr), pumpControlCallback(nullptr), valveControlCallback(nullptr), altControlCallback(nullptr),
-      pidControlCallback(nullptr), pingCallback(nullptr), autotuneCallback(nullptr) {}
+      tempReadChar(nullptr), pingChar(nullptr), pidControlChar(nullptr), errorChar(nullptr), autotuneChar(nullptr) {}
 
 void NimBLEServerController::initServer() {
     NimBLEDevice::init("GPBLS");
@@ -107,7 +105,7 @@ void NimBLEServerController::onDisconnect(NimBLEServer *pServer) {
     pServer->startAdvertising(); // Restart advertising so clients can reconnect
 }
 
-String get_token(String &from, uint8_t index, char separator) {
+String get_token(const String &from, uint8_t index, char separator) {
     uint16_t start = 0;
     uint16_t idx = 0;
     uint8_t cur = 0;

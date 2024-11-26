@@ -36,8 +36,8 @@ class NimBLEClientController : public NimBLEAdvertisedDeviceCallbacks, NimBLECli
     NimBLEAdvertisedDevice *serverDevice;
     bool readyForConnection = false;
 
-    temp_read_callback_t tempReadCallback;
-    remote_err_callback_t remoteErrorCallback;
+    temp_read_callback_t tempReadCallback = nullptr;
+    remote_err_callback_t remoteErrorCallback = nullptr;
 
     // BLEAdvertisedDeviceCallbacks override
     void onResult(NimBLEAdvertisedDevice *advertisedDevice) override;

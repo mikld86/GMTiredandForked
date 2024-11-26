@@ -6,7 +6,7 @@ constexpr size_t BLE_SCAN_DURATION_SECONDS = 10;
 NimBLEClientController::NimBLEClientController()
     : client(nullptr), tempControlChar(nullptr), pumpControlChar(nullptr), valveControlChar(nullptr), altControlChar(nullptr),
       tempReadChar(nullptr), pingChar(nullptr), pidControlChar(nullptr), errorChar(nullptr), autotuneChar(nullptr),
-      serverDevice(nullptr), tempReadCallback(nullptr), remoteErrorCallback(nullptr) {}
+      serverDevice(nullptr) {}
 
 void NimBLEClientController::initClient() {
     NimBLEDevice::init("GPBLC");

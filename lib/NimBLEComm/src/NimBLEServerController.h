@@ -29,13 +29,13 @@ class NimBLEServerController : public NimBLEServerCallbacks, public NimBLECharac
     NimBLECharacteristic *errorChar;
     NimBLECharacteristic *autotuneChar;
 
-    temp_control_callback_t tempControlCallback;
-    pump_control_callback_t pumpControlCallback;
-    pin_control_callback_t valveControlCallback;
-    pin_control_callback_t altControlCallback;
-    pid_control_callback_t pidControlCallback;
-    ping_callback_t pingCallback;
-    autotune_callback_t autotuneCallback;
+    temp_control_callback_t tempControlCallback = nullptr;
+    pump_control_callback_t pumpControlCallback = nullptr;
+    pin_control_callback_t valveControlCallback = nullptr;
+    pin_control_callback_t altControlCallback = nullptr;
+    pid_control_callback_t pidControlCallback = nullptr;
+    ping_callback_t pingCallback = nullptr;
+    autotune_callback_t autotuneCallback = nullptr;
 
     // BLEServerCallbacks overrides
     void onConnect(NimBLEServer *pServer) override;
