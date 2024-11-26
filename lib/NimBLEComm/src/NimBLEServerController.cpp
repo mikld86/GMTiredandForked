@@ -78,19 +78,19 @@ void NimBLEServerController::sendError(int errorCode) {
     }
 }
 
-void NimBLEServerController::registerTempControlCallback(temp_control_callback_t callback) { tempControlCallback = callback; }
+void NimBLEServerController::registerTempControlCallback(const temp_control_callback_t &callback) { tempControlCallback = callback; }
 
-void NimBLEServerController::registerPumpControlCallback(pump_control_callback_t callback) { pumpControlCallback = callback; }
+void NimBLEServerController::registerPumpControlCallback(const pump_control_callback_t &callback) { pumpControlCallback = callback; }
 
-void NimBLEServerController::registerValveControlCallback(pin_control_callback_t callback) { valveControlCallback = callback; }
+void NimBLEServerController::registerValveControlCallback(const pin_control_callback_t &callback) { valveControlCallback = callback; }
 
-void NimBLEServerController::registerAltControlCallback(pin_control_callback_t callback) { altControlCallback = callback; }
+void NimBLEServerController::registerAltControlCallback(const pin_control_callback_t &callback) { altControlCallback = callback; }
 
-void NimBLEServerController::registerPingCallback(ping_callback_t callback) { pingCallback = callback; }
+void NimBLEServerController::registerPingCallback(const ping_callback_t &callback) { pingCallback = callback; }
 
-void NimBLEServerController::registerAutotuneCallback(autotune_callback_t callback) { autotuneCallback = callback; }
+void NimBLEServerController::registerAutotuneCallback(const autotune_callback_t &callback) { autotuneCallback = callback; }
 
-void NimBLEServerController::registerPidControlCallback(pid_control_callback_t callback) { pidControlCallback = callback; }
+void NimBLEServerController::registerPidControlCallback(const pid_control_callback_t &callback) { pidControlCallback = callback; }
 
 // BLEServerCallbacks override
 void NimBLEServerController::onConnect(NimBLEServer *pServer) {

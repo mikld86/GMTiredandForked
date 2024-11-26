@@ -22,13 +22,13 @@ constexpr size_t ERROR_CODE_PROTO_ERR = 3;
 constexpr size_t ERROR_CODE_RUNAWAY = 4;
 constexpr size_t ERROR_CODE_TIMEOUT = 5;
 
-typedef std::function<void(float temperature)> temp_read_callback_t;
-typedef void (*temp_control_callback_t)(float setpoint);
-typedef void (*pump_control_callback_t)(float setpoint);
-typedef void (*pin_control_callback_t)(bool isActive);
-typedef void (*pid_control_callback_t)(float Kp, float Ki, float Kd);
-typedef void (*ping_callback_t)();
-typedef void (*remote_err_callback_t)(int errorCode);
-typedef void (*autotune_callback_t)();
+using temp_read_callback_t = std::function<void(float temperature)>;
+using temp_control_callback_t = std::function<void(float setpoint)>;
+using pump_control_callback_t = std::function<void(float setpoint)>;
+using pin_control_callback_t = std::function<void(bool isActive)>;
+using pid_control_callback_t = std::function<void(float Kp, float Ki, float Kd)>;
+using ping_callback_t = std::function<void()>;
+using remote_err_callback_t = std::function<void(int errorCode)>;
+using autotune_callback_t = std::function<void()>;
 
 #endif // NIMBLECOMM_H

@@ -27,9 +27,9 @@ void NimBLEClientController::scan() {
     pBLEScan->start(BLE_SCAN_DURATION_SECONDS);
 }
 
-void NimBLEClientController::registerTempReadCallback(temp_read_callback_t &callback) { tempReadCallback = callback; }
+void NimBLEClientController::registerTempReadCallback(const temp_read_callback_t &callback) { tempReadCallback = callback; }
 
-void NimBLEClientController::registerRemoteErrorCallback(remote_err_callback_t &callback) { remoteErrorCallback = callback; }
+void NimBLEClientController::registerRemoteErrorCallback(const remote_err_callback_t &callback) { remoteErrorCallback = callback; }
 
 bool NimBLEClientController::connectToServer() {
     Serial.println("Connecting to advertised device");

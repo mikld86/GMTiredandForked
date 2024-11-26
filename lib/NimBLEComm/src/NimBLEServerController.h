@@ -9,13 +9,13 @@ class NimBLEServerController : public NimBLEServerCallbacks, public NimBLECharac
     void initServer();
     void sendTemperature(float temperature);
     void sendError(int errorCode);
-    void registerTempControlCallback(temp_control_callback_t callback);
-    void registerPumpControlCallback(pump_control_callback_t callback);
-    void registerValveControlCallback(pin_control_callback_t callback);
-    void registerAltControlCallback(pin_control_callback_t callback);
-    void registerPidControlCallback(pid_control_callback_t callback);
-    void registerPingCallback(ping_callback_t callback);
-    void registerAutotuneCallback(autotune_callback_t callback);
+    void registerTempControlCallback(const temp_control_callback_t &callback);
+    void registerPumpControlCallback(const pump_control_callback_t &callback);
+    void registerValveControlCallback(const pin_control_callback_t &callback);
+    void registerAltControlCallback(const pin_control_callback_t &callback);
+    void registerPidControlCallback(const pid_control_callback_t &callback);
+    void registerPingCallback(const ping_callback_t &callback);
+    void registerAutotuneCallback(const autotune_callback_t &callback);
 
   private:
     bool deviceConnected = false;

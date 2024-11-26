@@ -18,8 +18,8 @@ class NimBLEClientController : public NimBLEAdvertisedDeviceCallbacks, NimBLECli
     bool isReadyForConnection() const;
     bool isConnected();
     void scan();
-    void registerTempReadCallback(temp_read_callback_t &callback);
-    void registerRemoteErrorCallback(remote_err_callback_t &callback);
+    void registerTempReadCallback(const temp_read_callback_t &callback);
+    void registerRemoteErrorCallback(const remote_err_callback_t &callback);
 
   private:
     NimBLEClient *client;
