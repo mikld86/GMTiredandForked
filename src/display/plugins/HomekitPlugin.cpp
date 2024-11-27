@@ -4,7 +4,7 @@
 #include <utility>
 
 HomekitAccessory::HomekitAccessory(change_callback_t callback)
-    : callback(nullptr), state(nullptr), targetState(nullptr), targetTemperature(nullptr), currentTemperature(nullptr),
+    : callback(nullptr), state(nullptr), targetState(nullptr), currentTemperature(nullptr), targetTemperature(nullptr),
       displayUnits(nullptr) {
     this->callback = std::move(callback);
     state = new Characteristic::CurrentHeatingCoolingState();
@@ -43,7 +43,7 @@ void HomekitAccessory::setTargetTemperature(float temperatureValue) const { targ
 float HomekitAccessory::getTargetTemperature() const { return targetTemperature->getVal(); }
 
 HomekitPlugin::HomekitPlugin(String wifiSsid, String wifiPassword)
-    : spanAccessory(nullptr), accessoryInformation(nullptr), identify(nullptr), accessory(nullptr), actionRequired(false),
+    : spanAccessory(nullptr), accessoryInformation(nullptr), identify(nullptr), accessory(nullptr),
       controller(nullptr) {
     this->wifiSsid = std::move(wifiSsid);
     this->wifiPassword = std::move(wifiPassword);
@@ -56,7 +56,7 @@ void HomekitPlugin::clearAction() { actionRequired = false; }
 void HomekitPlugin::setup(Controller *controller, PluginManager *pluginManager) {
     this->controller = controller;
 
-    pluginManager->on("controller:wifi:connect", [this](Event &event) {
+    pluginManager->on("controller:wifi:connect", [this](Event &) {
         homeSpan.setHostNameSuffix("");
         homeSpan.setPortNum(HOMESPAN_PORT);
         homeSpan.begin(Category::Thermostats, DEVICE_NAME, this->controller->getSettings().getMdnsName().c_str());
@@ -68,19 +68,19 @@ void HomekitPlugin::setup(Controller *controller, PluginManager *pluginManager) 
         homeSpan.autoPoll();
     });
 
-    pluginManager->on("boiler:targetTemperature:change", [this](Event &event) {
+    pluginManager->on("boiler:targetTemperature:change", [this](Event const &event) {
         if (accessory == nullptr)
             return;
         accessory->setTargetTemperature(event.getInt("value"));
     });
 
-    pluginManager->on("boiler:currentTemperature:change", [this](Event &event) {
+    pluginManager->on("boiler:currentTemperature:change", [this](Event const &event) {
         if (accessory == nullptr)
             return;
         accessory->setCurrentTemperature(event.getFloat("value"));
     });
 
-    pluginManager->on("controller:mode:change", [this](Event &event) {
+    pluginManager->on("controller:mode:change", [this](Event const &event) {
         if (accessory == nullptr)
             return;
         accessory->setState(event.getInt("value") != MODE_STANDBY);

@@ -24,6 +24,7 @@ class Settings {
     int getTargetWaterTemp() const { return targetWaterTemp; }
     int getTemperatureOffset() const { return temperatureOffset; }
     int getTargetDuration() const { return targetDuration; }
+    int getTargetGrindDuration() const { return targetGrindDuration; }
     int getStartupMode() const { return startupMode; }
     String getPid() const { return pid; }
     String getWifiSsid() const { return wifiSsid; }
@@ -35,6 +36,7 @@ class Settings {
     void setTargetWaterTemp(int target_water_temp);
     void setTemperatureOffset(int temperature_offset);
     void setTargetDuration(int target_duration);
+    void setTargetGrindDuration(int target_duration);
     void setStartupMode(int startup_mode);
     void setPid(const String &pid);
     void setWifiSsid(const String &wifiSsid);
@@ -51,6 +53,7 @@ class Settings {
     int targetWaterTemp = 80;
     int temperatureOffset = DEFAULT_TEMPERATURE_OFFSET;
     int targetDuration = 25000;
+    int targetGrindDuration = 25000;
     int startupMode = MODE_STANDBY;
     String pid = DEFAULT_PID;
     String wifiSsid = "";
