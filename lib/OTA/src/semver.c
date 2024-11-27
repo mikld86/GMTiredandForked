@@ -502,15 +502,15 @@ void semver_free(semver_t *x) {
 static void concat_num(char *str, int x, const char *sep) {
     char buf[SLICE_SIZE] = {0};
     if (sep == NULL)
-        sprintf(buf, "%d", x);
+        snprintf(buf, SLICE_SIZE, "%d", x);
     else
-        sprintf(buf, "%s%d", sep, x);
+        snprintf(buf, SLICE_SIZE, "%s%d", sep, x);
     strcat(str, buf);
 }
 
 static void concat_char(char *str, char *x, const char *sep) {
     char buf[SLICE_SIZE] = {0};
-    sprintf(buf, "%s%s", sep, x);
+    snprintf(buf, SLICE_SIZE, "%s%s", sep, x);
     strcat(str, buf);
 }
 
