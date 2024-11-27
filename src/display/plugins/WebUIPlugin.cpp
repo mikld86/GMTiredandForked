@@ -20,6 +20,7 @@ void WebUIPlugin::start() {
     server.on("/settings", [this](AsyncWebServerRequest *request) { handleSettings(request); });
     server.serveStatic("/assets", SPIFFS, "/assets/");
     ElegantOTA.begin(&server);
+    ElegantOTA.setAutoReboot(true);
     ElegantOTA.onStart([this]() { controller->onOTAUpdate(); });
     server.begin();
     Serial.print("OTA server started");

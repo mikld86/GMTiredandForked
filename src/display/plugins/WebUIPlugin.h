@@ -7,7 +7,7 @@
 #include <ESPAsyncWebServer.h>
 #include "GitHubOTA.h"
 
-constexpr String RELEASE_URL = "https://github.com/jniebuhr/gaggimate/releases/";
+const String RELEASE_URL = "https://github.com/jniebuhr/gaggimate/releases/";
 
 class WebUIPlugin : public Plugin {
   public:
