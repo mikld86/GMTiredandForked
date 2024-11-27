@@ -442,7 +442,8 @@ int semver_satisfies_patch(semver_t x, semver_t y) { return x.major == y.major &
  */
 
 int semver_satisfies(semver_t x, semver_t y, const char *op) {
-    int first, second;
+    int first;
+    int second;
     /* Extract the comparison operator */
     first = op[0];
     second = op[1];
@@ -565,7 +566,8 @@ int semver_is_valid(const char *s) { return has_valid_length(s) && has_valid_cha
  */
 
 int semver_clean(char *s) {
-    size_t i, len, mlen;
+    size_t len;
+    size_t mlen;
     int res;
     if (has_valid_length(s) == 0)
         return -1;
@@ -573,7 +575,7 @@ int semver_clean(char *s) {
     len = strlen(s);
     mlen = strlen(VALID_CHARS);
 
-    for (i = 0; i < len; i++) {
+    for (size_t i = 0; i < len; i++) {
         if (contains(s[i], VALID_CHARS, mlen) == 0) {
             res = strcut(s, i, 1);
             if (res == -1)
@@ -588,12 +590,13 @@ int semver_clean(char *s) {
 
 static int char_to_int(const char *str) {
     int buf;
-    size_t i, len, mlen;
+    size_t len;
+    size_t mlen;
     buf = 0;
     len = strlen(str);
     mlen = strlen(VALID_CHARS);
 
-    for (i = 0; i < len; i++)
+    for (size_t i = 0; i < len; i++)
         if (contains(str[i], VALID_CHARS, mlen))
             buf += (int)str[i];
 
@@ -605,7 +608,7 @@ static int char_to_int(const char *str) {
  * Useful for ordering and filtering.
  */
 
-int semver_numeric(semver_t *x) {
+int semver_numeric(const semver_t *x) {
     int num;
     char buf[SLICE_SIZE * 3];
     memset(&buf, 0, SLICE_SIZE * 3);

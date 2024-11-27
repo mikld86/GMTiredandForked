@@ -11,10 +11,6 @@
 extern "C" {
 #endif
 
-#ifndef SEMVER_VERSION
-#define SEMVER_VERSION "0.2.0"
-#endif
-
 /**
  * semver_t struct
  */
@@ -25,8 +21,6 @@ typedef struct semver_version_s {
     char *metadata;
     char *prerelease;
 } semver_t;
-
-// static const semver_t DEFAULT_SEMVER = { 0, 0, 0};
 
 /**
  * Set prototypes

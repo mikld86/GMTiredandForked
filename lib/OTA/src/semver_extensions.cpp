@@ -40,7 +40,7 @@ semver_t from_string(const string &version) {
         patch = atoi(numbers.at(2).c_str());
     }
 
-    semver_t _ver = {major, minor, patch, 0, prerelease_ptr};
+    semver_t _ver = {major, minor, patch, nullptr, prerelease_ptr};
 
     return _ver;
 }
