@@ -1,9 +1,11 @@
 #include "WebUIPlugin.h"
 #include "../core/Controller.h"
-#include "../web/html.h"
 #include <ElegantOTA.h>
+#include <SPIFFS.h>
 
-WebUIPlugin::WebUIPlugin() : server(80) {}
+WebUIPlugin::WebUIPlugin(): server(80) {
+}
+
 
 void WebUIPlugin::setup(Controller *controller, PluginManager *pluginManager) {
     this->controller = controller;
@@ -11,15 +13,16 @@ void WebUIPlugin::setup(Controller *controller, PluginManager *pluginManager) {
 }
 
 void WebUIPlugin::start() {
+    if (!SPIFFS.begin(true)) {
+        Serial.println("An Error has occurred while mounting LittleFS");
+        return;
+    }
+    ota.checkForUpdates();
     server.on("/", [this](AsyncWebServerRequest *request) {
-        auto *response = request->beginResponse(200, "text/html", index_html, [this](const String& var) { return processTemplate(var); });
-        response->addHeader("Server","GaggiMate");
-        request->send(response);
+        request->send(SPIFFS, "/index.html", String(), false, [this](const String &var) { return processTemplate(var); });
     });
     server.on("/ota", [this](AsyncWebServerRequest *request) {
-        auto *response = request->beginResponse(200, "text/html", ota_html, [this](const String& var) { return processTemplate(var); });
-        response->addHeader("Server","GaggiMate");
-        request->send(response);
+        request->send(SPIFFS, "/ota.html", String(), false, [this](const String &var) { return processOTATemplate(var); });
     });
     server.on("/settings", [this](AsyncWebServerRequest *request) {
         if (request->method() == HTTP_POST) {
@@ -49,16 +52,11 @@ void WebUIPlugin::start() {
             controller->setTargetTemp(controller->getTargetTemp());
         }
 
-        request->send(200, "text/html", settings_html, [this](const String& var) { return processTemplate(var); });
+        request->send(SPIFFS, "/settings.html", String(), false, [this](const String &var) { return processTemplate(var); });
         if (request->method() == HTTP_POST && request->hasArg("restart"))
             ESP.restart();
     });
-    server.on("/style.min.css", [this](AsyncWebServerRequest *request) {
-        request->send(200, "text/css", style_css);
-    });
-    server.on("/gm.svg", [this](AsyncWebServerRequest *request) {
-        request->send(200, "image/svg+xml", gm_svg);
-    });
+    server.serveStatic("/assets", SPIFFS, "/assets/");
     ElegantOTA.begin(&server);
     ElegantOTA.onStart([this]() { controller->onOTAUpdate(); });
     server.begin();
@@ -66,7 +64,7 @@ void WebUIPlugin::start() {
 }
 
 String WebUIPlugin::processTemplate(const String &var) {
-    Settings &settings = controller->getSettings();
+    Settings const &settings = controller->getSettings();
     std::map<String, String> variables = {{"STANDBY_SELECTED", settings.getStartupMode() == MODE_STANDBY ? "selected" : ""},
                                           {"BREW_SELECTED", settings.getStartupMode() == MODE_BREW ? "selected" : ""},
                                           {"TARGET_BREW_TEMP", String(settings.getTargetBrewTemp())},
@@ -85,4 +83,14 @@ String WebUIPlugin::processTemplate(const String &var) {
         return variables[var];
     }
     return "";
+}
+
+String WebUIPlugin::processOTATemplate(const String &var) {
+    Settings const &settings = controller->getSettings();
+    std::map<String, String> variables = {{"UPDATE_AVAILABLE", ota.isUpdateAvailable() ? "Update Available!" : ""},
+                                          {"LATEST_VERSION", ota.getCurrentVersion()}};
+    if (variables.find(var) != variables.end()) {
+        return variables[var];
+    }
+    return processTemplate(var);
 }

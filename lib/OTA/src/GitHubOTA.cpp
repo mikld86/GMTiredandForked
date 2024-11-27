@@ -1,90 +1,99 @@
-#ifdef ESP8266
-#include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
-#include <ESP8266httpUpdate.h>
-#elif defined(ESP32)
-#include <WiFiClientSecure.h>
-#include <Update.h>
 #include <HTTPClient.h>
 #include <HTTPUpdate.h>
-#endif
+#include <Update.h>
+#include <WiFiClientSecure.h>
 
-#include <ArduinoJson.h>
-#include "semver_extensions.h"
 #include "GitHubOTA.h"
 #include "common.h"
+#include "semver_extensions.h"
+#include <ArduinoJson.h>
 
-GitHubOTA::GitHubOTA(
-    String version,
-    String release_url,
-    String firmware_name,
-    bool fetch_url_via_redirect)
-{
-  ESP_LOGV("GitHubOTA", "GitHubOTA(version: %s, firmware_name: %s, fetch_url_via_redirect: %d)\n",
-           version.c_str(), firmware_name.c_str(), fetch_url_via_redirect);
+GitHubOTA::GitHubOTA(String version, String release_url, String firmware_name, String filesystem_name,
+                     bool fetch_url_via_redirect) {
+    ESP_LOGV("GitHubOTA", "GitHubOTA(version: %s, firmware_name: %s, fetch_url_via_redirect: %d)\n", version.c_str(),
+             firmware_name.c_str(), fetch_url_via_redirect);
 
-  _version = from_string(version.c_str());
-  _release_url = release_url;
-  _firmware_name = firmware_name;
-  _fetch_url_via_redirect = fetch_url_via_redirect;
+    _version = from_string(version.c_str());
+    _release_url = release_url;
+    _firmware_name = firmware_name;
+    _filesystem_name = filesystem_name;
+    _fetch_url_via_redirect = fetch_url_via_redirect;
 
-  Updater.rebootOnUpdate(false);
-#ifdef ESP8266
-  _x509.append(github_certificate);
-  _wifi_client.setTrustAnchors(&_x509);
-#elif defined(ESP32)
-  _wifi_client.setCACert(github_certificate);
-#endif
+    Updater.rebootOnUpdate(false);
+    _wifi_client.setCACert(ca_certificate);
 
-#ifdef LED_BUILTIN
-  Updater.setLedPin(LED_BUILTIN, LOW);
-#endif
-  Updater.onStart(update_started);
-  Updater.onEnd(update_finished);
-  Updater.onProgress(update_progress);
-  Updater.onError(update_error);
-  Updater.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
+    Updater.onStart(update_started);
+    Updater.onEnd(update_finished);
+    Updater.onProgress(update_progress);
+    Updater.onError(update_error);
+    Updater.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
 }
 
-void GitHubOTA::handle()
-{
-  const char *TAG = "handle";
-  synchronize_system_time();
+void GitHubOTA::checkForUpdates() {
+    const char *TAG = "checkForUpdates";
+    synchronize_system_time();
 
-  String base_url = _fetch_url_via_redirect ?
-    get_updated_base_url_via_redirect(_wifi_client, _release_url) :
-    get_updated_base_url_via_api(_wifi_client, _release_url);
-  ESP_LOGI(TAG, "base_url %s\n", base_url.c_str());
+    _latest_url = _fetch_url_via_redirect ? get_updated_base_url_via_redirect(_wifi_client, _release_url)
+                                              : get_updated_base_url_via_api(_wifi_client, _release_url);
+    ESP_LOGI(TAG, "base_url %s\n", _latest_url.c_str());
 
-  auto last_slash = base_url.lastIndexOf('/', base_url.length() - 2);
-  auto semver_str = base_url.substring(last_slash + 1);
-  auto _new_version = from_string(semver_str.c_str());
+    auto last_slash = _latest_url.lastIndexOf('/', _latest_url.length() - 2);
+    auto semver_str = _latest_url.substring(last_slash + 2);
+    semver_str.replace("/", "");
+    ESP_LOGI(TAG, "semver_str %s\n", semver_str.c_str());
+    _latest_version = from_string(semver_str.c_str());
+}
 
-  if (update_required(_new_version, _version))
-  {
-    auto result = update_firmware(base_url + _firmware_name);
+String GitHubOTA::getCurrentVersion() const {
+    return String(_latest_version.major) + "." + String(_latest_version.minor) + "." + _latest_version.patch;
+}
 
-    if (result != HTTP_UPDATE_OK)
-    {
-      ESP_LOGI(TAG, "Update failed: %s\n", Updater.getLastErrorString().c_str());
-      return;
+
+bool GitHubOTA::isUpdateAvailable() const {
+    return update_required(_latest_version, _version);
+}
+
+void GitHubOTA::update() {
+    const char *TAG = "update";
+
+    if (update_required(_latest_version, _version)) {
+        auto result = update_firmware(_latest_url + _firmware_name);
+
+        if (result != HTTP_UPDATE_OK) {
+            ESP_LOGI(TAG, "Update failed: %s\n", Updater.getLastErrorString().c_str());
+            return;
+        }
+
+        result = update_filesystem(_latest_url + _firmware_name);
+
+        if (result != HTTP_UPDATE_OK) {
+            ESP_LOGI(TAG, "Filesystem Update failed: %s\n", Updater.getLastErrorString().c_str());
+            return;
+        }
+
+        ESP_LOGI(TAG, "Update successful. Restarting...\n");
+        delay(1000);
+        ESP.restart();
     }
 
-    ESP_LOGI(TAG, "Update successful. Restarting...\n");
-    delay(1000);
-    ESP.restart();
-  }
-
-  ESP_LOGI(TAG, "No updates found\n");
+    ESP_LOGI(TAG, "No updates found\n");
 }
 
-HTTPUpdateResult GitHubOTA::update_firmware(String url)
-{
-  const char *TAG = "update_firmware";
-  ESP_LOGI(TAG, "Download URL: %s\n", url.c_str());
+HTTPUpdateResult GitHubOTA::update_firmware(const String &url) {
+    const char *TAG = "update_firmware";
+    ESP_LOGI(TAG, "Download URL: %s\n", url.c_str());
 
-  auto result = Updater.update(_wifi_client, url);
+    auto result = Updater.update(_wifi_client, url);
 
-  print_update_result(Updater, result, TAG);
-  return result;
+    print_update_result(Updater, result, TAG);
+    return result;
+}
+
+HTTPUpdateResult GitHubOTA::update_filesystem(const String &url) {
+    const char *TAG = "update_filesystem";
+    ESP_LOGI(TAG, "Download URL: %s\n", url.c_str());
+
+    auto result = Updater.updateSpiffs(_wifi_client, url);
+    print_update_result(Updater, result, TAG);
+    return result;
 }

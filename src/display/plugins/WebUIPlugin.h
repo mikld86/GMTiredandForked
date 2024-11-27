@@ -5,9 +5,7 @@
 
 #include "../core/Plugin.h"
 #include <ESPAsyncWebServer.h>
-#include <GitHubOTA.h>
-#include <GitHubFsOTA.h>
-#include "LittleFS.h"
+#include "GitHubOTA.h"
 
 
 class WebUIPlugin : public Plugin {
@@ -18,9 +16,11 @@ class WebUIPlugin : public Plugin {
   private:
     void start();
     String processTemplate(const String& var);
+    String processOTATemplate(const String& var);
 
+    GitHubOTA ota = GitHubOTA(BUILD_GIT_VERSION, "https://github.com/jniebuhr/gaggimate/releases/latest", "display-firmware.bin", "display-filesystem.bin", true);
     AsyncWebServer server;
-    Controller *controller;
+    Controller *controller = nullptr;
 };
 
 #endif // WEBUIPLUGIN_H

@@ -8,6 +8,7 @@
 #include "constants.h"
 #include <WiFiClient.h>
 #include <ctime>
+#include <SPIFFS.h>
 
 Controller::Controller()
     : timer(nullptr), mode(MODE_BREW), currentTemp(0), activeUntil(0), grindActiveUntil(0), lastPing(0), lastProgress(0),
