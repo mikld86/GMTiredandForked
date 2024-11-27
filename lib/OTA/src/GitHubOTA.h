@@ -8,13 +8,14 @@
 
 class GitHubOTA {
   public:
-    GitHubOTA(String version, String release_url, String firmware_name = "firmware.bin",
-              String filesystem_name = "filesystem.bin", bool fetch_url_via_redirect = false);
+    GitHubOTA(const String &version, const String &release_url, const String &firmware_name = "firmware.bin",
+              const String &filesystem_name = "filesystem.bin", bool fetch_url_via_redirect = false);
 
     void checkForUpdates();
     bool isUpdateAvailable() const;
     String getCurrentVersion() const;
     void update();
+    void setReleaseUrl(const String& release_url);
 
   private:
     HTTPUpdate Updater;

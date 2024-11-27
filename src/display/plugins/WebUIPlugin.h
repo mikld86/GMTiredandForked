@@ -7,6 +7,7 @@
 #include <ESPAsyncWebServer.h>
 #include "GitHubOTA.h"
 
+constexpr String RELEASE_URL = "https://github.com/jniebuhr/gaggimate/releases/";
 
 class WebUIPlugin : public Plugin {
   public:
@@ -18,7 +19,10 @@ class WebUIPlugin : public Plugin {
     String processTemplate(const String& var);
     String processOTATemplate(const String& var);
 
-    GitHubOTA ota = GitHubOTA(BUILD_GIT_VERSION, "https://github.com/jniebuhr/gaggimate/releases/latest", "display-firmware.bin", "display-filesystem.bin", true);
+  void handleOTA(AsyncWebServerRequest *request);
+  void handleSettings(AsyncWebServerRequest *request);
+
+    GitHubOTA ota = GitHubOTA(BUILD_GIT_VERSION, RELEASE_URL + "latest", "display-firmware.bin", "display-filesystem.bin", true);
     AsyncWebServer server;
     Controller *controller = nullptr;
 };

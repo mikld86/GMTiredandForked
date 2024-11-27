@@ -26,6 +26,10 @@ void Controller::setup() {
     pluginManager->setup(this);
 
     setupPanel();
+
+    if (!SPIFFS.begin(true)) {
+        Serial.println("An Error has occurred while mounting LittleFS");
+    }
 }
 
 void Controller::connect() {
