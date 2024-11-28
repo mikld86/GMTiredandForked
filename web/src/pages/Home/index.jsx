@@ -11,7 +11,7 @@ const modeMap = {
 
 
 export function Home() {
-  const { isLoading, isError, error, data: status } = useQuery(`status/${gen}`, async () => {
+  const { isLoading, isError, error, data: status } = useQuery(`status`, async () => {
     const response = await fetch(`/api/status`);
     const data = await response.json();
     return {
