@@ -14,11 +14,10 @@ const modeMap = {
 const gen = signal(0);
 
 export function Home() {
-  const [gen, setGen] = useState(0);
   effect(() => {
     const intervalId = setInterval(() => {
       gen.value ++;
-    }, 1000);
+    }, 5000);
 
     return () => {
       clearInterval(intervalId);
