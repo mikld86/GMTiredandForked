@@ -1,8 +1,6 @@
 import './style.css';
 import {useQuery} from 'preact-fetching';
 import {Spinner} from '../../components/Spinner.jsx';
-import {useState, useEffect} from 'preact/hooks';
-import { signal, effect } from "@preact/signals";
 
 const modeMap = {
   0: 'Standby',
@@ -11,18 +9,8 @@ const modeMap = {
   3: 'Water'
 }
 
-const gen = signal(0);
 
 export function Home() {
-  effect(() => {
-    const intervalId = setInterval(() => {
-      gen.value ++;
-    }, 5000);
-
-    return () => {
-      clearInterval(intervalId);
-    };
-  });
   const { isLoading, isError, error, data: status } = useQuery(`status/${gen}`, async () => {
     const response = await fetch(`/api/status`);
     const data = await response.json();
