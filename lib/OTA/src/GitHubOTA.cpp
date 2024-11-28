@@ -31,7 +31,6 @@ GitHubOTA::GitHubOTA(const String &version, const String &release_url, const Str
 
 void GitHubOTA::checkForUpdates() {
     const char *TAG = "checkForUpdates";
-    synchronize_system_time();
 
     _latest_url = _fetch_url_via_redirect ? get_updated_base_url_via_redirect(_wifi_client, _release_url)
                                               : get_updated_base_url_via_api(_wifi_client, _release_url);

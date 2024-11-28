@@ -21,7 +21,6 @@ void update_started();
 void update_finished();
 void update_progress(int currentlyReceiced, int totalBytes);
 void update_error(int err);
-void synchronize_system_time();
 
 extern const char *ca_certificate;
 

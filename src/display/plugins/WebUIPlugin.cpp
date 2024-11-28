@@ -1,5 +1,7 @@
 #include "WebUIPlugin.h"
 #include "../core/Controller.h"
+#include <ArduinoJson.h>
+#include <AsyncJson.h>
 #include <ElegantOTA.h>
 #include <SPIFFS.h>
 
@@ -13,12 +15,18 @@ void WebUIPlugin::setup(Controller *_controller, PluginManager *pluginManager) {
 void WebUIPlugin::start() {
     ota.setReleaseUrl(RELEASE_URL + controller->getSettings().getOTAChannel());
     ota.checkForUpdates();
-    server.on("/", [this](AsyncWebServerRequest *request) {
-        request->send(SPIFFS, "/index.html", String(), false, [this](const String &var) { return processTemplate(var); });
+    server.on("/api/ota", [this](AsyncWebServerRequest *request) { handleOTA(request); });
+    server.on("/api/settings", [this](AsyncWebServerRequest *request) { handleSettings(request); });
+    server.on("/api/status", [this](AsyncWebServerRequest *request) {
+        AsyncResponseStream *response = request->beginResponseStream("application/json");
+        JsonDocument doc;
+        doc["mode"] = controller->getMode();
+        doc["tt"] = controller->getTargetTemp();
+        doc["ct"] = controller->getCurrentTemp();
+        serializeJson(doc, *response);
+        request->send(response);
     });
-    server.on("/ota", [this](AsyncWebServerRequest *request) { handleOTA(request); });
-    server.on("/settings", [this](AsyncWebServerRequest *request) { handleSettings(request); });
-    server.serveStatic("/assets", SPIFFS, "/assets/");
+    server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
     ElegantOTA.begin(&server);
     ElegantOTA.setAutoReboot(true);
     ElegantOTA.onStart([this]() { controller->onOTAUpdate(); });
@@ -26,41 +34,6 @@ void WebUIPlugin::start() {
     Serial.print("OTA server started");
 }
 
-String WebUIPlugin::processTemplate(const String &var) {
-    Settings const &settings = controller->getSettings();
-    std::map<String, String> variables = {{"STANDBY_SELECTED", settings.getStartupMode() == MODE_STANDBY ? "selected" : ""},
-                                          {"BREW_SELECTED", settings.getStartupMode() == MODE_BREW ? "selected" : ""},
-                                          {"TARGET_BREW_TEMP", String(settings.getTargetBrewTemp())},
-                                          {"TARGET_STEAM_TEMP", String(settings.getTargetSteamTemp())},
-                                          {"TARGET_WATER_TEMP", String(settings.getTargetWaterTemp())},
-                                          {"TARGET_DURATION", String(settings.getTargetDuration() / 1000)},
-                                          {"HOMEKIT_CHECKED", settings.isHomekit() ? "checked" : ""},
-                                          {"PID", settings.getPid()},
-                                          {"WIFI_SSID", settings.getWifiSsid()},
-                                          {"WIFI_PASSWORD", settings.getWifiPassword()},
-                                          {"MDNS_NAME", settings.getMdnsName()},
-                                          {"BUILD_VERSION", BUILD_GIT_VERSION},
-                                          {"BUILD_TIMESTAMP", BUILD_TIMESTAMP},
-                                          {"TEMPERATURE_OFFSET", String(settings.getTemperatureOffset())}};
-    if (variables.find(var) != variables.end()) {
-        return variables[var];
-    }
-    return "";
-}
-
-String WebUIPlugin::processOTATemplate(const String &var) {
-    Settings const &settings = controller->getSettings();
-    std::map<String, String> variables = {
-        {"UPDATE_AVAILABLE", ota.isUpdateAvailable() ? "Update Available!" : ""},
-        {"LATEST_VERSION", ota.getCurrentVersion()},
-        {"STABLE_SELECTED", settings.getOTAChannel() == "latest" ? "selected" : ""},
-        {"DEV_SELECTED", settings.getOTAChannel() != "latest" ? "selected" : ""},
-    };
-    if (variables.find(var) != variables.end()) {
-        return variables[var];
-    }
-    return processTemplate(var);
-}
 
 void WebUIPlugin::handleOTA(AsyncWebServerRequest *request) {
 
@@ -74,7 +47,15 @@ void WebUIPlugin::handleOTA(AsyncWebServerRequest *request) {
             ota.update();
         }
     }
-    request->send(SPIFFS, "/ota.html", String(), false, [this](const String &var) { return processOTATemplate(var); });
+
+    AsyncResponseStream *response = request->beginResponseStream("application/json");
+    JsonDocument doc;
+    Settings const &settings = controller->getSettings();
+    doc["updateAvailable"] = ota.isUpdateAvailable();
+    doc["latestVersion"] = ota.getCurrentVersion();
+    doc["channel"] = settings.getOTAChannel();
+    serializeJson(doc, *response);
+    request->send(response);
 }
 
 void WebUIPlugin::handleSettings(AsyncWebServerRequest *request) {
@@ -105,7 +86,23 @@ void WebUIPlugin::handleSettings(AsyncWebServerRequest *request) {
         controller->setTargetTemp(controller->getTargetTemp());
     }
 
-    request->send(SPIFFS, "/settings.html", String(), false, [this](const String &var) { return processTemplate(var); });
+    AsyncResponseStream *response = request->beginResponseStream("application/json");
+    JsonDocument doc;
+    Settings const &settings = controller->getSettings();
+    doc["startupMode"] = settings.getStartupMode();
+    doc["targetBrewTemp"] = settings.getTargetBrewTemp();
+    doc["targetSteamTemp"] = settings.getTargetSteamTemp();
+    doc["targetWaterTemp"] = settings.getTargetWaterTemp();
+    doc["targetDuration"] = settings.getTargetDuration() / 1000;
+    doc["homekit"] = settings.isHomekit();
+    doc["pid"] = settings.getPid();
+    doc["wifiSsid"] = settings.getWifiSsid();
+    doc["wifiPassword"] = settings.getWifiPassword();
+    doc["mdnsName"] = settings.getMdnsName();
+    doc["temperatureOffset"] = String(settings.getTemperatureOffset());
+    serializeJson(doc, *response);
+    request->send(response);
+
     if (request->method() == HTTP_POST && request->hasArg("restart"))
         ESP.restart();
 }

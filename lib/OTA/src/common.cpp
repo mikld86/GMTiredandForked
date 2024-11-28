@@ -116,19 +116,6 @@ void update_progress(int currentlyReceiced, int totalBytes) {
 
 void update_error(int err) { ESP_LOGI("update_error", "HTTP update fatal error code %d\n", err); }
 
-// Set time via NTP, as required for x.509 validation
-void synchronize_system_time() {
-    configTime(3 * 3600, 0, "pool.ntp.org", "time.nist.gov");
-
-    time_t now = time(nullptr);
-    while (now < 8 * 3600 * 2) {
-        delay(100);
-        now = time(nullptr);
-    }
-    struct tm timeinfo;
-    gmtime_r(&now, &timeinfo);
-}
-
 const char *ca_certificate PROGMEM = R"CERT(
 -----BEGIN CERTIFICATE-----
 MIICjzCCAhWgAwIBAgIQXIuZxVqUxdJxVt7NiYDMJjAKBggqhkjOPQQDAzCBiDEL
