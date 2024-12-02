@@ -36,7 +36,9 @@ AliExpress links provided are affiliate links and supporting the project.
 
 ### PCB Build
 
-The recommended way to build this machine is to use the PCB designed for this project. There's currently a group buy started for this.
+The recommended way to build this machine is to use the PCB designed for this project.
+
+The first round of the group buy is filled up but I'll keep the form open. You can register there to get notified about the second round which will hopefully start at the beginning of 2025.
 
 https://forms.gle/KEXdpgJGCZbsFdKD7
 
