@@ -86,6 +86,15 @@ thermostat would usually sit.
 
 I will soon update this with detailed instructions.
 
+## Wiring Diagrams
+
+### Gaggia Classic
+<img src="docs/diagrams/classic.png" alt="Classic Wiring Diagram" width="500px" />
+
+
+### Gaggia Classic Pro
+<img src="docs/diagrams/classicpro.png" alt="Classic Pro Wiring Diagram" width="500px" />
+
 ## Docs
 
 The docs were moved to https://github.com/jniebuhr/gaggimate-docs
