@@ -47,6 +47,10 @@ i2c = [
         ("gpio18", "doc"),
     ],
     [
+        ("SDA2", "comms"),
+        ("gpio39", "doc"),
+    ],
+    [
         ("GND", "gnd"),
     ],
 ]
@@ -58,7 +62,7 @@ buttons = [
     ],
     [
         ("Steam", "gpio"),
-        ("gpio39", "doc"),
+        ("gpio48", "doc"),
     ],
     [
         ("GND", "gnd"),
