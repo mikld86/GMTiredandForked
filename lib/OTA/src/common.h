@@ -9,7 +9,6 @@
 
 using Updater = HTTPUpdate;
 
-String get_updated_base_url_via_api(WiFiClientSecure wifi_client, String release_url);
 String get_updated_base_url_via_redirect(WiFiClientSecure& wifi_client, String& release_url);
 String get_redirect_location(WiFiClientSecure& wifi_client, String& initial_url);
 

@@ -9,7 +9,7 @@
 class GitHubOTA {
   public:
     GitHubOTA(const String &version, const String &release_url, const String &firmware_name = "firmware.bin",
-              const String &filesystem_name = "filesystem.bin", bool fetch_url_via_redirect = false);
+              const String &filesystem_name = "filesystem.bin");
 
     void checkForUpdates();
     bool isUpdateAvailable() const;
@@ -29,7 +29,6 @@ class GitHubOTA {
     String _latest_url;
     String _firmware_name;
     String _filesystem_name;
-    bool _fetch_url_via_redirect;
     WiFiClientSecure _wifi_client;
 };
 

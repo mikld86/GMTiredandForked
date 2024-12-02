@@ -8,8 +8,7 @@
 #include "semver_extensions.h"
 #include <ArduinoJson.h>
 
-GitHubOTA::GitHubOTA(const String &version, const String &release_url, const String &firmware_name, const String &filesystem_name,
-                     bool fetch_url_via_redirect) {
+GitHubOTA::GitHubOTA(const String &version, const String &release_url, const String &firmware_name, const String &filesystem_name) {
     ESP_LOGV("GitHubOTA", "GitHubOTA(version: %s, firmware_name: %s, fetch_url_via_redirect: %d)\n", version.c_str(),
              firmware_name.c_str(), fetch_url_via_redirect);
 
@@ -17,7 +16,6 @@ GitHubOTA::GitHubOTA(const String &version, const String &release_url, const Str
     _release_url = release_url;
     _firmware_name = firmware_name;
     _filesystem_name = filesystem_name;
-    _fetch_url_via_redirect = fetch_url_via_redirect;
 
     Updater.rebootOnUpdate(false);
     _wifi_client.setCACert(ca_certificate);
@@ -32,8 +30,7 @@ GitHubOTA::GitHubOTA(const String &version, const String &release_url, const Str
 void GitHubOTA::checkForUpdates() {
     const char *TAG = "checkForUpdates";
 
-    _latest_url = _fetch_url_via_redirect ? get_updated_base_url_via_redirect(_wifi_client, _release_url)
-                                              : get_updated_base_url_via_api(_wifi_client, _release_url);
+    _latest_url = get_updated_base_url_via_redirect(_wifi_client, _release_url);
     ESP_LOGI(TAG, "base_url %s\n", _latest_url.c_str());
 
     auto last_slash = _latest_url.lastIndexOf('/', _latest_url.length() - 2);

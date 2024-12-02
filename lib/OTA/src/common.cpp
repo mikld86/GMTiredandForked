@@ -7,43 +7,6 @@
 #include "semver_extensions.h"
 #include <ArduinoJson.h>
 
-String get_updated_base_url_via_api(WiFiClientSecure wifi_client, String release_url) {
-    const char *TAG = "get_updated_base_url_via_api";
-    ESP_LOGI(TAG, "Release_url: %s\n", release_url.c_str());
-
-    HTTPClient https;
-    String base_url = "";
-
-    if (!https.begin(wifi_client, release_url)) {
-        ESP_LOGI(TAG, "[HTTPS] Unable to connect\n");
-        return base_url;
-    }
-
-    int httpCode = https.GET();
-    if (httpCode < 0 || httpCode >= 400) {
-        ESP_LOGI(TAG, "[HTTPS] GET... failed, error: %s\n", https.errorToString(httpCode).c_str());
-        char errorText[128];
-        int errCode = wifi_client.lastError(errorText, sizeof(errorText));
-        ESP_LOGV(TAG, "httpCode: %d, errorCode %d: %s\n", httpCode, errCode, errorText);
-    } else if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
-        StaticJsonDocument<64> filter;
-        filter["html_url"] = true;
-
-        StaticJsonDocument<256> doc;
-        auto result = deserializeJson(doc, https.getStream(), DeserializationOption::Filter(filter));
-        if (result != DeserializationError::Ok) {
-            ESP_LOGI(TAG, "deserializeJson error %s\n", result.c_str());
-        }
-
-        base_url = String((const char *)doc["html_url"]);
-        base_url.replace("tag", "download");
-        base_url += "/";
-    }
-
-    https.end();
-    return base_url;
-}
-
 String get_updated_base_url_via_redirect(WiFiClientSecure& wifi_client, String& release_url) {
     const char *TAG = "get_updated_base_url_via_redirect";
 
