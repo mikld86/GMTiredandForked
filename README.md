@@ -59,6 +59,18 @@ If you do not want to use the PCB you can buy the components on their own:
 - **LilyGo T-RGB 2.1" Display** https://s.click.aliexpress.com/e/_Eju6rYD (Full Circle)
 - **AC SSR** https://s.click.aliexpress.com/e/_EvPScvr (SSR-40DA)
 - **K-Type M4 Thermocouple** https://s.click.aliexpress.com/e/_Exzhqx7 (K-Type M4 0.5m)
+- **22 AWG Silicone Wire for LV wiring** https://s.click.aliexpress.com/e/_EH7UMS8
+- **18 AWG Silicone Wire for HV wiring** https://s.click.aliexpress.com/e/_EJEs0ak
+
+## Display Case
+- **4pcs 6x3mm Neodymium Magnet** https://s.click.aliexpress.com/e/_EjwXuaU
+
+## Tools
+- Wire stripper or knife
+- **Crimping tool** https://a.aliexpress.com/_EuVLJ9A (SNA02C-06-06WF-58B) - This one will do all the crimps required in the build
+- Screwdriver 
+- Zipties (good to have)
+- Cable labels/tape (good to have)
 
 ## How It Works
 
