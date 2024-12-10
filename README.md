@@ -11,7 +11,6 @@
 
 </p>
 
-
 This project upgrades a Gaggia espresso machine with smart controls to improve your coffee-making experience. By adding a display and custom electronics, you can monitor and control the machine more easily.
 
 <img src="docs/assets/gaggimate-render.png" alt="Gaggia Classic Installation" width="500" />
@@ -30,74 +29,19 @@ This project upgrades a Gaggia espresso machine with smart controls to improve y
 <img src="docs/assets/brew-screen.png" alt="Brew Screen" width="250px" />
 <img src="docs/assets/pcb_render.jpg" alt="PCB Render" width="250px" />
 
-## BOM
-
-AliExpress links provided are affiliate links and supporting the project.
-
-### PCB Build
-
-The recommended way to build this machine is to use the PCB designed for this project.
+### Group Buy for kits
 
 The first round of the group buy is filled up but I'll keep the form open. You can register there to get notified about the second round which will hopefully start at the beginning of 2025.
 
 https://forms.gle/KEXdpgJGCZbsFdKD7
 
-#### Pinout
-
-Here you can see where to connect which components. This is also printed on the back of the PCB.
-
-<img src="docs/assets/pinout.png" alt="PCB Pinout" width="500px" />
-
-### Lego Build
-
-If you do not want to use the PCB you can buy the components on their own:
-
-- **ESP-S3 DevKit** https://s.click.aliexpress.com/e/_EzXyAvP (N8R8)
-- **2-Channel 5V Relay** https://s.click.aliexpress.com/e/_ExUVY9J (2 or 3 channel if you want the Grinder integration)
-- **MAX6675 Temperature sensor board** https://s.click.aliexpress.com/e/_EG1t3V7 (Module)
-
-### General components
-
-- **LilyGo T-RGB 2.1" Display** https://s.click.aliexpress.com/e/_Eju6rYD (Full Circle)
-- **AC SSR** https://s.click.aliexpress.com/e/_EvPScvr (SSR-40DA)
-- **K-Type M4 Thermocouple** https://s.click.aliexpress.com/e/_Exzhqx7 (K-Type M4 0.5m)
-- **22 AWG Silicone Wire for LV wiring** https://s.click.aliexpress.com/e/_EH7UMS8
-- **18 AWG Silicone Wire for HV wiring** https://s.click.aliexpress.com/e/_EJEs0ak
-
-## Display Case
-- **4pcs 6x3mm Neodymium Magnet** https://s.click.aliexpress.com/e/_EjwXuaU
-
-## Tools
-- Wire stripper or knife
-- **Crimping tool** https://a.aliexpress.com/_EuVLJ9A (SNA02C-06-06WF-58B) - This one will do all the crimps required in the build
-- Screwdriver 
-- Zipties (good to have)
-- Cable labels/tape (good to have)
-
 ## How It Works
 
 The display allows you to control the espresso machine and see live temperature updates. If the machine becomes unresponsive or the temperature goes too high, it will automatically turn off for safety.
 
-## Installation
-
-The installation process of this mod consists of purely electrical changes. You will have to wire up the 3-Way valve and pump to the relays provided on the board.
-The existing thermostats of your machine have to be removed and bridged while connecting the heater to the SSR instead. The M4 thermistor goes into the screw hole where the brew
-thermostat would usually sit.
-
-I will soon update this with detailed instructions.
-
-## Wiring Diagrams
-
-### Gaggia Classic
-<img src="docs/diagrams/classic.png" alt="Classic Wiring Diagram" width="500px" />
-
-
-### Gaggia Classic Pro
-<img src="docs/diagrams/classicpro.png" alt="Classic Pro Wiring Diagram" width="500px" />
-
 ## Docs
 
-The docs were moved to https://github.com/jniebuhr/gaggimate-docs
+The docs were moved to [https://gaggimate.eu/](https://gaggimate.eu/). You can find all sourcing and assembly information there.
 
 ## License
 
