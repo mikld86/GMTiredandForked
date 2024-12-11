@@ -22,7 +22,7 @@ class WebUIPlugin : public Plugin {
   void handleOTA(AsyncWebServerRequest *request);
   void handleSettings(AsyncWebServerRequest *request);
 
-    GitHubOTA ota = GitHubOTA(BUILD_GIT_VERSION, RELEASE_URL + "latest", "display-firmware.bin", "display-filesystem.bin", true);
+    GitHubOTA ota = GitHubOTA(BUILD_GIT_VERSION, RELEASE_URL + "latest", "display-firmware.bin", "display-filesystem.bin");
     AsyncWebServer server;
     Controller *controller = nullptr;
 };
