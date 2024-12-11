@@ -219,7 +219,7 @@ void Controller::updateUiSettings() {
     int16_t setTemp = getTargetTemp();
     const int16_t angleRange = 3160;
     double percentage = ((double)setTemp) / ((double) MAX_TEMP);
-    int16_t angle = (percentage * ((double) angleRange)) - 1800;
+    int16_t angle = (percentage * ((double) angleRange)) - angleRange / 2;
     lv_img_set_angle(ui_BrewScreen_tempTarget,angle);
     lv_img_set_angle(ui_StatusScreen_tempTarget,angle);
     lv_img_set_angle(ui_MenuScreen_tempTarget,angle);
