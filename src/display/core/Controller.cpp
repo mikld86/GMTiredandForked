@@ -207,22 +207,25 @@ void Controller::updateRelay() {
 
 void Controller::updateUiActive() const {
     bool active = isActive();
-    lv_imgbtn_set_src(ui_SteamScreen_goButton, LV_IMGBTN_STATE_RELEASED, nullptr, active ? &ui_img_646127855 : &ui_img_2106667244,
+    lv_imgbtn_set_src(ui_SteamScreen_goButton, LV_IMGBTN_STATE_RELEASED, nullptr, active ? &ui_img_1456692430 : &ui_img_445946954,
                       nullptr);
-    lv_imgbtn_set_src(ui_WaterScreen_goButton, LV_IMGBTN_STATE_RELEASED, nullptr, active ? &ui_img_646127855 : &ui_img_2106667244,
+    lv_imgbtn_set_src(ui_WaterScreen_goButton, LV_IMGBTN_STATE_RELEASED, nullptr, active ? &ui_img_1456692430 : &ui_img_445946954,
                       nullptr);
     lv_imgbtn_set_src(ui_GrindScreen_startButton, LV_IMGBTN_STATE_RELEASED, nullptr,
-                      isGrindActive() ? &ui_img_646127855 : &ui_img_2106667244, nullptr);
+                      isGrindActive() ? &ui_img_1456692430 : &ui_img_445946954, nullptr);
 }
 
 void Controller::updateUiSettings() {
     int16_t setTemp = getTargetTemp();
-    lv_arc_set_value(ui_BrewScreen_tempTarget, setTemp);
-    lv_arc_set_value(ui_StatusScreen_tempTarget, setTemp);
-    lv_arc_set_value(ui_MenuScreen_tempTarget, setTemp);
-    lv_arc_set_value(ui_SteamScreen_tempTarget, setTemp);
-    lv_arc_set_value(ui_WaterScreen_tempTarget, setTemp);
-    lv_arc_set_value(ui_GrindScreen_tempTarget, setTemp);
+    const int16_t angleRange = 3160;
+    double percentage = ((double)setTemp) / ((double) MAX_TEMP);
+    int16_t angle = (percentage * ((double) angleRange)) - angleRange / 2;
+    lv_img_set_angle(ui_BrewScreen_tempTarget,angle);
+    lv_img_set_angle(ui_StatusScreen_tempTarget,angle);
+    lv_img_set_angle(ui_MenuScreen_tempTarget,angle);
+    lv_img_set_angle(ui_SteamScreen_tempTarget,angle);
+    lv_img_set_angle(ui_WaterScreen_tempTarget,angle);
+    lv_img_set_angle(ui_GrindScreen_tempTarget,angle);
 
     lv_label_set_text_fmt(ui_StatusScreen_targetTemp, "%d°C", settings.getTargetBrewTemp());
     lv_label_set_text_fmt(ui_BrewScreen_targetTemp, "%d°C", settings.getTargetBrewTemp());
@@ -257,7 +260,7 @@ void Controller::updateUiCurrentTemp() const {
     lv_label_set_text_fmt(ui_MenuScreen_tempText, "%d°C", temp);
     lv_label_set_text_fmt(ui_SteamScreen_tempText, "%d°C", temp);
     lv_label_set_text_fmt(ui_WaterScreen_tempText, "%d°C", temp);
-    lv_label_set_text_fmt(ui_GrindScreen_tempText1, "%d°C", temp);
+    lv_label_set_text_fmt(ui_GrindScreen_tempText, "%d°C", temp);
 }
 
 void Controller::updateProgress() const {
