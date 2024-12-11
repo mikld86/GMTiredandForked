@@ -29,8 +29,8 @@ hardware.add_coord("screen", 445, 506)
 hardware.add_coord("ssr", 445, 403)
 hardware.add_coord("uart", 275, 403)
 hardware.add_coord("temp_sensor", 133, 198)
-hardware.add_coord("buttons", 113, 320)
-hardware.add_coord("i2c", 113, 403)
+hardware.add_coord("i2c", 113, 320)
+hardware.add_coord("buttons", 113, 403)
 hardware.add_coord("ext", 97, 470)
 # Other (x,y) pairs can also be stored here
 hardware.add_coord("pin_pitch_v", 0, 30)
@@ -71,7 +71,7 @@ graphic.add(
         y=hardware.coord("buttons").y,
         scale=(-1, -1),
         pin_pitch=hardware.coord("pin_pitch_h", raw=True),
-        label_start=(60, 10),
+        label_start=(60,-60),
         label_pitch=hardware.coord("pin_pitch_v", raw=True),
         labels=data.buttons,
         leaderline=lline.Straight(),
@@ -84,7 +84,7 @@ graphic.add(
         y=hardware.coord("i2c").y,
         scale=(-1, -1),
         pin_pitch=hardware.coord("pin_pitch_h", raw=True),
-        label_start=(60, -30),
+        label_start=(60, -20),
         label_pitch=hardware.coord("pin_pitch_v", raw=True),
         labels=data.i2c,
         leaderline=lline.Straight(),

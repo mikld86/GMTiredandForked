@@ -17,8 +17,6 @@
 #define MAX6675_CS_PIN   7
 #define MAX6675_MISO_PIN 4
 
-#define PWM_FREQUENCY 20
-
 constexpr size_t TEMP_UPDATE_INTERVAL_MS = 1000;
 
 #define I2C_DEV_ADDR 0x55

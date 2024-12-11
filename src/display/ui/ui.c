@@ -22,23 +22,24 @@ lv_obj_t *ui_InitScreen_Label3;
 void ui_ProfileScreen_screen_init(void);
 void ui_event_ProfileScreen( lv_event_t * e);
 lv_obj_t *ui_ProfileScreen;
-lv_obj_t *ui_ProfileScreen_tempGauge;
 lv_obj_t *ui_ProfileScreen_tempTarget;
+lv_obj_t *ui_ProfileScreen_tempGauge;
 lv_obj_t *ui_ProfileScreen_ImgButton1;
-lv_obj_t *ui_ProfileScreen_tempText;
 lv_obj_t *ui_ProfileScreen_contentPanel;
 lv_obj_t *ui_ProfileScreen_mainLabel;
 void ui_event_ProfileScreen_profileChoices( lv_event_t * e);
 lv_obj_t *ui_ProfileScreen_profileChoices;
+lv_obj_t *ui_ProfileScreen_tempText;
 // CUSTOM VARIABLES
 
 
 // SCREEN: ui_MenuScreen
 void ui_MenuScreen_screen_init(void);
 lv_obj_t *ui_MenuScreen;
-lv_obj_t *ui_MenuScreen_tempGauge;
 lv_obj_t *ui_MenuScreen_tempTarget;
-lv_obj_t *ui_MenuScreen_tempText;
+lv_obj_t *ui_MenuScreen_tempGauge;
+lv_obj_t *ui_MenuScreen_pressureTarget;
+lv_obj_t *ui_MenuScreen_pressureGauge;
 lv_obj_t *ui_MenuScreen_contentPanel1;
 void ui_event_MenuScreen_grindButton1( lv_event_t * e);
 lv_obj_t *ui_MenuScreen_grindButton1;
@@ -48,9 +49,10 @@ void ui_event_MenuScreen_profileButton1( lv_event_t * e);
 lv_obj_t *ui_MenuScreen_profileButton1;
 void ui_event_MenuScreen_extrasButton1( lv_event_t * e);
 lv_obj_t *ui_MenuScreen_extrasButton1;
-lv_obj_t *ui_MenuScreen_mainLabel4;
 void ui_event_MenuScreen_standbyButton( lv_event_t * e);
 lv_obj_t *ui_MenuScreen_standbyButton;
+lv_obj_t *ui_MenuScreen_pressureText;
+lv_obj_t *ui_MenuScreen_tempText;
 // CUSTOM VARIABLES
 
 
@@ -58,10 +60,9 @@ lv_obj_t *ui_MenuScreen_standbyButton;
 void ui_BrewScreen_screen_init(void);
 void ui_event_BrewScreen( lv_event_t * e);
 lv_obj_t *ui_BrewScreen;
-lv_obj_t *ui_BrewScreen_tempGauge;
 lv_obj_t *ui_BrewScreen_tempTarget;
+lv_obj_t *ui_BrewScreen_tempGauge;
 lv_obj_t *ui_BrewScreen_ImgButton5;
-lv_obj_t *ui_BrewScreen_tempText;
 lv_obj_t *ui_BrewScreen_contentPanel4;
 lv_obj_t *ui_BrewScreen_mainLabel3;
 lv_obj_t *ui_BrewScreen_targetTempHelp1;
@@ -78,6 +79,7 @@ void ui_event_BrewScreen_upDurationButton( lv_event_t * e);
 lv_obj_t *ui_BrewScreen_upDurationButton;
 lv_obj_t *ui_BrewScreen_targetTemp;
 lv_obj_t *ui_BrewScreen_targetDuration;
+lv_obj_t *ui_BrewScreen_tempText;
 // CUSTOM VARIABLES
 
 
@@ -85,10 +87,9 @@ lv_obj_t *ui_BrewScreen_targetDuration;
 void ui_SteamScreen_screen_init(void);
 void ui_event_SteamScreen( lv_event_t * e);
 lv_obj_t *ui_SteamScreen;
-lv_obj_t *ui_SteamScreen_tempGauge;
 lv_obj_t *ui_SteamScreen_tempTarget;
+lv_obj_t *ui_SteamScreen_tempGauge;
 lv_obj_t *ui_SteamScreen_ImgButton6;
-lv_obj_t *ui_SteamScreen_tempText;
 lv_obj_t *ui_SteamScreen_contentPanel5;
 lv_obj_t *ui_SteamScreen_mainLabel5;
 lv_obj_t *ui_SteamScreen_targetTempHelp2;
@@ -99,6 +100,7 @@ lv_obj_t *ui_SteamScreen_downTempButton;
 void ui_event_SteamScreen_upTempButton( lv_event_t * e);
 lv_obj_t *ui_SteamScreen_upTempButton;
 lv_obj_t *ui_SteamScreen_targetTemp;
+lv_obj_t *ui_SteamScreen_tempText;
 // CUSTOM VARIABLES
 
 
@@ -106,10 +108,9 @@ lv_obj_t *ui_SteamScreen_targetTemp;
 void ui_WaterScreen_screen_init(void);
 void ui_event_WaterScreen( lv_event_t * e);
 lv_obj_t *ui_WaterScreen;
-lv_obj_t *ui_WaterScreen_tempGauge;
 lv_obj_t *ui_WaterScreen_tempTarget;
+lv_obj_t *ui_WaterScreen_tempGauge;
 lv_obj_t *ui_WaterScreen_ImgButton7;
-lv_obj_t *ui_WaterScreen_tempText;
 lv_obj_t *ui_WaterScreen_contentPanel6;
 lv_obj_t *ui_WaterScreen_mainLabel6;
 lv_obj_t *ui_WaterScreen_targetTempHelp3;
@@ -120,6 +121,7 @@ lv_obj_t *ui_WaterScreen_downTempButton;
 void ui_event_WaterScreen_upTempButton( lv_event_t * e);
 lv_obj_t *ui_WaterScreen_upTempButton;
 lv_obj_t *ui_WaterScreen_targetTemp;
+lv_obj_t *ui_WaterScreen_tempText;
 // CUSTOM VARIABLES
 
 
@@ -139,10 +141,9 @@ lv_obj_t *ui_StandbyScreen_wifiIcon;
 void ui_StatusScreen_screen_init(void);
 void ui_event_StatusScreen( lv_event_t * e);
 lv_obj_t *ui_StatusScreen;
-lv_obj_t *ui_StatusScreen_tempGauge;
 lv_obj_t *ui_StatusScreen_tempTarget;
+lv_obj_t *ui_StatusScreen_tempGauge;
 lv_obj_t *ui_StatusScreen_ImgButton3;
-lv_obj_t *ui_StatusScreen_tempText;
 lv_obj_t *ui_StatusScreen_contentPanel2;
 lv_obj_t *ui_StatusScreen_mainLabel1;
 lv_obj_t *ui_StatusScreen_progressBar;
@@ -153,6 +154,7 @@ lv_obj_t *ui_StatusScreen_targetDuration;
 lv_obj_t *ui_StatusScreen_targetTemp;
 void ui_event_StatusScreen_pauseButton( lv_event_t * e);
 lv_obj_t *ui_StatusScreen_pauseButton;
+lv_obj_t *ui_StatusScreen_tempText;
 // CUSTOM VARIABLES
 
 
@@ -160,10 +162,9 @@ lv_obj_t *ui_StatusScreen_pauseButton;
 void ui_GrindScreen_screen_init(void);
 void ui_event_GrindScreen( lv_event_t * e);
 lv_obj_t *ui_GrindScreen;
-lv_obj_t *ui_GrindScreen_tempGauge;
 lv_obj_t *ui_GrindScreen_tempTarget;
+lv_obj_t *ui_GrindScreen_tempGauge;
 lv_obj_t *ui_GrindScreen_ImgButton2;
-lv_obj_t *ui_GrindScreen_tempText1;
 lv_obj_t *ui_GrindScreen_contentPanel7;
 lv_obj_t *ui_GrindScreen_mainLabel7;
 lv_obj_t *ui_GrindScreen_targetPressureHelp1;
@@ -174,15 +175,26 @@ lv_obj_t *ui_GrindScreen_downDurationButton;
 void ui_event_GrindScreen_upDurationButton( lv_event_t * e);
 lv_obj_t *ui_GrindScreen_upDurationButton;
 lv_obj_t *ui_GrindScreen_targetDuration;
+lv_obj_t *ui_GrindScreen_tempText;
 // CUSTOM VARIABLES
 
 // EVENTS
 lv_obj_t *ui____initial_actions0;
 
 // IMAGES AND IMAGE SETS
-const lv_img_dsc_t *ui_imgset_257442185[1] = {&ui_img_2106667244};
-const lv_img_dsc_t *ui_imgset_1543159247[1] = {&ui_img_2056842146};
-const lv_img_dsc_t *ui_imgset_1856043536[1] = {&ui_img_2100879889};
+const lv_img_dsc_t *ui_imgset_459451241[1] = {&ui_img_1829139226};
+const lv_img_dsc_t *ui_imgset_434888472[1] = {&ui_img_295763949};
+const lv_img_dsc_t *ui_imgset_1091184723[1] = {&ui_img_1091371356};
+const lv_img_dsc_t *ui_imgset_1525119997[1] = {&ui_img_360122106};
+const lv_img_dsc_t *ui_imgset_1812359778[1] = {&ui_img_363557387};
+const lv_img_dsc_t *ui_imgset_359534444[1] = {&ui_img_979979123};
+const lv_img_dsc_t *ui_imgset_794559649[1] = {&ui_img_1456692430};
+const lv_img_dsc_t *ui_imgset_1612577215[1] = {&ui_img_445946954};
+const lv_img_dsc_t *ui_imgset_1010926578[1] = {&ui_img_2044104741};
+const lv_img_dsc_t *ui_imgset_1155213431[1] = {&ui_img_545340440};
+const lv_img_dsc_t *ui_imgset_1252186405[1] = {&ui_img_1951499226};
+const lv_img_dsc_t *ui_imgset_2074400918[1] = {&ui_img_364513079};
+const lv_img_dsc_t *ui_imgset_506671969[1] = {&ui_img_783005998};
 
 ///////////////////// TEST LVGL SETTINGS ////////////////////
 #if LV_COLOR_DEPTH != 16

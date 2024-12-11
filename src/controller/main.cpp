@@ -162,7 +162,6 @@ void thermal_runaway_shutdown() {
 }
 
 void control_heater(int out) {
-    analogWriteFrequency(PWM_FREQUENCY);
     analogWrite(HEATER_PIN, out);
 }
 
