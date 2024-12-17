@@ -2951,31 +2951,31 @@
                   {
                     "nid": 2095738133,
                     "strtype": "IMGBUTTON/Image_pressed",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": -41965686,
                     "strtype": "IMGBUTTON/Image_disabled",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": -2024697108,
                     "strtype": "IMGBUTTON/Image_checked_released",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 353298342,
                     "strtype": "IMGBUTTON/Image_checked_pressed",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": -1241235642,
                     "strtype": "IMGBUTTON/Image_checked_disabled",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
@@ -3064,13 +3064,12 @@
                           {
                             "nid": 1000009,
                             "strtype": "CHANGE SCREEN/Fade_mode",
-                            "strval": "FADE_ON",
+                            "strval": "NONE",
                             "InheritedType": 3
                           },
                           {
                             "nid": 1000010,
                             "strtype": "CHANGE SCREEN/Speed",
-                            "integer": 500,
                             "InheritedType": 6
                           },
                           {
@@ -3193,31 +3192,31 @@
                   {
                     "nid": -1934259585,
                     "strtype": "IMGBUTTON/Image_pressed",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 1714723951,
                     "strtype": "IMGBUTTON/Image_disabled",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 467414787,
                     "strtype": "IMGBUTTON/Image_checked_released",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": -1979095602,
                     "strtype": "IMGBUTTON/Image_checked_pressed",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 1233120870,
                     "strtype": "IMGBUTTON/Image_checked_disabled",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
@@ -3305,13 +3304,12 @@
                           {
                             "nid": -384017998,
                             "strtype": "CHANGE SCREEN/Fade_mode",
-                            "strval": "FADE_ON",
+                            "strval": "NONE",
                             "InheritedType": 3
                           },
                           {
                             "nid": -130859293,
                             "strtype": "CHANGE SCREEN/Speed",
-                            "integer": 500,
                             "InheritedType": 6
                           },
                           {
@@ -3471,31 +3469,31 @@
                   {
                     "nid": 1719371438,
                     "strtype": "IMGBUTTON/Image_pressed",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 1324834368,
                     "strtype": "IMGBUTTON/Image_disabled",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": -766253731,
                     "strtype": "IMGBUTTON/Image_checked_released",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": -2055103995,
                     "strtype": "IMGBUTTON/Image_checked_pressed",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": -1343175819,
                     "strtype": "IMGBUTTON/Image_checked_disabled",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
@@ -3583,13 +3581,12 @@
                           {
                             "nid": -78067501,
                             "strtype": "CHANGE SCREEN/Fade_mode",
-                            "strval": "FADE_ON",
+                            "strval": "NONE",
                             "InheritedType": 3
                           },
                           {
                             "nid": -145077371,
                             "strtype": "CHANGE SCREEN/Speed",
-                            "integer": 500,
                             "InheritedType": 6
                           },
                           {
@@ -3750,31 +3747,31 @@
                   {
                     "nid": 514460655,
                     "strtype": "IMGBUTTON/Image_pressed",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": -558875954,
                     "strtype": "IMGBUTTON/Image_disabled",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 1310612205,
                     "strtype": "IMGBUTTON/Image_checked_released",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 65560527,
                     "strtype": "IMGBUTTON/Image_checked_pressed",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 1486362094,
                     "strtype": "IMGBUTTON/Image_checked_disabled",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
@@ -3862,13 +3859,12 @@
                           {
                             "nid": -401616786,
                             "strtype": "CHANGE SCREEN/Fade_mode",
-                            "strval": "FADE_ON",
+                            "strval": "NONE",
                             "InheritedType": 3
                           },
                           {
                             "nid": 1780495974,
                             "strtype": "CHANGE SCREEN/Speed",
-                            "integer": 500,
                             "InheritedType": 6
                           },
                           {
@@ -7794,13 +7790,12 @@
                   {
                     "nid": -444022884,
                     "strtype": "CHANGE SCREEN/Fade_mode",
-                    "strval": "MOVE_TOP",
+                    "strval": "NONE",
                     "InheritedType": 3
                   },
                   {
                     "nid": -118589280,
                     "strtype": "CHANGE SCREEN/Speed",
-                    "integer": 500,
                     "InheritedType": 6
                   },
                   {
@@ -10037,13 +10032,12 @@
                   {
                     "nid": 1823421221,
                     "strtype": "CHANGE SCREEN/Fade_mode",
-                    "strval": "MOVE_TOP",
+                    "strval": "NONE",
                     "InheritedType": 3
                   },
                   {
                     "nid": 53726637,
                     "strtype": "CHANGE SCREEN/Speed",
-                    "integer": 500,
                     "InheritedType": 6
                   },
                   {
@@ -12280,13 +12274,12 @@
                   {
                     "nid": -34159378,
                     "strtype": "CHANGE SCREEN/Fade_mode",
-                    "strval": "MOVE_TOP",
+                    "strval": "NONE",
                     "InheritedType": 3
                   },
                   {
                     "nid": -446979142,
                     "strtype": "CHANGE SCREEN/Speed",
-                    "integer": 500,
                     "InheritedType": 6
                   },
                   {
@@ -13287,13 +13280,12 @@
                   {
                     "nid": 1160675023,
                     "strtype": "CHANGE SCREEN/Fade_mode",
-                    "strval": "FADE_ON",
+                    "strval": "NONE",
                     "InheritedType": 3
                   },
                   {
                     "nid": 966233795,
                     "strtype": "CHANGE SCREEN/Speed",
-                    "integer": 500,
                     "InheritedType": 6
                   },
                   {
@@ -15835,13 +15827,12 @@
                   {
                     "nid": 854663988,
                     "strtype": "CHANGE SCREEN/Fade_mode",
-                    "strval": "MOVE_TOP",
+                    "strval": "NONE",
                     "InheritedType": 3
                   },
                   {
                     "nid": 354579994,
                     "strtype": "CHANGE SCREEN/Speed",
-                    "integer": 500,
                     "InheritedType": 6
                   },
                   {
@@ -18079,13 +18070,12 @@
                   {
                     "nid": -444022884,
                     "strtype": "CHANGE SCREEN/Fade_mode",
-                    "strval": "MOVE_TOP",
+                    "strval": "NONE",
                     "InheritedType": 3
                   },
                   {
                     "nid": -118589280,
                     "strtype": "CHANGE SCREEN/Speed",
-                    "integer": 500,
                     "InheritedType": 6
                   },
                   {
@@ -18119,7 +18109,7 @@
   "selected_theme": "Default",
   "info": {
     "name": "GaggiMate.spj",
-    "depth": 1,
+    "depth": 3,
     "width": 480,
     "height": 480,
     "rotation": 0,
@@ -18161,7 +18151,7 @@
     "naming": "_Screen_Name",
     "naming_force_lowercase": false,
     "nidcnt": 1000012,
-    "BitDepth": 16,
+    "BitDepth": 8,
     "Name": "GaggiMate"
   }
 }

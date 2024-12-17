@@ -83,10 +83,12 @@ void Controller::setupWifi() {
 
             configTzTime(TIMEZONE, NTP_SERVER);
         } else {
+            WiFi.disconnect(true, true);
             Serial.println("Timed out while connecting to WiFi");
         }
     }
     if (WiFi.status() != WL_CONNECTED) {
+        isApConnection = true;
         WiFi.mode(WIFI_AP);
         WiFi.softAP(WIFI_AP_SSID);
         Serial.println("Started in AP mode");
@@ -96,7 +98,7 @@ void Controller::setupWifi() {
         Serial.println(WiFi.localIP());
     }
 
-    pluginManager->trigger("controller:wifi:connect");
+    pluginManager->trigger("controller:wifi:connect", "AP", isApConnection ? 1 : 0);
 }
 
 void Controller::loop() {
@@ -284,16 +286,21 @@ void Controller::updateProgress() const {
 }
 
 void Controller::updateStandby() {
-    struct tm timeinfo;
-    if (getLocalTime(&timeinfo)) {
-        char time[6];
-        strftime(time, 6, "%H:%M", &timeinfo);
-        lv_label_set_text(ui_StandbyScreen_time, time);
+    if (!isApConnection) {
+        struct tm timeinfo;
+        if (getLocalTime(&timeinfo)) {
+            char time[6];
+            strftime(time, 6, "%H:%M", &timeinfo);
+            lv_label_set_text(ui_StandbyScreen_time, time);
+        lv_obj_clear_flag(ui_StandbyScreen_time, LV_OBJ_FLAG_HIDDEN);
+        }
+    } else {
+        lv_obj_add_flag(ui_StandbyScreen_time, LV_OBJ_FLAG_HIDDEN);
     }
     ui_object_set_themeable_style_property(ui_StandbyScreen_bluetoothIcon, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR,
                                            clientController.isConnected() ? _ui_theme_color_NiceWhite : _ui_theme_color_SemiDark);
     ui_object_set_themeable_style_property(ui_StandbyScreen_wifiIcon, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR,
-                                           WiFi.status() == WL_CONNECTED ? _ui_theme_color_NiceWhite : _ui_theme_color_SemiDark);
+                                           !isApConnection && WiFi.status() == WL_CONNECTED ? _ui_theme_color_NiceWhite : _ui_theme_color_SemiDark);
 }
 
 void Controller::activate() {

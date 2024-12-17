@@ -78,6 +78,7 @@ class Controller {
     unsigned long lastAction;
     bool loaded;
     bool updating;
+    bool isApConnection = false;
 };
 
 #endif // CONTROLLER_H

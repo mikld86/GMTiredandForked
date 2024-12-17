@@ -19,8 +19,8 @@ class WebUIPlugin : public Plugin {
     String processTemplate(const String& var);
     String processOTATemplate(const String& var);
 
-  void handleOTA(AsyncWebServerRequest *request);
-  void handleSettings(AsyncWebServerRequest *request);
+    void handleOTA(AsyncWebServerRequest *request);
+    void handleSettings(AsyncWebServerRequest *request);
 
     GitHubOTA ota = GitHubOTA(BUILD_GIT_VERSION, RELEASE_URL + "latest", "display-firmware.bin", "display-filesystem.bin");
     AsyncWebServer server;
