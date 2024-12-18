@@ -164,7 +164,7 @@ void Controller::setTargetTemp(int temperature) {
         settings.setTargetSteamTemp(temperature);
         break;
     case MODE_WATER:
-        settings.setTargetDuration(temperature);
+        settings.setTargetWaterTemp(temperature);
         break;
     default:;
     }
