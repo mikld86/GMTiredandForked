@@ -14,7 +14,7 @@ void ui_InitScreen_screen_init(void);
 void ui_event_InitScreen(lv_event_t * e);
 lv_obj_t * ui_InitScreen;
 lv_obj_t * ui_InitScreen_Image2;
-lv_obj_t * ui_InitScreen_Label3;
+lv_obj_t * ui_InitScreen_mainLabel;
 // CUSTOM VARIABLES
 
 
@@ -194,11 +194,11 @@ const lv_img_dsc_t * ui_imgset_794559649[1] = {&ui_img_1456692430};
 const lv_img_dsc_t * ui_imgset_1612577215[1] = {&ui_img_445946954};
 const lv_img_dsc_t * ui_imgset_1010926578[1] = {&ui_img_2044104741};
 const lv_img_dsc_t * ui_imgset_1155213431[1] = {&ui_img_545340440};
+const lv_img_dsc_t * ui_imgset_524469952[1] = {&ui_img_1765671371};
+const lv_img_dsc_t * ui_imgset_690294202[1] = {&ui_img_1732953241};
 const lv_img_dsc_t * ui_imgset_1252186405[1] = {&ui_img_1951499226};
 const lv_img_dsc_t * ui_imgset_2074400918[1] = {&ui_img_364513079};
 const lv_img_dsc_t * ui_imgset_506671969[1] = {&ui_img_783005998};
-const lv_img_dsc_t * ui_imgset_524469952[1] = {&ui_img_1765671371};
-const lv_img_dsc_t * ui_imgset_690294202[1] = {&ui_img_1732953241};
 
 ///////////////////// TEST LVGL SETTINGS ////////////////////
 #if LV_COLOR_DEPTH != 16

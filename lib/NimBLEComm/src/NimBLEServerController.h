@@ -2,6 +2,7 @@
 #define NIMBLESERVERCONTROLLER_H
 
 #include "NimBLEComm.h"
+#include <ble_ota_dfu.hpp>
 
 class NimBLEServerController : public NimBLEServerCallbacks, public NimBLECharacteristicCallbacks {
   public:
@@ -43,6 +44,8 @@ class NimBLEServerController : public NimBLEServerCallbacks, public NimBLECharac
 
     // BLECharacteristicCallbacks overrides
     void onWrite(NimBLECharacteristic *pCharacteristic) override;
+
+    BLE_OTA_DFU ota_dfu_ble;
 };
 
 #endif // NIMBLESERVERCONTROLLER_H
