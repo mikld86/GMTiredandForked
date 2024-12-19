@@ -8,6 +8,7 @@
 #include "constants.h"
 #include <WiFiClient.h>
 #include <ctime>
+#include <SPIFFS.h>
 
 Controller::Controller()
     : timer(nullptr), mode(MODE_BREW), currentTemp(0), activeUntil(0), grindActiveUntil(0), lastPing(0), lastProgress(0),
@@ -25,6 +26,10 @@ void Controller::setup() {
     pluginManager->setup(this);
 
     setupPanel();
+
+    if (!SPIFFS.begin(true)) {
+        Serial.println("An Error has occurred while mounting LittleFS");
+    }
 }
 
 void Controller::connect() {
@@ -56,6 +61,7 @@ void Controller::setupPanel() {
     beginLvglHelper(panel);
     panel.setBrightness(16);
     ui_init();
+    lv_obj_add_flag(ui_StandbyScreen_updateIcon, LV_OBJ_FLAG_HIDDEN);
 }
 
 void Controller::setupWifi() {
@@ -78,10 +84,12 @@ void Controller::setupWifi() {
 
             configTzTime(TIMEZONE, NTP_SERVER);
         } else {
+            WiFi.disconnect(true, true);
             Serial.println("Timed out while connecting to WiFi");
         }
     }
     if (WiFi.status() != WL_CONNECTED) {
+        isApConnection = true;
         WiFi.mode(WIFI_AP);
         WiFi.softAP(WIFI_AP_SSID);
         Serial.println("Started in AP mode");
@@ -91,7 +99,14 @@ void Controller::setupWifi() {
         Serial.println(WiFi.localIP());
     }
 
-    pluginManager->trigger("controller:wifi:connect");
+    pluginManager->on("ota:update:start", [this](Event const &) {
+       this->updating = true;
+    });
+    pluginManager->on("ota:update:end", [this](Event const &) {
+       this->updating = false;
+    });
+
+    pluginManager->trigger("controller:wifi:connect", "AP", isApConnection ? 1 : 0);
 }
 
 void Controller::loop() {
@@ -157,7 +172,7 @@ void Controller::setTargetTemp(int temperature) {
         settings.setTargetSteamTemp(temperature);
         break;
     case MODE_WATER:
-        settings.setTargetDuration(temperature);
+        settings.setTargetWaterTemp(temperature);
         break;
     default:;
     }
@@ -279,16 +294,19 @@ void Controller::updateProgress() const {
 }
 
 void Controller::updateStandby() {
-    struct tm timeinfo;
-    if (getLocalTime(&timeinfo)) {
-        char time[6];
-        strftime(time, 6, "%H:%M", &timeinfo);
-        lv_label_set_text(ui_StandbyScreen_time, time);
+    if (!isApConnection) {
+        struct tm timeinfo;
+        if (getLocalTime(&timeinfo)) {
+            char time[6];
+            strftime(time, 6, "%H:%M", &timeinfo);
+            lv_label_set_text(ui_StandbyScreen_time, time);
+        lv_obj_clear_flag(ui_StandbyScreen_time, LV_OBJ_FLAG_HIDDEN);
+        }
+    } else {
+        lv_obj_add_flag(ui_StandbyScreen_time, LV_OBJ_FLAG_HIDDEN);
     }
-    ui_object_set_themeable_style_property(ui_StandbyScreen_bluetoothIcon, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR,
-                                           clientController.isConnected() ? _ui_theme_color_NiceWhite : _ui_theme_color_SemiDark);
-    ui_object_set_themeable_style_property(ui_StandbyScreen_wifiIcon, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR,
-                                           WiFi.status() == WL_CONNECTED ? _ui_theme_color_NiceWhite : _ui_theme_color_SemiDark);
+    clientController.isConnected() ? lv_obj_clear_flag(ui_StandbyScreen_bluetoothIcon, LV_OBJ_FLAG_HIDDEN) : lv_obj_add_flag(ui_StandbyScreen_bluetoothIcon, LV_OBJ_FLAG_HIDDEN);
+    !isApConnection && WiFi.status() == WL_CONNECTED  ? lv_obj_clear_flag(ui_StandbyScreen_wifiIcon, LV_OBJ_FLAG_HIDDEN) : lv_obj_add_flag(ui_StandbyScreen_wifiIcon, LV_OBJ_FLAG_HIDDEN);
 }
 
 void Controller::activate() {

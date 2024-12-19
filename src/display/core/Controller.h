@@ -26,6 +26,7 @@ class Controller {
     void setTargetDuration(int duration);
     int getTargetGrindDuration() const;
     void setTargetGrindDuration(int duration);
+    virtual int getCurrentTemp() const { return currentTemp; }
     bool isActive() const;
     bool isGrindActive() const;
     bool isUpdating() const;
@@ -77,6 +78,7 @@ class Controller {
     unsigned long lastAction;
     bool loaded;
     bool updating;
+    bool isApConnection = false;
 };
 
 #endif // CONTROLLER_H

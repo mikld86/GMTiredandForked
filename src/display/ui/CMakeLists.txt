@@ -13,17 +13,25 @@ SET(SOURCES screens/ui_InitScreen.c
     components/ui_comp_hook.c
     ui_helpers.c
     ui_events.cpp
-    images/ui_img_gaggimate_png.c
-    images/ui_img_1895594966.c
-    images/ui_img_1857452635.c
-    images/ui_img_753040508.c
-    images/ui_img_2100879889.c
-    images/ui_img_2056842146.c
-    images/ui_img_standby_png.c
-    images/ui_img_2106667244.c
-    images/ui_img_980971367.c
-    images/ui_img_bluetooth_png.c
-    images/ui_img_wifi_png.c
-    images/ui_img_646127855.c)
+    images/ui_img_logo_png.c
+    images/ui_img_indicator_png.c
+    images/ui_img_untitled_png.c
+    images/ui_img_489054950.c
+    images/ui_img_295763949.c
+    images/ui_img_1455708189.c
+    images/ui_img_363557387.c
+    images/ui_img_979979123.c
+    images/ui_img_545340440.c
+    images/ui_img_783005998.c
+    images/ui_img_2044104741.c
+    images/ui_img_445946954.c
+    images/ui_img_1829139226.c
+    images/ui_img_364513079.c
+    images/ui_img_1091371356.c
+    images/ui_img_1765671371.c
+    images/ui_img_1732953241.c
+    images/ui_img_1456692430.c
+    images/ui_img_360122106.c
+    images/ui_img_1951499226.c)
 
 add_library(ui ${SOURCES})

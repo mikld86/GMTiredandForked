@@ -43,8 +43,7 @@ void HomekitAccessory::setTargetTemperature(float temperatureValue) const { targ
 float HomekitAccessory::getTargetTemperature() const { return targetTemperature->getVal(); }
 
 HomekitPlugin::HomekitPlugin(String wifiSsid, String wifiPassword)
-    : spanAccessory(nullptr), accessoryInformation(nullptr), identify(nullptr), accessory(nullptr),
-      controller(nullptr) {
+    : spanAccessory(nullptr), accessoryInformation(nullptr), identify(nullptr), accessory(nullptr), controller(nullptr) {
     this->wifiSsid = std::move(wifiSsid);
     this->wifiPassword = std::move(wifiPassword);
 }
@@ -56,7 +55,9 @@ void HomekitPlugin::clearAction() { actionRequired = false; }
 void HomekitPlugin::setup(Controller *controller, PluginManager *pluginManager) {
     this->controller = controller;
 
-    pluginManager->on("controller:wifi:connect", [this](Event &) {
+    pluginManager->on("controller:wifi:connect", [this](Event & event) {
+        int apMode = event.getInt("AP");
+        if (apMode) return;
         homeSpan.setHostNameSuffix("");
         homeSpan.setPortNum(HOMESPAN_PORT);
         homeSpan.begin(Category::Thermostats, DEVICE_NAME, this->controller->getSettings().getMdnsName().c_str());

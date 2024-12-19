@@ -83,7 +83,7 @@ void beginLvglHelper(LilyGo_Display &board, bool debug) {
     disp_drv.ver_res = board.height();
     disp_drv.flush_cb = disp_flush;
     disp_drv.draw_buf = &draw_buf;
-    // disp_drv.full_refresh = 1;
+    disp_drv.full_refresh = 0;
     disp_drv.user_data = &board;
     lv_disp_drv_register(&disp_drv);
 
