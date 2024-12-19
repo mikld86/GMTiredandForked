@@ -78,11 +78,17 @@ void NimBLEServerController::sendError(int errorCode) {
     }
 }
 
-void NimBLEServerController::registerTempControlCallback(const temp_control_callback_t &callback) { tempControlCallback = callback; }
+void NimBLEServerController::registerTempControlCallback(const temp_control_callback_t &callback) {
+    tempControlCallback = callback;
+}
 
-void NimBLEServerController::registerPumpControlCallback(const pump_control_callback_t &callback) { pumpControlCallback = callback; }
+void NimBLEServerController::registerPumpControlCallback(const pump_control_callback_t &callback) {
+    pumpControlCallback = callback;
+}
 
-void NimBLEServerController::registerValveControlCallback(const pin_control_callback_t &callback) { valveControlCallback = callback; }
+void NimBLEServerController::registerValveControlCallback(const pin_control_callback_t &callback) {
+    valveControlCallback = callback;
+}
 
 void NimBLEServerController::registerAltControlCallback(const pin_control_callback_t &callback) { altControlCallback = callback; }
 

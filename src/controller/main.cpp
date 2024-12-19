@@ -161,9 +161,7 @@ void thermal_runaway_shutdown() {
     serverController.sendError(ERROR_CODE_RUNAWAY);
 }
 
-void control_heater(int out) {
-    analogWrite(HEATER_PIN, out);
-}
+void control_heater(int out) { analogWrite(HEATER_PIN, out); }
 
 void control_pump() {
     unsigned long currentMillis = millis();

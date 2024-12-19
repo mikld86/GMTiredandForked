@@ -6,6 +6,8 @@
 
 #include "semver.h"
 
+enum class OTAPhase { DISPLAY_FIRMWARE, DISPLAY_FS, CONTROLLER_FS };
+
 extern const uint8_t x509_crt_imported_bundle_bin_start[] asm("_binary_x509_crt_bundle_start");
 
 class GitHubOTA {
@@ -17,7 +19,7 @@ class GitHubOTA {
     bool isUpdateAvailable() const;
     String getCurrentVersion() const;
     void update();
-    void setReleaseUrl(const String& release_url);
+    void setReleaseUrl(const String &release_url);
 
   private:
     HTTPUpdate Updater;

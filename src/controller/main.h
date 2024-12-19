@@ -1,20 +1,20 @@
 #ifndef MAIN_H
 #define MAIN_H
 
+#include "NimBLEServerController.h"
 #include <Arduino.h>
+#include <SPI.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <SPI.h>
-#include "NimBLEServerController.h"
 
 // GPIO Pin Definitions
-#define HEATER_PIN       14
-#define PUMP_PIN         9
-#define VALVE_PIN        10
-#define ALT_PIN          11
-#define MAX6675_SCK_PIN  6
-#define MAX6675_CS_PIN   7
+#define HEATER_PIN 14
+#define PUMP_PIN 9
+#define VALVE_PIN 10
+#define ALT_PIN 11
+#define MAX6675_SCK_PIN 6
+#define MAX6675_CS_PIN 7
 #define MAX6675_MISO_PIN 4
 
 constexpr size_t TEMP_UPDATE_INTERVAL_MS = 1000;
@@ -48,4 +48,4 @@ void thermal_runaway_shutdown(void);
 void start_pid_autotune(void);
 void stop_pid_autotune(void);
 
-#endif //MAIN_H
+#endif // MAIN_H

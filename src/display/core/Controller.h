@@ -7,7 +7,6 @@
 #include "Settings.h"
 #include <WiFi.h>
 
-
 class Controller {
   public:
     Controller();
@@ -30,7 +29,7 @@ class Controller {
     bool isActive() const;
     bool isGrindActive() const;
     bool isUpdating() const;
-    Settings& getSettings() { return settings; }
+    Settings &getSettings() { return settings; }
 
     // Event callback methods
     void updateLastAction();

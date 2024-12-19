@@ -4,8 +4,8 @@
 #define ELEGANTOTA_USE_ASYNC_WEBSERVER 1
 
 #include "../core/Plugin.h"
-#include <ESPAsyncWebServer.h>
 #include "GitHubOTA.h"
+#include <ESPAsyncWebServer.h>
 
 constexpr size_t UPDATE_CHECK_INTERVAL = 5 * 60 * 1000;
 
@@ -16,10 +16,11 @@ class WebUIPlugin : public Plugin {
     WebUIPlugin();
     void setup(Controller *controller, PluginManager *pluginManager) override;
     void loop() override;
+
   private:
     void start();
-    String processTemplate(const String& var);
-    String processOTATemplate(const String& var);
+    String processTemplate(const String &var);
+    String processOTATemplate(const String &var);
 
     void handleOTA(AsyncWebServerRequest *request);
     void handleSettings(AsyncWebServerRequest *request);

@@ -4,9 +4,9 @@
 #include "Plugin.h"
 
 #include <functional>
-#include <vector>
-#include <string>
 #include <map>
+#include <string>
+#include <vector>
 
 using EventCallback = std::function<void(Event &)>;
 
@@ -18,17 +18,17 @@ class PluginManager {
     void setup(Controller *controller);
     void loop();
 
-    void on(const String& eventId, const EventCallback &callback);
+    void on(const String &eventId, const EventCallback &callback);
 
-    Event trigger(const String& eventId);
-    Event trigger(const String& eventId, const String& key, const String &value);
-    Event trigger(const String& eventId, const String& key, int value);
-    Event trigger(const String& eventId, const String& key, float value);
+    Event trigger(const String &eventId);
+    Event trigger(const String &eventId, const String &key, const String &value);
+    Event trigger(const String &eventId, const String &key, int value);
+    Event trigger(const String &eventId, const String &key, float value);
     void trigger(Event &event);
 
   private:
     bool initialized = false;
-    std::vector<Plugin*> plugins;
+    std::vector<Plugin *> plugins;
     std::map<std::string, std::vector<EventCallback>> listeners = {};
 };
 

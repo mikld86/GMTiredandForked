@@ -8,7 +8,8 @@
 #include "semver_extensions.h"
 #include <ArduinoJson.h>
 
-GitHubOTA::GitHubOTA(const String &version, const String &release_url, const String &firmware_name, const String &filesystem_name) {
+GitHubOTA::GitHubOTA(const String &version, const String &release_url, const String &firmware_name,
+                     const String &filesystem_name) {
     ESP_LOGV("GitHubOTA", "GitHubOTA(version: %s, firmware_name: %s, fetch_url_via_redirect: %d)\n", version.c_str(),
              firmware_name.c_str(), fetch_url_via_redirect);
 
@@ -44,10 +45,7 @@ String GitHubOTA::getCurrentVersion() const {
     return String(_latest_version.major) + "." + String(_latest_version.minor) + "." + _latest_version.patch;
 }
 
-
-bool GitHubOTA::isUpdateAvailable() const {
-    return update_required(_latest_version, _version);
-}
+bool GitHubOTA::isUpdateAvailable() const { return update_required(_latest_version, _version); }
 
 void GitHubOTA::update() {
     const char *TAG = "update";
@@ -76,9 +74,7 @@ void GitHubOTA::update() {
     ESP_LOGI(TAG, "No updates found\n");
 }
 
-void GitHubOTA::setReleaseUrl(const String& release_url) {
-    this->_release_url = release_url;
-}
+void GitHubOTA::setReleaseUrl(const String &release_url) { this->_release_url = release_url; }
 
 HTTPUpdateResult GitHubOTA::update_firmware(const String &url) {
     const char *TAG = "update_firmware";

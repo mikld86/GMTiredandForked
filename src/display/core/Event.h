@@ -15,14 +15,11 @@ struct EventDataEntry {
 
     EventDataEntry() = default;
 
-    EventDataEntry(const String &k, int value)
-        : key(k), type(EventDataType::EVENT_TYPE_INT), intValue(value) {}
+    EventDataEntry(const String &k, int value) : key(k), type(EventDataType::EVENT_TYPE_INT), intValue(value) {}
 
-    EventDataEntry(const String &k, float value)
-        : key(k), type(EventDataType::EVENT_TYPE_FLOAT), floatValue(value) {}
+    EventDataEntry(const String &k, float value) : key(k), type(EventDataType::EVENT_TYPE_FLOAT), floatValue(value) {}
 
-    EventDataEntry(const String &k, const String &value)
-        : key(k), type(EventDataType::EVENT_TYPE_STRING), stringValue(value) {}
+    EventDataEntry(const String &k, const String &value) : key(k), type(EventDataType::EVENT_TYPE_STRING), stringValue(value) {}
 };
 
 using EventData = std::vector<EventDataEntry>;

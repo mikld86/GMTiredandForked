@@ -1,9 +1,9 @@
 #include "WebUIPlugin.h"
 #include "../core/Controller.h"
+#include "../ui/ui.h"
 #include <ArduinoJson.h>
 #include <AsyncJson.h>
 #include <SPIFFS.h>
-#include "../ui/ui.h"
 
 WebUIPlugin::WebUIPlugin() : server(80) {}
 
@@ -46,7 +46,6 @@ void WebUIPlugin::start() {
     server.begin();
     Serial.print("OTA server started");
 }
-
 
 void WebUIPlugin::handleOTA(AsyncWebServerRequest *request) {
 

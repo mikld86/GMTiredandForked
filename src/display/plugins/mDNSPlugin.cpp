@@ -10,7 +10,8 @@ void mDNSPlugin::setup(Controller *controller, PluginManager *pluginManager) {
 }
 void mDNSPlugin::start(Event const &event) const {
     const int apMode = event.getInt("AP");
-    if (apMode) return;
+    if (apMode)
+        return;
     if (!MDNS.begin(controller->getSettings().getMdnsName().c_str())) {
         Serial.println("Error setting up MDNS responder!");
     }

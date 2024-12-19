@@ -55,9 +55,10 @@ void HomekitPlugin::clearAction() { actionRequired = false; }
 void HomekitPlugin::setup(Controller *controller, PluginManager *pluginManager) {
     this->controller = controller;
 
-    pluginManager->on("controller:wifi:connect", [this](Event & event) {
+    pluginManager->on("controller:wifi:connect", [this](Event &event) {
         int apMode = event.getInt("AP");
-        if (apMode) return;
+        if (apMode)
+            return;
         homeSpan.setHostNameSuffix("");
         homeSpan.setPortNum(HOMESPAN_PORT);
         homeSpan.begin(Category::Thermostats, DEVICE_NAME, this->controller->getSettings().getMdnsName().c_str());

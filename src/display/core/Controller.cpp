@@ -6,9 +6,9 @@
 #include "../plugins/mDNSPlugin.h"
 #include "../ui/ui.h"
 #include "constants.h"
+#include <SPIFFS.h>
 #include <WiFiClient.h>
 #include <ctime>
-#include <SPIFFS.h>
 
 Controller::Controller()
     : timer(nullptr), mode(MODE_BREW), currentTemp(0), activeUntil(0), grindActiveUntil(0), lastPing(0), lastProgress(0),
@@ -99,12 +99,8 @@ void Controller::setupWifi() {
         Serial.println(WiFi.localIP());
     }
 
-    pluginManager->on("ota:update:start", [this](Event const &) {
-       this->updating = true;
-    });
-    pluginManager->on("ota:update:end", [this](Event const &) {
-       this->updating = false;
-    });
+    pluginManager->on("ota:update:start", [this](Event const &) { this->updating = true; });
+    pluginManager->on("ota:update:end", [this](Event const &) { this->updating = false; });
 
     pluginManager->trigger("controller:wifi:connect", "AP", isApConnection ? 1 : 0);
 }
@@ -233,14 +229,14 @@ void Controller::updateUiActive() const {
 void Controller::updateUiSettings() {
     int16_t setTemp = getTargetTemp();
     const int16_t angleRange = 3160;
-    double percentage = ((double)setTemp) / ((double) MAX_TEMP);
-    int16_t angle = (percentage * ((double) angleRange)) - angleRange / 2;
-    lv_img_set_angle(ui_BrewScreen_tempTarget,angle);
-    lv_img_set_angle(ui_StatusScreen_tempTarget,angle);
-    lv_img_set_angle(ui_MenuScreen_tempTarget,angle);
-    lv_img_set_angle(ui_SteamScreen_tempTarget,angle);
-    lv_img_set_angle(ui_WaterScreen_tempTarget,angle);
-    lv_img_set_angle(ui_GrindScreen_tempTarget,angle);
+    double percentage = ((double)setTemp) / ((double)MAX_TEMP);
+    int16_t angle = (percentage * ((double)angleRange)) - angleRange / 2;
+    lv_img_set_angle(ui_BrewScreen_tempTarget, angle);
+    lv_img_set_angle(ui_StatusScreen_tempTarget, angle);
+    lv_img_set_angle(ui_MenuScreen_tempTarget, angle);
+    lv_img_set_angle(ui_SteamScreen_tempTarget, angle);
+    lv_img_set_angle(ui_WaterScreen_tempTarget, angle);
+    lv_img_set_angle(ui_GrindScreen_tempTarget, angle);
 
     lv_label_set_text_fmt(ui_StatusScreen_targetTemp, "%d°C", settings.getTargetBrewTemp());
     lv_label_set_text_fmt(ui_BrewScreen_targetTemp, "%d°C", settings.getTargetBrewTemp());
@@ -300,13 +296,15 @@ void Controller::updateStandby() {
             char time[6];
             strftime(time, 6, "%H:%M", &timeinfo);
             lv_label_set_text(ui_StandbyScreen_time, time);
-        lv_obj_clear_flag(ui_StandbyScreen_time, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_clear_flag(ui_StandbyScreen_time, LV_OBJ_FLAG_HIDDEN);
         }
     } else {
         lv_obj_add_flag(ui_StandbyScreen_time, LV_OBJ_FLAG_HIDDEN);
     }
-    clientController.isConnected() ? lv_obj_clear_flag(ui_StandbyScreen_bluetoothIcon, LV_OBJ_FLAG_HIDDEN) : lv_obj_add_flag(ui_StandbyScreen_bluetoothIcon, LV_OBJ_FLAG_HIDDEN);
-    !isApConnection && WiFi.status() == WL_CONNECTED  ? lv_obj_clear_flag(ui_StandbyScreen_wifiIcon, LV_OBJ_FLAG_HIDDEN) : lv_obj_add_flag(ui_StandbyScreen_wifiIcon, LV_OBJ_FLAG_HIDDEN);
+    clientController.isConnected() ? lv_obj_clear_flag(ui_StandbyScreen_bluetoothIcon, LV_OBJ_FLAG_HIDDEN)
+                                   : lv_obj_add_flag(ui_StandbyScreen_bluetoothIcon, LV_OBJ_FLAG_HIDDEN);
+    !isApConnection &&WiFi.status() == WL_CONNECTED ? lv_obj_clear_flag(ui_StandbyScreen_wifiIcon, LV_OBJ_FLAG_HIDDEN)
+                                                    : lv_obj_add_flag(ui_StandbyScreen_wifiIcon, LV_OBJ_FLAG_HIDDEN);
 }
 
 void Controller::activate() {
