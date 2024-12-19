@@ -2,19 +2,35 @@
 #include "../core/Controller.h"
 #include <ArduinoJson.h>
 #include <AsyncJson.h>
-#include <ElegantOTA.h>
 #include <SPIFFS.h>
+#include "../ui/ui.h"
 
 WebUIPlugin::WebUIPlugin() : server(80) {}
 
-void WebUIPlugin::setup(Controller *_controller, PluginManager *pluginManager) {
+void WebUIPlugin::setup(Controller *_controller, PluginManager *_pluginManager) {
     this->controller = _controller;
+    this->pluginManager = _pluginManager;
     pluginManager->on("controller:wifi:connect", [this](Event const &) { start(); });
+}
+void WebUIPlugin::loop() {
+    if (updating) {
+        pluginManager->trigger("ota:update:start");
+        ota.update();
+        pluginManager->trigger("ota:update:end");
+        updating = false;
+    }
+    const long now = millis();
+    if (lastUpdateCheck == 0 || now > lastUpdateCheck + UPDATE_CHECK_INTERVAL) {
+        ota.checkForUpdates();
+        if (ota.isUpdateAvailable()) {
+            lv_obj_clear_flag(ui_StandbyScreen_updateIcon, LV_OBJ_FLAG_HIDDEN);
+        }
+        lastUpdateCheck = now;
+    }
 }
 
 void WebUIPlugin::start() {
     ota.setReleaseUrl(RELEASE_URL + controller->getSettings().getOTAChannel());
-    ota.checkForUpdates();
     server.on("/api/ota", [this](AsyncWebServerRequest *request) { handleOTA(request); });
     server.on("/api/settings", [this](AsyncWebServerRequest *request) { handleSettings(request); });
     server.on("/api/status", [this](AsyncWebServerRequest *request) {
@@ -27,9 +43,6 @@ void WebUIPlugin::start() {
         request->send(response);
     });
     server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
-    ElegantOTA.begin(&server);
-    ElegantOTA.setAutoReboot(true);
-    ElegantOTA.onStart([this]() { controller->onOTAUpdate(); });
     server.begin();
     Serial.print("OTA server started");
 }
@@ -39,12 +52,12 @@ void WebUIPlugin::handleOTA(AsyncWebServerRequest *request) {
 
     if (request->method() == HTTP_POST) {
         if (request->hasArg("channel")) {
-            controller->getSettings().setOTAChannel(request->arg("channel") == "stable" ? "latest" : "nightly");
+            controller->getSettings().setOTAChannel(request->arg("channel") == "latest" ? "latest" : "nightly");
             ota.setReleaseUrl(RELEASE_URL + controller->getSettings().getOTAChannel());
             ota.checkForUpdates();
         }
         if (request->hasArg("update")) {
-            ota.update();
+            updating = true;
         }
     }
 
@@ -52,8 +65,10 @@ void WebUIPlugin::handleOTA(AsyncWebServerRequest *request) {
     JsonDocument doc;
     Settings const &settings = controller->getSettings();
     doc["updateAvailable"] = ota.isUpdateAvailable();
+    doc["currentVersion"] = BUILD_GIT_VERSION;
     doc["latestVersion"] = ota.getCurrentVersion();
     doc["channel"] = settings.getOTAChannel();
+    doc["updating"] = updating;
     serializeJson(doc, *response);
     request->send(response);
 }

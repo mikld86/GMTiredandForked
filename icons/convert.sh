@@ -1,5 +1,15 @@
 #!/usr/bin/env bash
 
+command=""
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        command="inkscape"
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+        command="/Applications/Inkscape.app/Contents/MacOS/inkscape"
+else
+        echo "Unsupported OS"
+        exit 1
+fi
+
 
 function convert() {
   input="$1"
@@ -8,7 +18,7 @@ function convert() {
   output="out/${base}-${size}x${size}.png"
   mkdir -p out
 
-  /Applications/Inkscape.app/Contents/MacOS/inkscape -w "$size" -h "$size" "$input" -o "$output"
+  $command -w "$size" -h "$size" "$input" -o "$output"
 }
 
 convert "angle-down.svg" 40
@@ -24,3 +34,5 @@ convert "wifi.svg" 20
 convert "wind.svg" 80
 convert "clock.svg" 40
 convert "thermometer-half.svg" 40
+convert "refresh.svg" 20
+convert "tap.svg" 60

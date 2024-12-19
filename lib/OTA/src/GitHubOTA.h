@@ -6,6 +6,8 @@
 
 #include "semver.h"
 
+extern const uint8_t x509_crt_imported_bundle_bin_start[] asm("_binary_x509_crt_bundle_start");
+
 class GitHubOTA {
   public:
     GitHubOTA(const String &version, const String &release_url, const String &firmware_name = "firmware.bin",

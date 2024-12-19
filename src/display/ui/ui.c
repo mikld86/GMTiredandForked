@@ -130,10 +130,12 @@ void ui_StandbyScreen_screen_init(void);
 void ui_event_StandbyScreen(lv_event_t * e);
 lv_obj_t * ui_StandbyScreen;
 lv_obj_t * ui_StandbyScreen_Image1;
-lv_obj_t * ui_StandbyScreen_text1;
 lv_obj_t * ui_StandbyScreen_time;
-lv_obj_t * ui_StandbyScreen_bluetoothIcon;
+lv_obj_t * ui_StandbyScreen_Container1;
 lv_obj_t * ui_StandbyScreen_wifiIcon;
+lv_obj_t * ui_StandbyScreen_bluetoothIcon;
+lv_obj_t * ui_StandbyScreen_updateIcon;
+lv_obj_t * ui_StandbyScreen_Image3;
 // CUSTOM VARIABLES
 
 
@@ -195,6 +197,8 @@ const lv_img_dsc_t * ui_imgset_1155213431[1] = {&ui_img_545340440};
 const lv_img_dsc_t * ui_imgset_1252186405[1] = {&ui_img_1951499226};
 const lv_img_dsc_t * ui_imgset_2074400918[1] = {&ui_img_364513079};
 const lv_img_dsc_t * ui_imgset_506671969[1] = {&ui_img_783005998};
+const lv_img_dsc_t * ui_imgset_524469952[1] = {&ui_img_1765671371};
+const lv_img_dsc_t * ui_imgset_690294202[1] = {&ui_img_1732953241};
 
 ///////////////////// TEST LVGL SETTINGS ////////////////////
 #if LV_COLOR_DEPTH != 16

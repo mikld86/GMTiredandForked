@@ -61,6 +61,7 @@ void Controller::setupPanel() {
     beginLvglHelper(panel);
     panel.setBrightness(16);
     ui_init();
+    lv_obj_add_flag(ui_StandbyScreen_updateIcon, LV_OBJ_FLAG_HIDDEN);
 }
 
 void Controller::setupWifi() {
@@ -97,6 +98,13 @@ void Controller::setupWifi() {
         Serial.print("IP address: ");
         Serial.println(WiFi.localIP());
     }
+
+    pluginManager->on("ota:update:start", [this](Event const &) {
+       this->updating = true;
+    });
+    pluginManager->on("ota:update:end", [this](Event const &) {
+       this->updating = false;
+    });
 
     pluginManager->trigger("controller:wifi:connect", "AP", isApConnection ? 1 : 0);
 }
@@ -297,10 +305,8 @@ void Controller::updateStandby() {
     } else {
         lv_obj_add_flag(ui_StandbyScreen_time, LV_OBJ_FLAG_HIDDEN);
     }
-    ui_object_set_themeable_style_property(ui_StandbyScreen_bluetoothIcon, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR,
-                                           clientController.isConnected() ? _ui_theme_color_NiceWhite : _ui_theme_color_SemiDark);
-    ui_object_set_themeable_style_property(ui_StandbyScreen_wifiIcon, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR,
-                                           !isApConnection && WiFi.status() == WL_CONNECTED ? _ui_theme_color_NiceWhite : _ui_theme_color_SemiDark);
+    clientController.isConnected() ? lv_obj_clear_flag(ui_StandbyScreen_bluetoothIcon, LV_OBJ_FLAG_HIDDEN) : lv_obj_add_flag(ui_StandbyScreen_bluetoothIcon, LV_OBJ_FLAG_HIDDEN);
+    !isApConnection && WiFi.status() == WL_CONNECTED  ? lv_obj_clear_flag(ui_StandbyScreen_wifiIcon, LV_OBJ_FLAG_HIDDEN) : lv_obj_add_flag(ui_StandbyScreen_wifiIcon, LV_OBJ_FLAG_HIDDEN);
 }
 
 void Controller::activate() {

@@ -21,6 +21,4 @@ void update_finished();
 void update_progress(int currentlyReceiced, int totalBytes);
 void update_error(int err);
 
-extern const char *ca_certificate;
-
 #endif

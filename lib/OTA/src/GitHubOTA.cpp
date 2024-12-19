@@ -18,7 +18,7 @@ GitHubOTA::GitHubOTA(const String &version, const String &release_url, const Str
     _filesystem_name = filesystem_name;
 
     Updater.rebootOnUpdate(false);
-    _wifi_client.setCACert(ca_certificate);
+    _wifi_client.setCACertBundle(x509_crt_imported_bundle_bin_start);
 
     Updater.onStart(update_started);
     Updater.onEnd(update_finished);
@@ -53,6 +53,7 @@ void GitHubOTA::update() {
     const char *TAG = "update";
 
     if (update_required(_latest_version, _version)) {
+        ESP_LOGI(TAG, "Update is required, running firmware update.");
         auto result = update_firmware(_latest_url + _firmware_name);
 
         if (result != HTTP_UPDATE_OK) {

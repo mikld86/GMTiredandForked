@@ -142,10 +142,12 @@ void ui_StandbyScreen_screen_init(void);
 void ui_event_StandbyScreen(lv_event_t * e);
 extern lv_obj_t * ui_StandbyScreen;
 extern lv_obj_t * ui_StandbyScreen_Image1;
-extern lv_obj_t * ui_StandbyScreen_text1;
 extern lv_obj_t * ui_StandbyScreen_time;
-extern lv_obj_t * ui_StandbyScreen_bluetoothIcon;
+extern lv_obj_t * ui_StandbyScreen_Container1;
 extern lv_obj_t * ui_StandbyScreen_wifiIcon;
+extern lv_obj_t * ui_StandbyScreen_bluetoothIcon;
+extern lv_obj_t * ui_StandbyScreen_updateIcon;
+extern lv_obj_t * ui_StandbyScreen_Image3;
 // CUSTOM VARIABLES
 
 // SCREEN: ui_StatusScreen
@@ -205,8 +207,10 @@ LV_IMG_DECLARE(ui_img_783005998);    // assets/wind-80x80.png
 LV_IMG_DECLARE(ui_img_2044104741);    // assets/power-40x40.png
 LV_IMG_DECLARE(ui_img_445946954);    // assets/play-40x40.png
 LV_IMG_DECLARE(ui_img_1829139226);    // assets/angle-down-40x40.png
-LV_IMG_DECLARE(ui_img_1091371356);    // assets/bluetooth-alt-20x20.png
 LV_IMG_DECLARE(ui_img_364513079);    // assets/wifi-20x20.png
+LV_IMG_DECLARE(ui_img_1091371356);    // assets/bluetooth-alt-20x20.png
+LV_IMG_DECLARE(ui_img_1765671371);    // assets/refresh-20x20.png
+LV_IMG_DECLARE(ui_img_1732953241);    // assets/tap-60x60.png
 LV_IMG_DECLARE(ui_img_1456692430);    // assets/pause-40x40.png
 LV_IMG_DECLARE(ui_img_360122106);    // assets/clock-40x40.png
 LV_IMG_DECLARE(ui_img_1951499226);    // assets/thermometer-half-40x40.png
