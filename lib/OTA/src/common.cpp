@@ -73,8 +73,4 @@ void update_started() { ESP_LOGI("update_started", "HTTP update process started\
 
 void update_finished() { ESP_LOGI("update_finished", "HTTP update process finished\n"); }
 
-void update_progress(int currentlyReceiced, int totalBytes) {
-    ESP_LOGI("update_progress", "Data received, Progress: %.2f %%\r", 100.0 * currentlyReceiced / totalBytes);
-}
-
 void update_error(int err) { ESP_LOGI("update_error", "HTTP update fatal error code %d\n", err); }

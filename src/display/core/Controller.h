@@ -78,6 +78,7 @@ class Controller {
     bool loaded;
     bool updating;
     bool isApConnection = false;
+    bool initialized = false;
 };
 
 #endif // CONTROLLER_H

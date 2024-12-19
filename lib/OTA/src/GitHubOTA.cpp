@@ -8,7 +8,8 @@
 #include "semver_extensions.h"
 #include <ArduinoJson.h>
 
-GitHubOTA::GitHubOTA(const String &version, const String &release_url, const String &firmware_name,
+GitHubOTA::GitHubOTA(const String &version, const String &release_url, const phase_callback_t &phase_callback,
+                     const progress_callback_t &progress_callback, const String &firmware_name,
                      const String &filesystem_name) {
     ESP_LOGV("GitHubOTA", "GitHubOTA(version: %s, firmware_name: %s, fetch_url_via_redirect: %d)\n", version.c_str(),
              firmware_name.c_str(), fetch_url_via_redirect);
@@ -17,13 +18,18 @@ GitHubOTA::GitHubOTA(const String &version, const String &release_url, const Str
     _release_url = release_url;
     _firmware_name = firmware_name;
     _filesystem_name = filesystem_name;
+    _phase_callback = phase_callback;
 
     Updater.rebootOnUpdate(false);
     _wifi_client.setCACertBundle(x509_crt_imported_bundle_bin_start);
 
     Updater.onStart(update_started);
     Updater.onEnd(update_finished);
-    Updater.onProgress(update_progress);
+    Updater.onProgress([progress_callback](int bytesReceived, int totalBytes) {
+        int percentage = 100.0 * bytesReceived / totalBytes;
+        progress_callback(percentage);
+        ESP_LOGI("update_progress", "Data received, Progress: %d %%\r", percentage);
+    });
     Updater.onError(update_error);
     Updater.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
 }
@@ -52,6 +58,7 @@ void GitHubOTA::update() {
 
     if (update_required(_latest_version, _version)) {
         ESP_LOGI(TAG, "Update is required, running firmware update.");
+        this->_phase_callback(PHASE_DISPLAY_FW);
         auto result = update_firmware(_latest_url + _firmware_name);
 
         if (result != HTTP_UPDATE_OK) {
@@ -59,6 +66,7 @@ void GitHubOTA::update() {
             return;
         }
 
+        this->_phase_callback(PHASE_DISPLAY_FS);
         result = update_filesystem(_latest_url + _firmware_name);
 
         if (result != HTTP_UPDATE_OK) {

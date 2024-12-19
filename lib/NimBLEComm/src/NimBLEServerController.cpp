@@ -51,6 +51,10 @@ void NimBLEServerController::initServer() {
     autotuneChar->setCallbacks(this); // Use this class as the callback handler
 
     pService->start();
+
+    ota_dfu_ble.configure_OTA(pServer);
+    ota_dfu_ble.start_OTA();
+
     NimBLEAdvertising *pAdvertising = NimBLEDevice::getAdvertising();
     pAdvertising->addServiceUUID(SERVICE_UUID);
     pAdvertising->setScanResponse(true);

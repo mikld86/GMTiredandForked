@@ -27,18 +27,18 @@ void ui_InitScreen_screen_init(void)
     ui_object_set_themeable_style_property(ui_InitScreen_Image2, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR_OPA,
                                            _ui_theme_alpha_NiceWhite);
 
-    ui_InitScreen_Label3 = lv_label_create(ui_InitScreen);
-    lv_obj_set_width(ui_InitScreen_Label3, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_InitScreen_Label3, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_InitScreen_Label3, 0);
-    lv_obj_set_y(ui_InitScreen_Label3, 150);
-    lv_obj_set_align(ui_InitScreen_Label3, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_InitScreen_Label3, "Starting...");
-    ui_object_set_themeable_style_property(ui_InitScreen_Label3, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_TEXT_COLOR,
+    ui_InitScreen_mainLabel = lv_label_create(ui_InitScreen);
+    lv_obj_set_width(ui_InitScreen_mainLabel, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_InitScreen_mainLabel, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_InitScreen_mainLabel, 0);
+    lv_obj_set_y(ui_InitScreen_mainLabel, 150);
+    lv_obj_set_align(ui_InitScreen_mainLabel, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_InitScreen_mainLabel, "Starting...");
+    ui_object_set_themeable_style_property(ui_InitScreen_mainLabel, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_TEXT_COLOR,
                                            _ui_theme_color_NiceWhite);
-    ui_object_set_themeable_style_property(ui_InitScreen_Label3, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_TEXT_OPA,
+    ui_object_set_themeable_style_property(ui_InitScreen_mainLabel, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_TEXT_OPA,
                                            _ui_theme_alpha_NiceWhite);
-    lv_obj_set_style_text_font(ui_InitScreen_Label3, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_InitScreen_mainLabel, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_add_event_cb(ui_InitScreen, ui_event_InitScreen, LV_EVENT_ALL, NULL);
 

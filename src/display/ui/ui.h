@@ -32,7 +32,7 @@ void ui_InitScreen_screen_init(void);
 void ui_event_InitScreen(lv_event_t * e);
 extern lv_obj_t * ui_InitScreen;
 extern lv_obj_t * ui_InitScreen_Image2;
-extern lv_obj_t * ui_InitScreen_Label3;
+extern lv_obj_t * ui_InitScreen_mainLabel;
 // CUSTOM VARIABLES
 
 // SCREEN: ui_ProfileScreen

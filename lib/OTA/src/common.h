@@ -18,7 +18,6 @@ bool update_required(semver_t _new_version, semver_t _current_version);
 
 void update_started();
 void update_finished();
-void update_progress(int currentlyReceiced, int totalBytes);
 void update_error(int err);
 
 #endif

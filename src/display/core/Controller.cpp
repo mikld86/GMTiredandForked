@@ -33,6 +33,7 @@ void Controller::setup() {
 }
 
 void Controller::connect() {
+    if (initialized) return;
     lastPing = millis();
     pluginManager->trigger("controller:startup");
 
@@ -41,6 +42,7 @@ void Controller::connect() {
 
     updateUiSettings();
     updateUiCurrentTemp();
+    initialized = true;
 }
 
 void Controller::setupBluetooth() {
@@ -99,7 +101,12 @@ void Controller::setupWifi() {
         Serial.println(WiFi.localIP());
     }
 
-    pluginManager->on("ota:update:start", [this](Event const &) { this->updating = true; });
+    pluginManager->on("ota:update:start", [this](Event const &) {
+        this->updating = true;
+        _ui_screen_change(&ui_InitScreen, LV_SCR_LOAD_ANIM_NONE, 0, 0, &ui_InitScreen_screen_init);
+        lv_label_set_text(ui_InitScreen_mainLabel, "Updating...");
+        lv_timer_handler();
+    });
     pluginManager->on("ota:update:end", [this](Event const &) { this->updating = false; });
 
     pluginManager->trigger("controller:wifi:connect", "AP", isApConnection ? 1 : 0);
