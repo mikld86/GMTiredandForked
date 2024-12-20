@@ -14,7 +14,7 @@ GitHubOTA::GitHubOTA(const String &version, const String &release_url, const pha
     ESP_LOGV("GitHubOTA", "GitHubOTA(version: %s, firmware_name: %s, fetch_url_via_redirect: %d)\n", version.c_str(),
              firmware_name.c_str(), fetch_url_via_redirect);
 
-    _version = from_string(version.c_str());
+    _version = from_string(version.substring(1).c_str());
     _release_url = release_url;
     _firmware_name = firmware_name;
     _filesystem_name = filesystem_name;
