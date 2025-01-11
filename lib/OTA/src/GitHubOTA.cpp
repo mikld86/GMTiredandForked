@@ -9,8 +9,7 @@
 #include <ArduinoJson.h>
 
 GitHubOTA::GitHubOTA(const String &version, const String &release_url, const phase_callback_t &phase_callback,
-                     const progress_callback_t &progress_callback, const String &firmware_name,
-                     const String &filesystem_name) {
+                     const progress_callback_t &progress_callback, const String &firmware_name, const String &filesystem_name) {
     ESP_LOGV("GitHubOTA", "GitHubOTA(version: %s, firmware_name: %s, fetch_url_via_redirect: %d)\n", version.c_str(),
              firmware_name.c_str(), fetch_url_via_redirect);
 

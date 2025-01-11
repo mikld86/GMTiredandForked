@@ -82,3 +82,11 @@ def onGrindTimeLower(event_struct):
 def onGrindTimeRaise(event_struct):
     return
 
+
+def onGrindScreen(event_struct):
+    return
+
+
+def onMenuClick(event_struct):
+    return
+
