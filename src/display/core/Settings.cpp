@@ -27,6 +27,9 @@ Settings::Settings() {
     smartGrindActive = preferences.getBool("sg_a", false);
     smartGrindIp = preferences.getString("sg_i", "");
     smartGrindToggle = preferences.getBool("sg_t", false);
+    homeAssistant = preferences.getBool("ha_a", false);
+    homeAssistantIP = preferences.getString("ha_i", "");
+    homeAssistantPort = preferences.getInt("ha_p", 1883);
     preferences.end();
 }
 
@@ -66,6 +69,9 @@ void Settings::save() {
     preferences.putBool("sg_a", smartGrindActive);
     preferences.putString("sg_i", smartGrindIp);
     preferences.putBool("sg_t", smartGrindToggle);
+    preferences.putBool("ha_a", homeAssistant);
+    preferences.putString("ha_i", homeAssistantIP);
+    preferences.putInt("ha_p", homeAssistantPort);
     preferences.end();
 }
 
@@ -191,5 +197,20 @@ void Settings::setSmartGrindIp(String smart_grind_ip) {
 
 void Settings::setSmartGrindToggle(bool smart_grind_toggle) {
     this->smartGrindToggle = smart_grind_toggle;
+    save();
+}
+
+void Settings::setHomeAssistant(const bool homeAssistant) {
+    this->homeAssistant = homeAssistant;
+    save();
+}
+
+void Settings::setHomeAssistantIP(const String &homeAssistantIP) {
+    this->homeAssistantIP = homeAssistantIP;
+    save();
+}
+
+void Settings::setHomeAssistantPort(const int homeAssistantPort) {
+    this->homeAssistantPort = homeAssistantPort;
     save();
 }
