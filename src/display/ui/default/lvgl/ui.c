@@ -244,7 +244,7 @@ void ui_event_MenuScreen_grindButton1(lv_event_t * e)
     lv_event_code_t event_code = lv_event_get_code(e);
 
     if(event_code == LV_EVENT_CLICKED) {
-        _ui_screen_change(&ui_GrindScreen, LV_SCR_LOAD_ANIM_NONE, 0, 0, &ui_GrindScreen_screen_init);
+        onGrindScreen(e);
     }
 }
 
@@ -253,7 +253,6 @@ void ui_event_MenuScreen_brewButton1(lv_event_t * e)
     lv_event_code_t event_code = lv_event_get_code(e);
 
     if(event_code == LV_EVENT_CLICKED) {
-        _ui_screen_change(&ui_BrewScreen, LV_SCR_LOAD_ANIM_NONE, 0, 0, &ui_BrewScreen_screen_init);
         onBrewScreen(e);
     }
 }
@@ -263,7 +262,6 @@ void ui_event_MenuScreen_profileButton1(lv_event_t * e)
     lv_event_code_t event_code = lv_event_get_code(e);
 
     if(event_code == LV_EVENT_CLICKED) {
-        _ui_screen_change(&ui_WaterScreen, LV_SCR_LOAD_ANIM_NONE, 0, 0, &ui_WaterScreen_screen_init);
         onWaterScreen(e);
     }
 }
@@ -273,7 +271,6 @@ void ui_event_MenuScreen_extrasButton1(lv_event_t * e)
     lv_event_code_t event_code = lv_event_get_code(e);
 
     if(event_code == LV_EVENT_CLICKED) {
-        _ui_screen_change(&ui_SteamScreen, LV_SCR_LOAD_ANIM_NONE, 0, 0, &ui_SteamScreen_screen_init);
         onSteamScreen(e);
     }
 }
@@ -293,7 +290,7 @@ void ui_event_BrewScreen(lv_event_t * e)
 
     if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_TOP) {
         lv_indev_wait_release(lv_indev_get_act());
-        _ui_screen_change(&ui_MenuScreen, LV_SCR_LOAD_ANIM_NONE, 0, 0, &ui_MenuScreen_screen_init);
+        onMenuClick(e);
     }
 }
 
@@ -303,7 +300,6 @@ void ui_event_BrewScreen_startButton(lv_event_t * e)
 
     if(event_code == LV_EVENT_CLICKED) {
         onBrewStart(e);
-        _ui_screen_change(&ui_StatusScreen, LV_SCR_LOAD_ANIM_NONE, 500, 0, &ui_StatusScreen_screen_init);
     }
 }
 
@@ -349,7 +345,7 @@ void ui_event_SteamScreen(lv_event_t * e)
 
     if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_TOP) {
         lv_indev_wait_release(lv_indev_get_act());
-        _ui_screen_change(&ui_MenuScreen, LV_SCR_LOAD_ANIM_NONE, 0, 0, &ui_MenuScreen_screen_init);
+        onMenuClick(e);;
     }
 }
 
@@ -386,7 +382,7 @@ void ui_event_WaterScreen(lv_event_t * e)
 
     if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_TOP) {
         lv_indev_wait_release(lv_indev_get_act());
-        _ui_screen_change(&ui_MenuScreen, LV_SCR_LOAD_ANIM_NONE, 0, 0, &ui_MenuScreen_screen_init);
+        onMenuClick(e);
     }
 }
 
@@ -422,7 +418,6 @@ void ui_event_StandbyScreen(lv_event_t * e)
     lv_event_code_t event_code = lv_event_get_code(e);
 
     if(event_code == LV_EVENT_PRESSED) {
-        _ui_screen_change(&ui_MenuScreen, LV_SCR_LOAD_ANIM_NONE, 0, 0, &ui_MenuScreen_screen_init);
         onWakeup(e);
     }
 }
@@ -433,7 +428,7 @@ void ui_event_StatusScreen(lv_event_t * e)
 
     if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_TOP) {
         lv_indev_wait_release(lv_indev_get_act());
-        _ui_screen_change(&ui_MenuScreen, LV_SCR_LOAD_ANIM_NONE, 0, 0, &ui_MenuScreen_screen_init);
+        onMenuClick(e);
     }
 }
 
@@ -444,7 +439,6 @@ void ui_event_StatusScreen_pauseButton(lv_event_t * e)
     if(event_code == LV_EVENT_CLICKED) {
         onBrewCancel(e);
         (e);
-        _ui_screen_change(&ui_BrewScreen, LV_SCR_LOAD_ANIM_NONE, 500, 0, &ui_BrewScreen_screen_init);
     }
 }
 
@@ -454,7 +448,7 @@ void ui_event_GrindScreen(lv_event_t * e)
 
     if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_TOP) {
         lv_indev_wait_release(lv_indev_get_act());
-        _ui_screen_change(&ui_MenuScreen, LV_SCR_LOAD_ANIM_NONE, 0, 0, &ui_MenuScreen_screen_init);
+        onMenuClick(e);
     }
 }
 

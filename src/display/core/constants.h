@@ -20,6 +20,7 @@
 #define MODE_BREW 1
 #define MODE_STEAM 2
 #define MODE_WATER 3
+#define MODE_GRIND 4
 
 #define WIFI_CONNECT_ATTEMPTS 10
 

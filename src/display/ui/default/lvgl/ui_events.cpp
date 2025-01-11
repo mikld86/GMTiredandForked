@@ -5,7 +5,7 @@
 
 #include <Arduino.h>
 #include "ui.h"
-#include "../main.h"
+#include "../../../main.h"
 
 
 void onBrewCancel(lv_event_t * e)
@@ -102,7 +102,7 @@ void onWaterTempRaise(lv_event_t * e)
 
 void onLoadStarted(lv_event_t * e)
 {
-  controller.connect();
+  controller.onScreenReady();
 }
 
 void onStandby(lv_event_t * e)
@@ -131,4 +131,14 @@ void onGrindTimeRaise(lv_event_t * e)
     newDuration = BREW_MIN_DURATION_MS;
   }
   controller.setTargetGrindDuration(newDuration);
+}
+
+void onMenuClick(lv_event_t * e)
+{
+  controller.getUI()->changeScreen(&ui_MenuScreen, &ui_MenuScreen_screen_init);
+}
+
+void onGrindScreen(lv_event_t * e)
+{
+  controller.setMode(MODE_GRIND);
 }

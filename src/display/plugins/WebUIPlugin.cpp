@@ -1,6 +1,5 @@
 #include "WebUIPlugin.h"
 #include "../core/Controller.h"
-#include "../ui/ui.h"
 #include <ArduinoJson.h>
 #include <AsyncJson.h>
 #include <SPIFFS.h>
@@ -30,9 +29,7 @@ void WebUIPlugin::loop() {
     const long now = millis();
     if (lastUpdateCheck == 0 || now > lastUpdateCheck + UPDATE_CHECK_INTERVAL) {
         ota->checkForUpdates();
-        if (ota->isUpdateAvailable()) {
-            lv_obj_clear_flag(ui_StandbyScreen_updateIcon, LV_OBJ_FLAG_HIDDEN);
-        }
+        pluginManager->trigger("ota:update:status", "value", ota->isUpdateAvailable());
         lastUpdateCheck = now;
     }
 }
