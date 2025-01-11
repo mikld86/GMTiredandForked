@@ -31,6 +31,8 @@ void onBrewCancel(lv_event_t * e);
 void onGrindToggle(lv_event_t * e);
 void onGrindTimeLower(lv_event_t * e);
 void onGrindTimeRaise(lv_event_t * e);
+void onMenuClick(lv_event_t * e);
+void onGrindScreen(lv_event_t * e);
 
 #ifdef __cplusplus
 } /*extern "C"*/

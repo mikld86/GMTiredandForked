@@ -1,11 +1,11 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#include "../drivers/LilyGo-T-RGB/LilyGo_RGBPanel.h"
 #include "NimBLEClientController.h"
 #include "PluginManager.h"
 #include "Settings.h"
 #include <WiFi.h>
+#include <display/ui/default/DefaultUI.h>
 
 class Controller {
   public:
@@ -29,7 +29,9 @@ class Controller {
     bool isActive() const;
     bool isGrindActive() const;
     bool isUpdating() const;
+    unsigned long getActiveUntil() const { return activeUntil; }
     Settings &getSettings() { return settings; }
+    DefaultUI* getUI() const { return ui; }
 
     // Event callback methods
     void updateLastAction();
@@ -42,6 +44,7 @@ class Controller {
     void activateStandby();
     void deactivateStandby();
     void onOTAUpdate();
+    void onScreenReady();
 
   private:
     // Initialization methods
@@ -51,17 +54,12 @@ class Controller {
 
     // Functional methods
     void updateRelay();
-    void updateUiActive() const;
-    void updateUiSettings();
-    void updateUiCurrentTemp() const;
-    void updateProgress() const;
-    void updateStandby();
 
     // Event handlers
     void onTempRead(float temperature);
 
     // Private Attributes
-    LilyGo_RGBPanel panel;
+    DefaultUI *ui = nullptr;
     NimBLEClientController clientController;
     hw_timer_t *timer;
     Settings settings;
@@ -79,6 +77,7 @@ class Controller {
     bool updating;
     bool isApConnection = false;
     bool initialized = false;
+    bool screenReady = false;
 };
 
 #endif // CONTROLLER_H
