@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 # Clean data
+mkdir -p data
 rm -rf data/*
 
 # Build web application
