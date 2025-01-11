@@ -3,142 +3,88 @@
 // LVGL version: 8.3.11
 // Project name: GaggiMate
 
-#include <Arduino.h>
-#include "ui.h"
 #include "../../../main.h"
+#include "ui.h"
+#include <Arduino.h>
 
+void onBrewCancel(lv_event_t *e) { controller.deactivate(); }
 
-void onBrewCancel(lv_event_t * e)
-{
-  controller.deactivate();
+void onBrewStart(lv_event_t *e) { controller.activate(); }
+
+void onBrewTempLower(lv_event_t *e) { controller.lowerTemp(); }
+
+void onBrewTempRaise(lv_event_t *e) { controller.raiseTemp(); }
+
+void onBrewTimeLower(lv_event_t *e) {
+    int newDuration = controller.getTargetDuration() - 1000;
+    if (newDuration < BREW_MIN_DURATION_MS) {
+        newDuration = BREW_MIN_DURATION_MS;
+    }
+    controller.setTargetDuration(newDuration);
 }
 
-void onBrewStart(lv_event_t * e)
-{
-  controller.activate();
+void onBrewTimeRaise(lv_event_t *e) {
+    int newDuration = controller.getTargetDuration() + 1000;
+    if (newDuration > BREW_MAX_DURATION_MS) {
+        newDuration = BREW_MIN_DURATION_MS;
+    }
+    controller.setTargetDuration(newDuration);
 }
 
-void onBrewTempLower(lv_event_t * e)
-{
-  controller.lowerTemp();
+void onSteamToggle(lv_event_t *e) { controller.isActive() ? controller.deactivate() : controller.activate(); }
+
+void onSteamTempLower(lv_event_t *e) { controller.lowerTemp(); }
+
+void onSteamTempRaise(lv_event_t *e) { controller.raiseTemp(); }
+
+void onBrewScreen(lv_event_t *e) {
+    controller.deactivate();
+    controller.setMode(MODE_BREW);
 }
 
-void onBrewTempRaise(lv_event_t * e)
-{
-  controller.raiseTemp();
+void onWaterScreen(lv_event_t *e) {
+    controller.setMode(MODE_WATER);
+    controller.deactivate();
 }
 
-void onBrewTimeLower(lv_event_t * e)
-{
-  int newDuration = controller.getTargetDuration() - 1000;
-  if (newDuration < BREW_MIN_DURATION_MS) {
-    newDuration = BREW_MIN_DURATION_MS;
-  }
-  controller.setTargetDuration(newDuration);
+void onSteamScreen(lv_event_t *e) {
+    controller.setMode(MODE_STEAM);
+    controller.deactivate();
 }
 
-void onBrewTimeRaise(lv_event_t * e)
-{
-  int newDuration = controller.getTargetDuration() + 1000;
-  if (newDuration > BREW_MAX_DURATION_MS) {
-    newDuration = BREW_MIN_DURATION_MS;
-  }
-  controller.setTargetDuration(newDuration);
+void onWaterToggle(lv_event_t *e) { controller.isActive() ? controller.deactivate() : controller.activate(); }
+
+void onWakeup(lv_event_t *e) {
+    controller.deactivate();
+    controller.setMode(MODE_BREW);
 }
 
-void onSteamToggle(lv_event_t * e)
-{
-  controller.isActive() ? controller.deactivate() : controller.activate();
+void onWaterTempLower(lv_event_t *e) { controller.lowerTemp(); }
+
+void onWaterTempRaise(lv_event_t *e) { controller.raiseTemp(); }
+
+void onLoadStarted(lv_event_t *e) { controller.onScreenReady(); }
+
+void onStandby(lv_event_t *e) { controller.activateStandby(); }
+
+void onGrindToggle(lv_event_t *e) { controller.isGrindActive() ? controller.deactivateGrind() : controller.activateGrind(); }
+
+void onGrindTimeLower(lv_event_t *e) {
+    int newDuration = controller.getTargetGrindDuration() - 1000;
+    if (newDuration < BREW_MIN_DURATION_MS) {
+        newDuration = BREW_MIN_DURATION_MS;
+    }
+    controller.setTargetGrindDuration(newDuration);
 }
 
-void onSteamTempLower(lv_event_t * e)
-{
-  controller.lowerTemp();
+void onGrindTimeRaise(lv_event_t *e) {
+    int newDuration = controller.getTargetGrindDuration() + 1000;
+    if (newDuration > BREW_MAX_DURATION_MS) {
+        newDuration = BREW_MIN_DURATION_MS;
+    }
+    controller.setTargetGrindDuration(newDuration);
 }
 
-void onSteamTempRaise(lv_event_t * e)
-{
-  controller.raiseTemp();
-}
+void onMenuClick(lv_event_t *e) { controller.getUI()->changeScreen(&ui_MenuScreen, &ui_MenuScreen_screen_init); }
 
-void onBrewScreen(lv_event_t * e)
-{
-  controller.deactivate();
-  controller.setMode(MODE_BREW);
-}
-
-void onWaterScreen(lv_event_t * e)
-{
-  controller.setMode(MODE_WATER);
-  controller.deactivate();
-}
-
-void onSteamScreen(lv_event_t * e)
-{
-  controller.setMode(MODE_STEAM);
-  controller.deactivate();
-}
-
-void onWaterToggle(lv_event_t * e)
-{
-  controller.isActive() ? controller.deactivate() : controller.activate();
-}
-
-void onWakeup(lv_event_t * e)
-{
-  controller.deactivate();
-  controller.setMode(MODE_BREW);
-}
-
-void onWaterTempLower(lv_event_t * e)
-{
-  controller.lowerTemp();
-}
-
-void onWaterTempRaise(lv_event_t * e)
-{
-  controller.raiseTemp();
-}
-
-void onLoadStarted(lv_event_t * e)
-{
-  controller.onScreenReady();
-}
-
-void onStandby(lv_event_t * e)
-{
-  controller.activateStandby();
-}
-
-void onGrindToggle(lv_event_t * e)
-{
-  controller.isGrindActive() ? controller.deactivateGrind() : controller.activateGrind();
-}
-
-void onGrindTimeLower(lv_event_t * e)
-{
-  int newDuration = controller.getTargetGrindDuration() - 1000;
-  if (newDuration < BREW_MIN_DURATION_MS) {
-    newDuration = BREW_MIN_DURATION_MS;
-  }
-  controller.setTargetGrindDuration(newDuration);
-}
-
-void onGrindTimeRaise(lv_event_t * e)
-{
-  int newDuration = controller.getTargetGrindDuration() + 1000;
-  if (newDuration > BREW_MAX_DURATION_MS) {
-    newDuration = BREW_MIN_DURATION_MS;
-  }
-  controller.setTargetGrindDuration(newDuration);
-}
-
-void onMenuClick(lv_event_t * e)
-{
-  controller.getUI()->changeScreen(&ui_MenuScreen, &ui_MenuScreen_screen_init);
-}
-
-void onGrindScreen(lv_event_t * e)
-{
-  controller.setMode(MODE_GRIND);
-}
+void onGrindScreen(lv_event_t *e) { controller.setMode(MODE_GRIND); }

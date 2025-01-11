@@ -31,7 +31,7 @@ class Controller {
     bool isUpdating() const;
     unsigned long getActiveUntil() const { return activeUntil; }
     Settings &getSettings() { return settings; }
-    DefaultUI* getUI() const { return ui; }
+    DefaultUI *getUI() const { return ui; }
 
     // Event callback methods
     void updateLastAction();

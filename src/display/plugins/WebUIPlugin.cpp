@@ -10,13 +10,10 @@ void WebUIPlugin::setup(Controller *_controller, PluginManager *_pluginManager) 
     this->controller = _controller;
     this->pluginManager = _pluginManager;
     this->ota = new GitHubOTA(
-        BUILD_GIT_VERSION,
-        RELEASE_URL + controller->getSettings().getOTAChannel(),
+        BUILD_GIT_VERSION, RELEASE_URL + controller->getSettings().getOTAChannel(),
         [this](uint8_t phase) { pluginManager->trigger("ota:update:phase", "phase", phase); },
-        [this](int progress) { pluginManager->trigger("ota:update:progress", "progress", progress); },
-        "display-firmware.bin",
-        "display-filesystem.bin"
-        );
+        [this](int progress) { pluginManager->trigger("ota:update:progress", "progress", progress); }, "display-firmware.bin",
+        "display-filesystem.bin");
     pluginManager->on("controller:wifi:connect", [this](Event const &) { start(); });
 }
 void WebUIPlugin::loop() {

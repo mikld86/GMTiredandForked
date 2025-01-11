@@ -31,12 +31,11 @@ void Controller::setup() {
     ui->init();
 }
 
-void Controller::onScreenReady() {
-    screenReady = true;
-}
+void Controller::onScreenReady() { screenReady = true; }
 
 void Controller::connect() {
-    if (initialized) return;
+    if (initialized)
+        return;
     lastPing = millis();
     pluginManager->trigger("controller:startup");
 
@@ -88,9 +87,7 @@ void Controller::setupWifi() {
         Serial.println(WiFi.localIP());
     }
 
-    pluginManager->on("ota:update:start", [this](Event const &) {
-        this->updating = true;
-    });
+    pluginManager->on("ota:update:start", [this](Event const &) { this->updating = true; });
     pluginManager->on("ota:update:end", [this](Event const &) { this->updating = false; });
 
     pluginManager->trigger("controller:wifi:connect", "AP", isApConnection ? 1 : 0);
@@ -109,7 +106,8 @@ void Controller::loop() {
         pluginManager->trigger("controller:bluetooth:connect");
         if (!loaded) {
             loaded = true;
-            if (settings.getStartupMode() == MODE_STANDBY) activateStandby();
+            if (settings.getStartupMode() == MODE_STANDBY)
+                activateStandby();
         }
     }
 
@@ -132,7 +130,6 @@ void Controller::loop() {
         deactivateGrind();
     if (mode != MODE_STANDBY && now > lastAction + STANDBY_TIMEOUT_MS)
         activateStandby();
-
 }
 
 bool Controller::isUpdating() const { return updating; }
