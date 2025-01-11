@@ -46,6 +46,8 @@ void WebUIPlugin::start() {
         serializeJson(doc, *response);
         request->send(response);
     });
+    server.on("/ota", [](AsyncWebServerRequest *request) { request->send(SPIFFS, "/index.html"); });
+    server.on("/settings", [](AsyncWebServerRequest *request) { request->send(SPIFFS, "/index.html"); });
     server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
     server.begin();
     Serial.print("OTA server started");
