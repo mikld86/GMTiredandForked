@@ -401,6 +401,34 @@ export function Settings() {
                         onChange={onChange('haPort')}
                     />
                   </div>
+                  <div className="flex-auto">
+                    <label htmlFor="haUser" className="block font-medium text-[#333333]">
+                      Home Assistant User
+                    </label>
+                    <input
+                        id="haUser"
+                        name="haUser"
+                        type="text"
+                        className="input-field"
+                        placeholder="0"
+                        value={formData.haUser}
+                        onChange={onChange('haUser')}
+                    />
+                  </div>
+                  <div className="flex-auto">
+                    <label htmlFor="haPassword" className="block font-medium text-[#333333]">
+                      Home Assistant Password
+                    </label>
+                    <input
+                        id="haPassword"
+                        name="haPassword"
+                        type="password"
+                        className="input-field"
+                        placeholder="0"
+                        value={formData.haUser}
+                        onChange={onChange('haPassword')}
+                    />
+                  </div>
                 </div>
             }
           </div>
@@ -466,7 +494,7 @@ export function Settings() {
             />
           </div>
 
-          <div class="text-sm text-[#666666]">Some options like WiFi, NTP or integrations require a restart.</div>
+        <div className="text-sm text-[#666666]">Some options like WiFi, NTP, Homekit and MQTT require a restart.</div>
 
           <div class="flex justify-center mt-6 flex-row gap-1">
             <a href="/" class="menu-button">
