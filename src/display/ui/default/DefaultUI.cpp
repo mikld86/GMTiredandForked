@@ -2,6 +2,7 @@
 
 #include <WiFi.h>
 #include <display/core/Controller.h>
+#include <display/core/Process.h>
 #include <display/drivers/LilyGo-T-RGB/LV_Helper.h>
 
 int16_t calculate_angle(int set_temp) {
@@ -140,22 +141,51 @@ void DefaultUI::updateStatusScreen() {
     lv_img_set_angle(ui_StatusScreen_tempTarget, calculate_angle(setTemp));
     Settings &settings = controller->getSettings();
 
-    double secondsDouble = settings.getTargetDuration() / 1000.0;
+    Process *process = controller->getProcess();
+    if (process == nullptr || process->getType() != MODE_BREW) {
+        return;
+    }
+    BrewProcess *brewProcess = static_cast<BrewProcess *>(process);
+
+    lv_img_set_src(ui_StatusScreen_divider2, &ui_img_189748990);
+    switch (brewProcess->phase) {
+    case BrewPhase::FINISHED:
+        ui_object_set_themeable_style_property(ui_StatusScreen_finishedIndicator, LV_PART_MAIN | LV_STATE_DEFAULT,
+                                               LV_STYLE_IMG_RECOLOR, _ui_theme_color_NiceWhite);
+        ui_object_set_themeable_style_property(ui_StatusScreen_divider1, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR,
+                                               _ui_theme_color_NiceWhite);
+        lv_img_set_src(ui_StatusScreen_divider2, &ui_img_1321592583);
+    case BrewPhase::BREW_PUMP:
+    case BrewPhase::BREW_PRESSURIZE:
+        ui_object_set_themeable_style_property(ui_StatusScreen_brewIndicator, LV_PART_MAIN | LV_STATE_DEFAULT,
+                                               LV_STYLE_IMG_RECOLOR, _ui_theme_color_NiceWhite);
+        ui_object_set_themeable_style_property(ui_StatusScreen_divider2, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR,
+                                               _ui_theme_color_NiceWhite);
+        lv_img_set_src(ui_StatusScreen_divider1, &ui_img_1321592583);
+    default: ;
+    }
+
+    unsigned long targetDuration = brewProcess->getPhaseDuration();
+    double secondsDouble = targetDuration / 1000.0;
     auto minutes = (int)(secondsDouble / 60.0 - 0.5);
     auto seconds = (int)secondsDouble % 60;
     lv_label_set_text_fmt(ui_StatusScreen_targetDuration, "%2d:%02d", minutes, seconds);
 
-    int targetDuration = settings.getTargetDuration();
+    unsigned long phaseDuration = brewProcess->getPhaseDuration();
     unsigned long now = millis();
-    unsigned long activeUntil = controller->getActiveUntil();
-    unsigned long progress = now - (activeUntil - targetDuration);
+    unsigned long activeUntil = brewProcess->currentPhaseStarted + phaseDuration;
+    unsigned long progress = now - (activeUntil - phaseDuration);
+    secondsDouble = phaseDuration / 1000.0;
+    minutes = (int)(secondsDouble / 60.0 - 0.5);
+    seconds = (int)secondsDouble % 60;
+    lv_label_set_text_fmt(ui_StatusScreen_targetDuration, "%2d:%02d", minutes, seconds);
     double progressSecondsDouble = progress / 1000.0;
     auto progressMinutes = (int)(progressSecondsDouble / 60.0 - 0.5);
     auto progressSeconds = (int)progressSecondsDouble % 60;
-    lv_bar_set_range(ui_StatusScreen_progressBar, 0, (int)secondsDouble);
-    lv_bar_set_value(ui_StatusScreen_progressBar, progress / 1000, LV_ANIM_OFF);
-    lv_label_set_text_fmt(ui_StatusScreen_progressLabel, "%2d:%02d / %2d:%02d", progressMinutes, progressSeconds, minutes,
-                          seconds);
+    lv_bar_set_range(ui_StatusScreen_progressBar, 0, (int)secondsDouble + 1);
+    lv_bar_set_value(ui_StatusScreen_progressBar, progress / 1000 + 1, LV_ANIM_OFF);
+    lv_label_set_text_fmt(ui_StatusScreen_targetDuration1, "%2d:%02d", minutes, seconds);
+    lv_label_set_text_fmt(ui_StatusScreen_progressLabel, "%2d:%02d", progressMinutes, progressSeconds);
 }
 
 void DefaultUI::updateBrewScreen() const {

@@ -94,3 +94,7 @@ def onMenuClick(event_struct):
 def onTimedClick(event_struct):
     return
 
+
+def onVolumetricClick(event_struct):
+    return
+

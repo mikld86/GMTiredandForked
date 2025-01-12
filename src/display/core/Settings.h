@@ -26,6 +26,8 @@ class Settings {
     int getTargetDuration() const { return targetDuration; }
     int getTargetGrindDuration() const { return targetGrindDuration; }
     int getStartupMode() const { return startupMode; }
+    int getInfuseBloomTime() const { return infuseBloomTime; }
+    int getInfusePumpTime() const { return infusePumpTime; }
     String getPid() const { return pid; }
     String getWifiSsid() const { return wifiSsid; }
     String getWifiPassword() const { return wifiPassword; }
@@ -39,6 +41,8 @@ class Settings {
     void setTargetDuration(int target_duration);
     void setTargetGrindDuration(int target_duration);
     void setStartupMode(int startup_mode);
+    void setInfuseBloomTime(int infuse_bloom_time);
+    void setInfusePumpTime(int infuse_pump_time);
     void setPid(const String &pid);
     void setWifiSsid(const String &wifiSsid);
     void setWifiPassword(const String &wifiPassword);
@@ -57,6 +61,8 @@ class Settings {
     int targetDuration = 25000;
     int targetGrindDuration = 25000;
     int startupMode = MODE_STANDBY;
+    int infuseBloomTime = 0;
+    int infusePumpTime = 0;
     String pid = DEFAULT_PID;
     String wifiSsid = "";
     String wifiPassword = "";

@@ -9,8 +9,8 @@
 #include <ctime>
 
 Controller::Controller()
-    : timer(nullptr), mode(MODE_BREW), currentTemp(0), activeUntil(0), grindActiveUntil(0), lastPing(0), lastProgress(0),
-      lastAction(0), loaded(false), updating(false) {}
+    : timer(nullptr), mode(MODE_BREW), currentTemp(0), grindActiveUntil(0), lastPing(0), lastProgress(0), lastAction(0),
+      loaded(false), updating(false) {}
 
 void Controller::setup() {
     mode = settings.getStartupMode();
@@ -117,6 +117,13 @@ void Controller::loop() {
         clientController.sendPing();
     }
 
+    if (currentProcess != nullptr) {
+        currentProcess->progress();
+        if (!isActive()) {
+            deactivate();
+        }
+    }
+
     if (now - lastProgress > PROGRESS_INTERVAL) {
         clientController.sendTemperatureControl(getTargetTemp() + settings.getTemperatureOffset());
         clientController.sendPidSettings(settings.getPid());
@@ -124,8 +131,6 @@ void Controller::loop() {
         lastProgress = now;
     }
 
-    if (activeUntil != 0 && now > activeUntil)
-        deactivate();
     if (grindActiveUntil != 0 && now > grindActiveUntil)
         deactivateGrind();
     if (mode != MODE_STANDBY && now > lastAction + STANDBY_TIMEOUT_MS)
@@ -197,44 +202,43 @@ void Controller::lowerTemp() {
 }
 
 void Controller::updateRelay() {
-    bool active = isActive();
-    float pumpValue = active ? mode == MODE_STEAM ? 4.f : 100.f : 0.f;
-    bool valve = (active && mode == MODE_BREW);
-
-    clientController.sendPumpControl(pumpValue);
-    clientController.sendValveControl(valve);
+    clientController.sendPumpControl(isActive() ? currentProcess->getPumpValue() : 0);
+    clientController.sendValveControl(isActive() && currentProcess->isRelayActive());
     clientController.sendAltControl(isGrindActive());
 }
 
 void Controller::activate() {
     if (isActive())
         return;
-    unsigned long duration = 0;
     switch (mode) {
     case MODE_BREW:
-        duration = settings.getTargetDuration();
+        currentProcess = new BrewProcess(BrewTarget::TIME, settings.getInfusePumpTime(), settings.getInfuseBloomTime(),
+                                         settings.getTargetDuration(), 0);
         break;
     case MODE_STEAM:
-        duration = STEAM_SAFETY_DURATION_MS;
+        currentProcess = new SteamProcess();
         break;
     case MODE_WATER:
-        duration = HOT_WATER_SAFETY_DURATION_MS;
+        currentProcess = new WaterProcess();
         break;
     default:;
     }
-    activeUntil = millis() + duration;
     updateRelay();
     updateLastAction();
-    if (mode == MODE_BREW) {
+    if (currentProcess->getType() == MODE_BREW) {
         pluginManager->trigger("controller:brew:start");
     }
 }
 
 void Controller::deactivate() {
-    activeUntil = 0;
-    if (mode == MODE_BREW) {
+    if (currentProcess == nullptr) {
+        return;
+    }
+    if (currentProcess->getType() == MODE_BREW) {
         pluginManager->trigger("controller:brew:end");
     }
+    delete (currentProcess);
+    currentProcess = nullptr;
     updateRelay();
     updateLastAction();
 }
@@ -266,7 +270,7 @@ void Controller::deactivateStandby() {
     setMode(MODE_BREW);
 }
 
-bool Controller::isActive() const { return activeUntil > millis(); }
+bool Controller::isActive() const { return currentProcess != nullptr && currentProcess->isActive(); }
 
 bool Controller::isGrindActive() const { return grindActiveUntil > millis(); }
 

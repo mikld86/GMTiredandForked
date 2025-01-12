@@ -304,9 +304,9 @@ void ui_StatusScreen_screen_init(void) {
     lv_obj_clear_flag(ui_StatusScreen_divider1, LV_OBJ_FLAG_SCROLLABLE); /// Flags
     lv_img_set_zoom(ui_StatusScreen_divider1, 200);
     ui_object_set_themeable_style_property(ui_StatusScreen_divider1, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR,
-                                           _ui_theme_color_NiceWhite);
+                                           _ui_theme_color_SemiDark);
     ui_object_set_themeable_style_property(ui_StatusScreen_divider1, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR_OPA,
-                                           _ui_theme_alpha_NiceWhite);
+                                           _ui_theme_alpha_SemiDark);
 
     ui_StatusScreen_tempText = lv_label_create(ui_StatusScreen);
     lv_obj_set_width(ui_StatusScreen_tempText, LV_SIZE_CONTENT);  /// 1

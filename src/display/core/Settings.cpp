@@ -15,6 +15,8 @@ Settings::Settings() {
     mdnsName = preferences.getString("mn", DEFAULT_MDNS_NAME);
     homekit = preferences.getBool("hk", false);
     otaChannel = preferences.getString("oc", DEFAULT_OTA_CHANNEL);
+    infusePumpTime = preferences.getInt("ipt", 0);
+    infuseBloomTime = preferences.getInt("ibt", 0);
     preferences.end();
 }
 
@@ -42,6 +44,8 @@ void Settings::save() {
     preferences.putString("mn", mdnsName);
     preferences.putBool("hk", homekit);
     preferences.putString("oc", otaChannel);
+    preferences.putInt("ipt", infusePumpTime);
+    preferences.putInt("ibt", infuseBloomTime);
     preferences.end();
 }
 
@@ -79,6 +83,10 @@ void Settings::setStartupMode(const int startup_mode) {
     startupMode = startup_mode;
     save();
 }
+
+void Settings::setInfuseBloomTime(int infuse_bloom_time) { infuseBloomTime = infuse_bloom_time; }
+
+void Settings::setInfusePumpTime(int infuse_pump_time) { infusePumpTime = infuse_pump_time; }
 
 void Settings::setPid(const String &pid) {
     this->pid = pid;

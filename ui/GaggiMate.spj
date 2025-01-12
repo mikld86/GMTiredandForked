@@ -17920,12 +17920,12 @@
                           {
                             "nid": 11210,
                             "strtype": "_style/Image_reColor",
-                            "strval": "NiceWhite",
-                            "integer": 1000206,
+                            "strval": "SemiDark",
+                            "integer": 1000208,
                             "intarray": [
-                              250,
-                              250,
-                              250,
+                              51,
+                              51,
+                              51,
                               255
                             ],
                             "InheritedType": 7
@@ -17940,7 +17940,8 @@
                     "InheritedType": 11
                   }
                 ],
-                "saved_objtypeKey": "IMAGE"
+                "saved_objtypeKey": "IMAGE",
+                "tree_closed": true
               }
             ],
             "dont_export": false,
@@ -20746,7 +20747,7 @@
     "uiExportFolderPath": "/Users/jniebuhr/work/3d/projects/paros-control/src/display/ui/default/lvgl",
     "projectExportFolderPath": "/Users/jniebuhr/work/3d/projects/paros-control",
     "custom_variable_prefix": "uic",
-    "backup_cnt": 179,
+    "backup_cnt": 191,
     "autosave_cnt": 0,
     "lvgl_version": "8.3.11",
     "callfuncsexport": "CPP_FILE",
