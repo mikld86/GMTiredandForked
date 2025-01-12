@@ -24,6 +24,7 @@ class Settings {
     int getTargetWaterTemp() const { return targetWaterTemp; }
     int getTemperatureOffset() const { return temperatureOffset; }
     int getTargetDuration() const { return targetDuration; }
+    int getTargetVolume() const { return targetVolume; }
     int getTargetGrindDuration() const { return targetGrindDuration; }
     int getStartupMode() const { return startupMode; }
     int getInfuseBloomTime() const { return infuseBloomTime; }
@@ -33,12 +34,14 @@ class Settings {
     String getWifiPassword() const { return wifiPassword; }
     String getMdnsName() const { return mdnsName; }
     bool isHomekit() const { return homekit; }
+    bool isVolumetricTarget() const { return volumetricTarget; }
     String getOTAChannel() const { return otaChannel; }
     void setTargetBrewTemp(int target_brew_temp);
     void setTargetSteamTemp(int target_steam_temp);
     void setTargetWaterTemp(int target_water_temp);
     void setTemperatureOffset(int temperature_offset);
     void setTargetDuration(int target_duration);
+    void setTargetVolume(int target_volume);
     void setTargetGrindDuration(int target_duration);
     void setStartupMode(int startup_mode);
     void setInfuseBloomTime(int infuse_bloom_time);
@@ -48,6 +51,7 @@ class Settings {
     void setWifiPassword(const String &wifiPassword);
     void setMdnsName(const String &mdnsName);
     void setHomekit(bool homekit);
+    void setVolumetricTarget(bool volumetric_target);
     void setOTAChannel(const String &otaChannel);
 
   private:
@@ -59,6 +63,7 @@ class Settings {
     int targetWaterTemp = 80;
     int temperatureOffset = DEFAULT_TEMPERATURE_OFFSET;
     int targetDuration = 25000;
+    int targetVolume = 36;
     int targetGrindDuration = 25000;
     int startupMode = MODE_STANDBY;
     int infuseBloomTime = 0;
@@ -68,6 +73,7 @@ class Settings {
     String wifiPassword = "";
     String mdnsName = DEFAULT_MDNS_NAME;
     bool homekit = false;
+    bool volumetricTarget = false;
 
     String otaChannel = DEFAULT_OTA_CHANNEL;
 };

@@ -30,7 +30,6 @@ SET(SOURCES screens/ui_InitScreen.c
     images/ui_img_360122106.c
     images/ui_img_1951499226.c
     images/ui_img_1424216268.c
-    images/ui_img_1829139226.c
     images/ui_img_364513079.c
     images/ui_img_1091371356.c
     images/ui_img_1765671371.c
@@ -40,6 +39,7 @@ SET(SOURCES screens/ui_InitScreen.c
     images/ui_img_1828633851.c
     images/ui_img_631115820.c
     images/ui_img_189748990.c
-    images/ui_img_1321592583.c)
+    images/ui_img_1321592583.c
+    images/ui_img_1829139226.c)
 
 add_library(ui ${SOURCES})

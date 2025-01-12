@@ -33,7 +33,7 @@ class BrewProcess : public Process {
     int brewVolume;
 
     unsigned long currentPhaseStarted = 0;
-    int currentVolume = 0;
+    double currentVolume = 0;
 
     explicit BrewProcess(BrewTarget target = BrewTarget::TIME, int infusionPumpTime = 0, int infusionBloomTime = 0,
                          int brewSeconds = 0, int brewVolume = 0)
@@ -42,7 +42,7 @@ class BrewProcess : public Process {
         currentPhaseStarted = millis();
     }
 
-    void updateVolume(int volume) { currentVolume = volume; }
+    void updateVolume(double volume) { currentVolume = volume; }
 
     unsigned long getPhaseDuration() const {
         switch (phase) {
@@ -51,7 +51,7 @@ class BrewProcess : public Process {
         case BrewPhase::INFUSION_BLOOM:
             return infusionBloomTime;
         case BrewPhase::BREW_PRESSURIZE:
-            return 1;
+            return 1000;
         case BrewPhase::BREW_PUMP:
             return brewSeconds;
         default:
@@ -69,10 +69,10 @@ class BrewProcess : public Process {
         return true;
     }
 
-    bool isRelayActive() override { return phase == BrewPhase::INFUSION_PUMP || phase == BrewPhase::BREW_PUMP; }
+    bool isRelayActive() override { return phase == BrewPhase::INFUSION_BLOOM || phase == BrewPhase::BREW_PUMP; }
 
     float getPumpValue() override {
-        if (isRelayActive() || phase == BrewPhase::BREW_PRESSURIZE) {
+        if (phase == BrewPhase::INFUSION_PUMP || phase == BrewPhase::BREW_PRESSURIZE || phase == BrewPhase::BREW_PUMP) {
             return 100.f;
         }
         return 0.f;

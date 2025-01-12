@@ -16,19 +16,11 @@ void onBrewTempLower(lv_event_t *e) { controller.lowerTemp(); }
 void onBrewTempRaise(lv_event_t *e) { controller.raiseTemp(); }
 
 void onBrewTimeLower(lv_event_t *e) {
-    int newDuration = controller.getTargetDuration() - 1000;
-    if (newDuration < BREW_MIN_DURATION_MS) {
-        newDuration = BREW_MIN_DURATION_MS;
-    }
-    controller.setTargetDuration(newDuration);
+    controller.raiseBrewTarget();
 }
 
 void onBrewTimeRaise(lv_event_t *e) {
-    int newDuration = controller.getTargetDuration() + 1000;
-    if (newDuration > BREW_MAX_DURATION_MS) {
-        newDuration = BREW_MIN_DURATION_MS;
-    }
-    controller.setTargetDuration(newDuration);
+    controller.lowerBrewTarget();
 }
 
 void onSteamToggle(lv_event_t *e) { controller.isActive() ? controller.deactivate() : controller.activate(); }
@@ -90,9 +82,9 @@ void onMenuClick(lv_event_t *e) { controller.getUI()->changeScreen(&ui_MenuScree
 void onGrindScreen(lv_event_t *e) { controller.setMode(MODE_GRIND); }
 
 void onTimedClick(lv_event_t *e) {
-    // Your code here
+    controller.onTargetChange(BrewTarget::TIME);
 }
 
 void onVolumetricClick(lv_event_t *e) {
-    // Your code here
+    controller.onTargetChange(BrewTarget::VOLUMETRIC);
 }

@@ -33,6 +33,10 @@ void Controller::setup() {
 
 void Controller::onScreenReady() { screenReady = true; }
 
+void Controller::onTargetChange(BrewTarget target) {
+    settings.setVolumetricTarget(target == BrewTarget::VOLUMETRIC);
+}
+
 void Controller::connect() {
     if (initialized)
         return;
@@ -117,14 +121,13 @@ void Controller::loop() {
         clientController.sendPing();
     }
 
-    if (currentProcess != nullptr) {
-        currentProcess->progress();
-        if (!isActive()) {
-            deactivate();
-        }
-    }
-
     if (now - lastProgress > PROGRESS_INTERVAL) {
+        if (currentProcess != nullptr) {
+            currentProcess->progress();
+            if (!isActive()) {
+                deactivate();
+            }
+        }
         clientController.sendTemperatureControl(getTargetTemp() + settings.getTemperatureOffset());
         clientController.sendPidSettings(settings.getPid());
         updateRelay();
@@ -178,7 +181,6 @@ int Controller::getTargetDuration() const { return settings.getTargetDuration();
 void Controller::setTargetDuration(int duration) {
     Event event = pluginManager->trigger("controller:targetDuration:change", "value", duration);
     settings.setTargetDuration(event.getInt("value"));
-    updateLastAction();
 }
 
 int Controller::getTargetGrindDuration() const { return settings.getTargetGrindDuration(); }
@@ -201,6 +203,40 @@ void Controller::lowerTemp() {
     setTargetTemp(temp);
 }
 
+void Controller::raiseBrewTarget() {
+    if (settings.isVolumetricTarget()) {
+        int newTarget = settings.getTargetVolume() + 1;
+        if (newTarget > BREW_MAX_VOLUMETRIC) {
+            newTarget = BREW_MAX_VOLUMETRIC;
+        }
+        settings.setVolumetricTarget(newTarget);
+    } else {
+        int newDuration = getTargetDuration() + 1000;
+        if (newDuration > BREW_MAX_DURATION_MS) {
+            newDuration = BREW_MIN_DURATION_MS;
+        }
+        setTargetDuration(newDuration);
+    }
+    updateLastAction();
+}
+
+void Controller::lowerBrewTarget() {
+    if (settings.isVolumetricTarget()) {
+        int newTarget = settings.getTargetVolume() - 1;
+        if (newTarget < BREW_MIN_VOLUMETRIC) {
+            newTarget = BREW_MIN_VOLUMETRIC;
+        }
+        settings.setVolumetricTarget(newTarget);
+    } else {
+        int newDuration = getTargetDuration() - 1000;
+        if (newDuration < BREW_MIN_DURATION_MS) {
+            newDuration = BREW_MIN_DURATION_MS;
+        }
+        setTargetDuration(newDuration);
+    }
+    updateLastAction();
+}
+
 void Controller::updateRelay() {
     clientController.sendPumpControl(isActive() ? currentProcess->getPumpValue() : 0);
     clientController.sendValveControl(isActive() && currentProcess->isRelayActive());
@@ -212,8 +248,13 @@ void Controller::activate() {
         return;
     switch (mode) {
     case MODE_BREW:
-        currentProcess = new BrewProcess(BrewTarget::TIME, settings.getInfusePumpTime(), settings.getInfuseBloomTime(),
-                                         settings.getTargetDuration(), 0);
+        if (settings.isVolumetricTarget()) {
+            currentProcess = new BrewProcess(BrewTarget::VOLUMETRIC, settings.getInfusePumpTime(), settings.getInfuseBloomTime(),
+                                             0, settings.getTargetVolume());
+        } else {
+            currentProcess = new BrewProcess(BrewTarget::TIME, settings.getInfusePumpTime(), settings.getInfuseBloomTime(),
+                                             settings.getTargetDuration(), 0);
+        }
         break;
     case MODE_STEAM:
         currentProcess = new SteamProcess();

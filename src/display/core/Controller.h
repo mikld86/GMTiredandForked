@@ -55,6 +55,10 @@ class Controller {
 
     void lowerTemp();
 
+    void raiseBrewTarget();
+
+    void lowerBrewTarget();
+
     void activate();
 
     void deactivate();
@@ -70,6 +74,8 @@ class Controller {
     void onOTAUpdate();
 
     void onScreenReady();
+
+    void onTargetChange(BrewTarget target);
 
   private:
     // Initialization methods

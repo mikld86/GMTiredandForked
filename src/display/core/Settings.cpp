@@ -7,6 +7,7 @@ Settings::Settings() {
     targetSteamTemp = preferences.getInt("ts", 145);
     targetWaterTemp = preferences.getInt("tw", 80);
     targetDuration = preferences.getInt("td", 25000);
+    targetVolume = preferences.getInt("tv", 36);
     targetGrindDuration = preferences.getInt("tgd", 25000);
     temperatureOffset = preferences.getInt("to", DEFAULT_TEMPERATURE_OFFSET);
     pid = preferences.getString("pid", DEFAULT_PID);
@@ -14,6 +15,7 @@ Settings::Settings() {
     wifiPassword = preferences.getString("wp", "");
     mdnsName = preferences.getString("mn", DEFAULT_MDNS_NAME);
     homekit = preferences.getBool("hk", false);
+    volumetricTarget = preferences.getBool("vt", false);
     otaChannel = preferences.getString("oc", DEFAULT_OTA_CHANNEL);
     infusePumpTime = preferences.getInt("ipt", 0);
     infuseBloomTime = preferences.getInt("ibt", 0);
@@ -43,6 +45,7 @@ void Settings::save() {
     preferences.putString("wp", wifiPassword);
     preferences.putString("mn", mdnsName);
     preferences.putBool("hk", homekit);
+    preferences.putBool("vt", volumetricTarget);
     preferences.putString("oc", otaChannel);
     preferences.putInt("ipt", infusePumpTime);
     preferences.putInt("ibt", infuseBloomTime);
