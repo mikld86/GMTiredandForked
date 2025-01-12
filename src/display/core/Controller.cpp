@@ -8,10 +8,6 @@
 #include <SPIFFS.h>
 #include <ctime>
 
-Controller::Controller()
-    : timer(nullptr), mode(MODE_BREW), currentTemp(0), grindActiveUntil(0), lastPing(0), lastProgress(0), lastAction(0),
-      loaded(false), updating(false) {}
-
 void Controller::setup() {
     mode = settings.getStartupMode();
 
@@ -33,9 +29,7 @@ void Controller::setup() {
 
 void Controller::onScreenReady() { screenReady = true; }
 
-void Controller::onTargetChange(BrewTarget target) {
-    settings.setVolumetricTarget(target == BrewTarget::VOLUMETRIC);
-}
+void Controller::onTargetChange(BrewTarget target) { settings.setVolumetricTarget(target == BrewTarget::VOLUMETRIC); }
 
 void Controller::connect() {
     if (initialized)
@@ -278,7 +272,7 @@ void Controller::deactivate() {
     if (currentProcess->getType() == MODE_BREW) {
         pluginManager->trigger("controller:brew:end");
     }
-    delete (currentProcess);
+    delete currentProcess;
     currentProcess = nullptr;
     updateRelay();
     updateLastAction();

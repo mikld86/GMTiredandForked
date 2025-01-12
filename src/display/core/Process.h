@@ -37,7 +37,7 @@ class BrewProcess : public Process {
 
     explicit BrewProcess(BrewTarget target = BrewTarget::TIME, int infusionPumpTime = 0, int infusionBloomTime = 0,
                          int brewSeconds = 0, int brewVolume = 0)
-        : target(target), infusionBloomTime(infusionBloomTime), infusionPumpTime(infusionPumpTime), brewSeconds(brewSeconds),
+        : target(target), infusionPumpTime(infusionPumpTime), infusionBloomTime(infusionBloomTime), brewSeconds(brewSeconds),
           brewVolume(brewVolume) {
         currentPhaseStarted = millis();
     }
@@ -111,7 +111,7 @@ class SteamProcess : public Process {
     unsigned long started;
 
     explicit SteamProcess(int duration = STEAM_SAFETY_DURATION_MS, float pumpValue = 4.f)
-        : duration(duration), pumpValue(pumpValue) {
+        : pumpValue(pumpValue), duration(duration) {
         started = millis();
     }
 
@@ -119,7 +119,9 @@ class SteamProcess : public Process {
 
     float getPumpValue() override { return isActive() ? pumpValue : 0.f; };
 
-    void progress() override {};
+    void progress() override {
+        // Stateless implmentation
+    };
 
     bool isActive() override {
         unsigned long now = millis();
@@ -140,7 +142,9 @@ class WaterProcess : public Process {
 
     float getPumpValue() override { return isActive() ? 100.f : 0.f; };
 
-    void progress() override {};
+    void progress() override {
+        // Stateless implementation
+    };
 
     bool isActive() override {
         unsigned long now = millis();

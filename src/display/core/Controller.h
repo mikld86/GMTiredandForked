@@ -10,7 +10,7 @@
 
 class Controller {
   public:
-    Controller();
+    Controller() = default;
 
     // Base methods called from sketch
     void setup();
@@ -94,21 +94,21 @@ class Controller {
     // Private Attributes
     DefaultUI *ui = nullptr;
     NimBLEClientController clientController;
-    hw_timer_t *timer;
+    hw_timer_t *timer = nullptr;
     Settings settings;
     PluginManager *pluginManager{};
 
-    int mode;
-    int currentTemp;
+    int mode = MODE_BREW;
+    int currentTemp = 0;
 
     Process *currentProcess = nullptr;
 
-    unsigned long grindActiveUntil;
-    unsigned long lastPing;
-    unsigned long lastProgress;
-    unsigned long lastAction;
-    bool loaded;
-    bool updating;
+    unsigned long grindActiveUntil = 0;
+    unsigned long lastPing = 0;
+    unsigned long lastProgress = 0;
+    unsigned long lastAction = 0;
+    bool loaded = false;
+    bool updating = false;
     bool isApConnection = false;
     bool initialized = false;
     bool screenReady = false;
