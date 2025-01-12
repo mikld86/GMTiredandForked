@@ -102,7 +102,7 @@ void ui_SteamScreen_screen_init(void) {
     lv_obj_set_width(ui_SteamScreen_goButton, 40);
     lv_obj_set_height(ui_SteamScreen_goButton, 40);
     lv_obj_set_x(ui_SteamScreen_goButton, 0);
-    lv_obj_set_y(ui_SteamScreen_goButton, 110);
+    lv_obj_set_y(ui_SteamScreen_goButton, 120);
     lv_obj_set_align(ui_SteamScreen_goButton, LV_ALIGN_CENTER);
     ui_object_set_themeable_style_property(ui_SteamScreen_goButton, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_OUTLINE_COLOR,
                                            _ui_theme_color_Dark);

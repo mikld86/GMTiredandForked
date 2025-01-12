@@ -75,7 +75,14 @@ void ui_event_BrewScreen_upDurationButton(lv_event_t *e);
 lv_obj_t *ui_BrewScreen_upDurationButton;
 lv_obj_t *ui_BrewScreen_targetTemp;
 lv_obj_t *ui_BrewScreen_targetDuration;
+lv_obj_t *ui_BrewScreen_Image4;
+lv_obj_t *ui_BrewScreen_Image5;
 lv_obj_t *ui_BrewScreen_tempText;
+lv_obj_t *ui_BrewScreen_modeSwitch;
+void ui_event_BrewScreen_timedButton(lv_event_t *e);
+lv_obj_t *ui_BrewScreen_timedButton;
+void ui_event_BrewScreen_volumetricButton(lv_event_t *e);
+lv_obj_t *ui_BrewScreen_volumetricButton;
 // CUSTOM VARIABLES
 
 // SCREEN: ui_SteamScreen
@@ -148,6 +155,14 @@ lv_obj_t *ui_StatusScreen_targetDuration;
 lv_obj_t *ui_StatusScreen_targetTemp;
 void ui_event_StatusScreen_pauseButton(lv_event_t *e);
 lv_obj_t *ui_StatusScreen_pauseButton;
+lv_obj_t *ui_StatusScreen_Image7;
+lv_obj_t *ui_StatusScreen_Image8;
+lv_obj_t *ui_StatusScreen_targetDuration1;
+lv_obj_t *ui_StatusScreen_infuseIndicator;
+lv_obj_t *ui_StatusScreen_brewIndicator;
+lv_obj_t *ui_StatusScreen_finishedIndicator;
+lv_obj_t *ui_StatusScreen_divider2;
+lv_obj_t *ui_StatusScreen_divider1;
 lv_obj_t *ui_StatusScreen_tempText;
 // CUSTOM VARIABLES
 
@@ -178,13 +193,19 @@ lv_obj_t *ui____initial_actions0;
 const lv_img_dsc_t *ui_imgset_459451241[1] = {&ui_img_1829139226};
 const lv_img_dsc_t *ui_imgset_434888472[1] = {&ui_img_295763949};
 const lv_img_dsc_t *ui_imgset_1091184723[1] = {&ui_img_1091371356};
+const lv_img_dsc_t *ui_imgset_960046369[1] = {&ui_img_631115820};
 const lv_img_dsc_t *ui_imgset_1525119997[1] = {&ui_img_360122106};
 const lv_img_dsc_t *ui_imgset_1812359778[1] = {&ui_img_363557387};
-const lv_img_dsc_t *ui_imgset_359534444[1] = {&ui_img_979979123};
+const lv_img_dsc_t *ui_imgset_359218129[1] = {&ui_img_1424216268};
+const lv_img_dsc_t *ui_imgset_1140785554[1] = {&ui_img_1321592583};
+const lv_img_dsc_t *ui_imgset_968612361[1] = {&ui_img_189748990};
+const lv_img_dsc_t *ui_imgset_403384789[1] = {&ui_img_834125362};
+const lv_img_dsc_t *ui_imgset_359534444[2] = {&ui_img_1828633851, &ui_img_979979123};
 const lv_img_dsc_t *ui_imgset_794559649[1] = {&ui_img_1456692430};
 const lv_img_dsc_t *ui_imgset_1612577215[1] = {&ui_img_445946954};
+const lv_img_dsc_t *ui_imgset_1166435085[1] = {&ui_img_390988422};
 const lv_img_dsc_t *ui_imgset_1010926578[1] = {&ui_img_2044104741};
-const lv_img_dsc_t *ui_imgset_1155213431[1] = {&ui_img_545340440};
+const lv_img_dsc_t *ui_imgset_1155213431[2] = {&ui_img_1394011568, &ui_img_545340440};
 const lv_img_dsc_t *ui_imgset_524469952[1] = {&ui_img_1765671371};
 const lv_img_dsc_t *ui_imgset_690294202[1] = {&ui_img_1732953241};
 const lv_img_dsc_t *ui_imgset_1252186405[1] = {&ui_img_1951499226};
@@ -313,6 +334,22 @@ void ui_event_BrewScreen_upDurationButton(lv_event_t *e) {
 
     if (event_code == LV_EVENT_CLICKED) {
         onBrewTimeRaise(e);
+    }
+}
+
+void ui_event_BrewScreen_timedButton(lv_event_t *e) {
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if (event_code == LV_EVENT_CLICKED) {
+        onTimedClick(e);
+    }
+}
+
+void ui_event_BrewScreen_volumetricButton(lv_event_t *e) {
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if (event_code == LV_EVENT_CLICKED) {
+        onVolumetricClick(e);
     }
 }
 

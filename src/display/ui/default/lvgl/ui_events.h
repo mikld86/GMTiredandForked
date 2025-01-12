@@ -22,6 +22,8 @@ void onBrewTempLower(lv_event_t *e);
 void onBrewTempRaise(lv_event_t *e);
 void onBrewTimeLower(lv_event_t *e);
 void onBrewTimeRaise(lv_event_t *e);
+void onTimedClick(lv_event_t *e);
+void onVolumetricClick(lv_event_t *e);
 void onSteamToggle(lv_event_t *e);
 void onSteamTempLower(lv_event_t *e);
 void onSteamTempRaise(lv_event_t *e);

@@ -94,7 +94,14 @@ void ui_event_BrewScreen_upDurationButton(lv_event_t *e);
 extern lv_obj_t *ui_BrewScreen_upDurationButton;
 extern lv_obj_t *ui_BrewScreen_targetTemp;
 extern lv_obj_t *ui_BrewScreen_targetDuration;
+extern lv_obj_t *ui_BrewScreen_Image4;
+extern lv_obj_t *ui_BrewScreen_Image5;
 extern lv_obj_t *ui_BrewScreen_tempText;
+extern lv_obj_t *ui_BrewScreen_modeSwitch;
+void ui_event_BrewScreen_timedButton(lv_event_t *e);
+extern lv_obj_t *ui_BrewScreen_timedButton;
+void ui_event_BrewScreen_volumetricButton(lv_event_t *e);
+extern lv_obj_t *ui_BrewScreen_volumetricButton;
 // CUSTOM VARIABLES
 
 // SCREEN: ui_SteamScreen
@@ -167,6 +174,14 @@ extern lv_obj_t *ui_StatusScreen_targetDuration;
 extern lv_obj_t *ui_StatusScreen_targetTemp;
 void ui_event_StatusScreen_pauseButton(lv_event_t *e);
 extern lv_obj_t *ui_StatusScreen_pauseButton;
+extern lv_obj_t *ui_StatusScreen_Image7;
+extern lv_obj_t *ui_StatusScreen_Image8;
+extern lv_obj_t *ui_StatusScreen_targetDuration1;
+extern lv_obj_t *ui_StatusScreen_infuseIndicator;
+extern lv_obj_t *ui_StatusScreen_brewIndicator;
+extern lv_obj_t *ui_StatusScreen_finishedIndicator;
+extern lv_obj_t *ui_StatusScreen_divider2;
+extern lv_obj_t *ui_StatusScreen_divider1;
 extern lv_obj_t *ui_StatusScreen_tempText;
 // CUSTOM VARIABLES
 
@@ -206,14 +221,22 @@ LV_IMG_DECLARE(ui_img_783005998);     // assets/wind-80x80.png
 LV_IMG_DECLARE(ui_img_545340440);     // assets/raindrops-80x80.png
 LV_IMG_DECLARE(ui_img_363557387);     // assets/coffee-bean-80x80.png
 LV_IMG_DECLARE(ui_img_445946954);     // assets/play-40x40.png
+LV_IMG_DECLARE(ui_img_834125362);     // assets/minus-small-40x40.png
+LV_IMG_DECLARE(ui_img_390988422);     // assets/plus-small-40x40.png
+LV_IMG_DECLARE(ui_img_360122106);     // assets/clock-40x40.png
+LV_IMG_DECLARE(ui_img_1951499226);    // assets/thermometer-half-40x40.png
+LV_IMG_DECLARE(ui_img_1424216268);    // assets/equality-40x40.png
 LV_IMG_DECLARE(ui_img_1829139226);    // assets/angle-down-40x40.png
 LV_IMG_DECLARE(ui_img_364513079);     // assets/wifi-20x20.png
 LV_IMG_DECLARE(ui_img_1091371356);    // assets/bluetooth-alt-20x20.png
 LV_IMG_DECLARE(ui_img_1765671371);    // assets/refresh-20x20.png
 LV_IMG_DECLARE(ui_img_1732953241);    // assets/tap-60x60.png
 LV_IMG_DECLARE(ui_img_1456692430);    // assets/pause-40x40.png
-LV_IMG_DECLARE(ui_img_360122106);     // assets/clock-40x40.png
-LV_IMG_DECLARE(ui_img_1951499226);    // assets/thermometer-half-40x40.png
+LV_IMG_DECLARE(ui_img_1394011568);    // assets/raindrops-40x40.png
+LV_IMG_DECLARE(ui_img_1828633851);    // assets/mug-hot-alt-40x40.png
+LV_IMG_DECLARE(ui_img_631115820);     // assets/check-40x40.png
+LV_IMG_DECLARE(ui_img_189748990);     // assets/menu-dots-40x40.png
+LV_IMG_DECLARE(ui_img_1321592583);    // assets/horizontal-rule-40x40.png
 
 // UI INIT
 void ui_init(void);

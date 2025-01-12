@@ -102,7 +102,7 @@ void ui_GrindScreen_screen_init(void) {
     lv_obj_set_width(ui_GrindScreen_startButton, 40);
     lv_obj_set_height(ui_GrindScreen_startButton, 40);
     lv_obj_set_x(ui_GrindScreen_startButton, 0);
-    lv_obj_set_y(ui_GrindScreen_startButton, 110);
+    lv_obj_set_y(ui_GrindScreen_startButton, 120);
     lv_obj_set_align(ui_GrindScreen_startButton, LV_ALIGN_CENTER);
     ui_object_set_themeable_style_property(ui_GrindScreen_startButton, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_OUTLINE_COLOR,
                                            _ui_theme_color_Dark);

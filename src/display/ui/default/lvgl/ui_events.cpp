@@ -88,3 +88,11 @@ void onGrindTimeRaise(lv_event_t *e) {
 void onMenuClick(lv_event_t *e) { controller.getUI()->changeScreen(&ui_MenuScreen, &ui_MenuScreen_screen_init); }
 
 void onGrindScreen(lv_event_t *e) { controller.setMode(MODE_GRIND); }
+
+void onTimedClick(lv_event_t *e) {
+    // Your code here
+}
+
+void onVolumetricClick(lv_event_t *e) {
+    // Your code here
+}
