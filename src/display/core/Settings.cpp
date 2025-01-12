@@ -30,6 +30,8 @@ Settings::Settings() {
     homeAssistant = preferences.getBool("ha_a", false);
     homeAssistantIP = preferences.getString("ha_i", "");
     homeAssistantPort = preferences.getInt("ha_p", 1883);
+    homeAssistantUser = preferences.getString("ha_u", "");
+    homeAssistantPassword = preferences.getString("ha_pw", "");
     preferences.end();
 }
 
@@ -72,6 +74,8 @@ void Settings::save() {
     preferences.putBool("ha_a", homeAssistant);
     preferences.putString("ha_i", homeAssistantIP);
     preferences.putInt("ha_p", homeAssistantPort);
+    preferences.putString("ha_u", homeAssistantUser);
+    preferences.putString("ha_pw", homeAssistantPassword);
     preferences.end();
 }
 
@@ -212,5 +216,13 @@ void Settings::setHomeAssistantIP(const String &homeAssistantIP) {
 
 void Settings::setHomeAssistantPort(const int homeAssistantPort) {
     this->homeAssistantPort = homeAssistantPort;
+    save();
+}
+void Settings::setHomeAssistantUser(const String &homeAssistantUser) {
+    this->homeAssistantUser = homeAssistantUser;
+    save();
+}
+void Settings::setHomeAssistantPassword(const String &homeAssistantPassword) {
+    this->homeAssistantPassword = homeAssistantPassword;
     save();
 }

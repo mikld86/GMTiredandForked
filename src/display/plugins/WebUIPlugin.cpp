@@ -120,6 +120,10 @@ void WebUIPlugin::handleSettings(AsyncWebServerRequest *request) {
                 settings->setSmartGrindIp(request->arg("smartGrindIp"));
             settings->setSmartGrindToggle(request->hasArg("smartGrindToggle"));
             settings->setHomeAssistant(request->hasArg("homeAssistant"));
+            if (request->hasArg("haUser"))
+                settings->setHomeAssistantIP(request->arg("haUser"));
+            if (request->hasArg("haPassword"))
+                settings->setHomeAssistantIP(request->arg("haPassword"));
             if (request->hasArg("haIP"))
                 settings->setHomeAssistantIP(request->arg("haIP"));
             if (request->hasArg("haPort"))
@@ -140,6 +144,8 @@ void WebUIPlugin::handleSettings(AsyncWebServerRequest *request) {
     doc["infuseBloomTime"] = settings.getInfuseBloomTime() / 1000;
     doc["homekit"] = settings.isHomekit();
     doc["homeAssistant"] = settings.isHomeAssistant();
+    doc["haUser"] = settings.getHomeAssistantUser();
+    doc["haPassword"] = settings.getHomeAssistantPassword();
     doc["haIP"] = settings.getHomeAssistantIP();
     doc["haPort"] = settings.getHomeAssistantPort();
     doc["pid"] = settings.getPid();
