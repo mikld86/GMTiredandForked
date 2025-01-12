@@ -374,7 +374,7 @@ export function Settings() {
                   </p>
                   <div className="flex-auto">
                     <label htmlFor="haIP" className="block font-medium text-[#333333]">
-                      Home Assistant IP
+                      MQTT IP
                     </label>
                     <input
                         id="haIP"
@@ -389,7 +389,7 @@ export function Settings() {
 
                   <div className="flex-auto">
                     <label htmlFor="haPort" className="block font-medium text-[#333333]">
-                      Home Assistant Port
+                      MQTT Port
                     </label>
                     <input
                         id="haPort"
@@ -403,7 +403,7 @@ export function Settings() {
                   </div>
                   <div className="flex-auto">
                     <label htmlFor="haUser" className="block font-medium text-[#333333]">
-                      Home Assistant User
+                      MQTT User
                     </label>
                     <input
                         id="haUser"
@@ -417,7 +417,7 @@ export function Settings() {
                   </div>
                   <div className="flex-auto">
                     <label htmlFor="haPassword" className="block font-medium text-[#333333]">
-                      Home Assistant Password
+                      MQTT Password
                     </label>
                     <input
                         id="haPassword"
