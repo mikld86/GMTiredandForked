@@ -38,6 +38,7 @@ void Settings::save() {
     preferences.putInt("ts", targetSteamTemp);
     preferences.putInt("tw", targetWaterTemp);
     preferences.putInt("td", targetDuration);
+    preferences.putInt("tv", targetVolume);
     preferences.putInt("tgd", targetGrindDuration);
     preferences.putInt("to", temperatureOffset);
     preferences.putString("pid", pid);
@@ -77,6 +78,11 @@ void Settings::setTargetDuration(const int target_duration) {
     save();
 }
 
+void Settings::setTargetVolume(int target_volume) {
+    targetVolume = target_volume;
+    save();
+}
+
 void Settings::setTargetGrindDuration(const int target_duration) {
     targetGrindDuration = target_duration;
     save();
@@ -87,9 +93,15 @@ void Settings::setStartupMode(const int startup_mode) {
     save();
 }
 
-void Settings::setInfuseBloomTime(int infuse_bloom_time) { infuseBloomTime = infuse_bloom_time; }
+void Settings::setInfuseBloomTime(int infuse_bloom_time) {
+    infuseBloomTime = infuse_bloom_time;
+    save();
+}
 
-void Settings::setInfusePumpTime(int infuse_pump_time) { infusePumpTime = infuse_pump_time; }
+void Settings::setInfusePumpTime(int infuse_pump_time) {
+    infusePumpTime = infuse_pump_time;
+    save();
+}
 
 void Settings::setPid(const String &pid) {
     this->pid = pid;
@@ -113,6 +125,11 @@ void Settings::setMdnsName(const String &mdnsName) {
 
 void Settings::setHomekit(const bool homekit) {
     this->homekit = homekit;
+    save();
+}
+
+void Settings::setVolumetricTarget(bool volumetric_target) {
+    this->volumetricTarget = volumetric_target;
     save();
 }
 

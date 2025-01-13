@@ -77,6 +77,8 @@ class Controller {
 
     void onTargetChange(BrewTarget target);
 
+    void onVolumetricMeasurement(double measurement) const;
+
   private:
     // Initialization methods
     void setupPanel();

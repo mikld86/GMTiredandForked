@@ -1,10 +1,11 @@
 #include "Controller.h"
-#include "../config.h"
-#include "../drivers/LilyGo-T-RGB/LV_Helper.h"
-#include "../plugins/HomekitPlugin.h"
-#include "../plugins/WebUIPlugin.h"
-#include "../plugins/mDNSPlugin.h"
-#include "constants.h"
+#include <display/config.h>
+#include <display/drivers/LilyGo-T-RGB/LV_Helper.h>
+#include <display/plugins/BLEScalePlugin.h>
+#include <display/plugins/HomekitPlugin.h>
+#include <display/plugins/WebUIPlugin.h>
+#include <display/plugins/mDNSPlugin.h>
+#include <display/core/constants.h>
 #include <SPIFFS.h>
 #include <ctime>
 
@@ -18,6 +19,7 @@ void Controller::setup() {
     else
         pluginManager->registerPlugin(new mDNSPlugin());
     pluginManager->registerPlugin(new WebUIPlugin());
+    pluginManager->registerPlugin(&BLEScales);
     pluginManager->setup(this);
 
     if (!SPIFFS.begin(true)) {
@@ -203,7 +205,7 @@ void Controller::raiseBrewTarget() {
         if (newTarget > BREW_MAX_VOLUMETRIC) {
             newTarget = BREW_MAX_VOLUMETRIC;
         }
-        settings.setVolumetricTarget(newTarget);
+        settings.setTargetVolume(newTarget);
     } else {
         int newDuration = getTargetDuration() + 1000;
         if (newDuration > BREW_MAX_DURATION_MS) {
@@ -220,7 +222,7 @@ void Controller::lowerBrewTarget() {
         if (newTarget < BREW_MIN_VOLUMETRIC) {
             newTarget = BREW_MIN_VOLUMETRIC;
         }
-        settings.setVolumetricTarget(newTarget);
+        settings.setTargetVolume(newTarget);
     } else {
         int newDuration = getTargetDuration() - 1000;
         if (newDuration < BREW_MIN_DURATION_MS) {
@@ -330,4 +332,11 @@ void Controller::updateLastAction() { lastAction = millis(); }
 void Controller::onOTAUpdate() {
     activateStandby();
     updating = true;
+}
+
+void Controller::onVolumetricMeasurement(double measurement) const {
+    if (currentProcess != nullptr && currentProcess->getType() == MODE_BREW) {
+        auto* brewProcess = static_cast<BrewProcess *>(currentProcess);
+        brewProcess->updateVolume(measurement);
+    }
 }

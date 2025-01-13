@@ -15,9 +15,9 @@ void onBrewTempLower(lv_event_t *e) { controller.lowerTemp(); }
 
 void onBrewTempRaise(lv_event_t *e) { controller.raiseTemp(); }
 
-void onBrewTimeLower(lv_event_t *e) { controller.raiseBrewTarget(); }
+void onBrewTimeLower(lv_event_t *e) { controller.lowerBrewTarget(); }
 
-void onBrewTimeRaise(lv_event_t *e) { controller.lowerBrewTarget(); }
+void onBrewTimeRaise(lv_event_t *e) { controller.raiseBrewTarget(); }
 
 void onSteamToggle(lv_event_t *e) { controller.isActive() ? controller.deactivate() : controller.activate(); }
 

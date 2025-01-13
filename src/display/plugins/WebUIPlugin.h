@@ -19,11 +19,13 @@ class WebUIPlugin : public Plugin {
 
   private:
     void start();
-    String processTemplate(const String &var);
-    String processOTATemplate(const String &var);
 
     void handleOTA(AsyncWebServerRequest *request);
     void handleSettings(AsyncWebServerRequest *request);
+    void handleBLEScaleList(AsyncWebServerRequest *request);
+    void handleBLEScaleScan(AsyncWebServerRequest *request);
+    void handleBLEScaleConnect(AsyncWebServerRequest *request);
+    void handleBLEScaleInfo(AsyncWebServerRequest *request);
 
     GitHubOTA *ota = nullptr;
     AsyncWebServer server;
