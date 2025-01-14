@@ -62,10 +62,8 @@ void ui_ProfileScreen_screen_init(void) {
     lv_obj_set_align(ui_ProfileScreen_contentPanel, LV_ALIGN_CENTER);
     lv_obj_clear_flag(ui_ProfileScreen_contentPanel, LV_OBJ_FLAG_SCROLLABLE); /// Flags
     lv_obj_set_style_radius(ui_ProfileScreen_contentPanel, 180, LV_PART_MAIN | LV_STATE_DEFAULT);
-    ui_object_set_themeable_style_property(ui_ProfileScreen_contentPanel, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_COLOR,
-                                           _ui_theme_color_Transparent);
-    ui_object_set_themeable_style_property(ui_ProfileScreen_contentPanel, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_OPA,
-                                           _ui_theme_alpha_Transparent);
+    lv_obj_set_style_bg_color(ui_ProfileScreen_contentPanel, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_ProfileScreen_contentPanel, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
     ui_object_set_themeable_style_property(ui_ProfileScreen_contentPanel, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BORDER_COLOR,
                                            _ui_theme_color_NiceWhite);
     ui_object_set_themeable_style_property(ui_ProfileScreen_contentPanel, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BORDER_OPA,
@@ -96,10 +94,8 @@ void ui_ProfileScreen_screen_init(void) {
                                            _ui_theme_alpha_NiceWhite);
     lv_obj_set_style_text_font(ui_ProfileScreen_profileChoices, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_radius(ui_ProfileScreen_profileChoices, 180, LV_PART_MAIN | LV_STATE_DEFAULT);
-    ui_object_set_themeable_style_property(ui_ProfileScreen_profileChoices, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_COLOR,
-                                           _ui_theme_color_Transparent);
-    ui_object_set_themeable_style_property(ui_ProfileScreen_profileChoices, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_OPA,
-                                           _ui_theme_alpha_Transparent);
+    lv_obj_set_style_bg_color(ui_ProfileScreen_profileChoices, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_ProfileScreen_profileChoices, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_clip_corner(ui_ProfileScreen_profileChoices, true, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_object_set_themeable_style_property(ui_ProfileScreen_profileChoices, LV_PART_SELECTED | LV_STATE_DEFAULT,

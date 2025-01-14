@@ -9,11 +9,12 @@ void on_ble_measurement(float value);
 constexpr unsigned long UPDATE_INTERVAL_MS = 250;
 
 class BLEScalePlugin : public Plugin {
-public:
+  public:
     BLEScalePlugin();
 
     void setup(Controller *controller, PluginManager *pluginManager) override;
-    void loop() override;;
+    void loop() override;
+    ;
 
     void connect(const std::string &uuid);
     void scan() const;
@@ -24,7 +25,8 @@ public:
     std::string getUUID() { return isConnected() ? scale->getDeviceAddress() : ""; };
 
     std::vector<DiscoveredDevice> getDiscoveredScales() const;
-private:
+
+  private:
     void onBrewStart() const;
 
     void establishConnection();
@@ -33,17 +35,17 @@ private:
 
     bool doConnect = false;
     std::string uuid;
-    NimBLEAdvertisedDevice* dummyDevice = new NimBLEAdvertisedDevice();
+    NimBLEAdvertisedDevice *dummyDevice = new NimBLEAdvertisedDevice();
     DiscoveredDevice device;
 
     unsigned long lastUpdate = 0;
 
     Controller *controller = nullptr;
     RemoteScalesPluginRegistry *pluginRegistry = nullptr;
-    RemoteScalesScanner* scanner = nullptr;
+    RemoteScalesScanner *scanner = nullptr;
     std::unique_ptr<RemoteScales> scale = nullptr;
 };
 
 extern BLEScalePlugin BLEScales;
 
-#endif //BLESCALEPLUGIN_H
+#endif // BLESCALEPLUGIN_H

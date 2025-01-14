@@ -31,6 +31,7 @@ class BrewProcess : public Process {
     int infusionBloomTime;
     int brewSeconds;
     int brewVolume;
+    int brewPressurize = 3000;
 
     unsigned long currentPhaseStarted = 0;
     double currentVolume = 0;
@@ -51,7 +52,7 @@ class BrewProcess : public Process {
         case BrewPhase::INFUSION_BLOOM:
             return infusionBloomTime;
         case BrewPhase::BREW_PRESSURIZE:
-            return 1000;
+            return brewPressurize;
         case BrewPhase::BREW_PUMP:
             return brewSeconds;
         default:

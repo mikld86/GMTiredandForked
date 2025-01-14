@@ -1,13 +1,12 @@
 #include "Controller.h"
+#include <SPIFFS.h>
+#include <ctime>
 #include <display/config.h>
-#include <display/drivers/LilyGo-T-RGB/LV_Helper.h>
+#include <display/core/constants.h>
 #include <display/plugins/BLEScalePlugin.h>
 #include <display/plugins/HomekitPlugin.h>
 #include <display/plugins/WebUIPlugin.h>
 #include <display/plugins/mDNSPlugin.h>
-#include <display/core/constants.h>
-#include <SPIFFS.h>
-#include <ctime>
 
 void Controller::setup() {
     mode = settings.getStartupMode();
@@ -336,7 +335,7 @@ void Controller::onOTAUpdate() {
 
 void Controller::onVolumetricMeasurement(double measurement) const {
     if (currentProcess != nullptr && currentProcess->getType() == MODE_BREW) {
-        auto* brewProcess = static_cast<BrewProcess *>(currentProcess);
+        auto *brewProcess = static_cast<BrewProcess *>(currentProcess);
         brewProcess->updateVolume(measurement);
     }
 }

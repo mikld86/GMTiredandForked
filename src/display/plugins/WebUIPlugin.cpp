@@ -6,8 +6,7 @@
 
 #include "BLEScalePlugin.h"
 
-WebUIPlugin::WebUIPlugin() : server(80) {
-}
+WebUIPlugin::WebUIPlugin() : server(80) {}
 
 void WebUIPlugin::setup(Controller *_controller, PluginManager *_pluginManager) {
     this->controller = _controller;
@@ -163,7 +162,6 @@ void WebUIPlugin::handleBLEScaleScan(AsyncWebServerRequest *request) {
     AsyncResponseStream *response = request->beginResponseStream("application/json");
     serializeJson(doc, *response);
     request->send(response);
-
 }
 
 void WebUIPlugin::handleBLEScaleConnect(AsyncWebServerRequest *request) {

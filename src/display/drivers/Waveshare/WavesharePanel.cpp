@@ -7,7 +7,10 @@
  * @date      2024-01-22
  *
  */
-#include "LilyGo_RGBPanel.h"
+#include "WavesharePanel.h"
+#include "I2C_Driver.h"
+#include "TCA9554PWR.h"
+#include "driver/spi_master.h"
 #include "utilities.h"
 #include <display/drivers/common/RGBPanelInit.h>
 #include <esp_adc_cal.h>
@@ -15,14 +18,30 @@
 static void TouchDrvDigitalWrite(uint32_t gpio, uint8_t level);
 static int TouchDrvDigitalRead(uint32_t gpio);
 static void TouchDrvPinMode(uint32_t gpio, uint8_t mode);
-static ExtensionIOXL9555 extension;
 static const lcd_init_cmd_t *_init_cmd = NULL;
 
-LilyGo_RGBPanel::LilyGo_RGBPanel(/* args */)
-    : _brightness(0), _panelDrv(NULL), _touchDrv(NULL), _order(LILYGO_T_RGB_ORDER_RGB), _has_init(false),
-      _wakeupMethod(LILYGO_T_RGB_WAKEUP_FORM_BUTTON), _sleepTimeUs(0), _touchType(LILYGO_T_RGB_TOUCH_UNKNOWN) {}
+void ST7701_CS_EN() {
+    Set_EXIO(EXIO_PIN3, Low);
+    vTaskDelay(pdMS_TO_TICKS(10));
+}
 
-LilyGo_RGBPanel::~LilyGo_RGBPanel() {
+void ST7701_CS_Dis() {
+    Set_EXIO(EXIO_PIN3, High);
+    vTaskDelay(pdMS_TO_TICKS(10));
+}
+
+void ST7701_Reset() {
+    Set_EXIO(EXIO_PIN1, Low);
+    vTaskDelay(pdMS_TO_TICKS(10));
+    Set_EXIO(EXIO_PIN1, High);
+    vTaskDelay(pdMS_TO_TICKS(50));
+}
+
+WavesharePanel::WavesharePanel(/* args */)
+    : _brightness(0), _panelDrv(NULL), _touchDrv(NULL), _order(WS_T_RGB_ORDER_RGB), _has_init(false),
+      _wakeupMethod(WS_T_RGB_WAKEUP_FORM_BUTTON), _sleepTimeUs(0), _touchType(WS_T_RGB_TOUCH_UNKNOWN) {}
+
+WavesharePanel::~WavesharePanel() {
     if (_panelDrv) {
         esp_lcd_panel_del(_panelDrv);
         _panelDrv = NULL;
@@ -33,28 +52,17 @@ LilyGo_RGBPanel::~LilyGo_RGBPanel() {
     }
 }
 
-bool LilyGo_RGBPanel::begin(LilyGo_RGBPanel_Color_Order order) {
+bool WavesharePanel::begin(WS_RGBPanel_Color_Order order) {
     if (_panelDrv) {
         return true;
     }
 
     _order = order;
 
-    pinMode(BOARD_TFT_BL, OUTPUT);
-    digitalWrite(BOARD_TFT_BL, LOW);
+    pinMode(WS_BOARD_TFT_BL, OUTPUT);
+    digitalWrite(WS_BOARD_TFT_BL, LOW);
 
-    // Initialize the XL9555 expansion chip
-    if (!extension.init(Wire, BOARD_I2C_SDA, BOARD_I2C_SCL)) {
-        Serial.println("External GPIO expansion chip does not exist.");
-        assert(false);
-    }
-
-    /**
-     * * The power enable is connected to the XL9555 expansion chip GPIO.
-     * * It must be turned on and can only be started when using a battery.
-     */
-    extension.pinMode(power_enable, OUTPUT);
-    extension.digitalWrite(power_enable, HIGH);
+    I2C_Init();
 
     if (!initTouch()) {
         Serial.println("Touch chip not found.");
@@ -67,11 +75,11 @@ bool LilyGo_RGBPanel::begin(LilyGo_RGBPanel_Color_Order order) {
     return true;
 }
 
-bool LilyGo_RGBPanel::installSD() {
-    extension.pinMode(sdmmc_cs, OUTPUT);
-    extension.digitalWrite(sdmmc_cs, HIGH);
+bool WavesharePanel::installSD() {
+    Mode_EXIO(EXIO_PIN4, TCA9554_OUTPUT_REG);
+    Set_EXIO(EXIO_PIN4, High);
 
-    SD_MMC.setPins(BOARD_SDMMC_SCK, BOARD_SDMMC_CMD, BOARD_SDMMC_DAT);
+    SD_MMC.setPins(WS_BOARD_SDMMC_SCK, WS_BOARD_SDMMC_CMD, WS_BOARD_SDMMC_DAT);
 
     if (SD_MMC.begin("/sdcard", true, false)) {
         uint8_t cardType = SD_MMC.cardType();
@@ -93,13 +101,13 @@ bool LilyGo_RGBPanel::installSD() {
     return false;
 }
 
-void LilyGo_RGBPanel::uninstallSD() {
+void WavesharePanel::uninstallSD() {
     SD_MMC.end();
-    extension.digitalWrite(sdmmc_cs, LOW);
-    extension.pinMode(sdmmc_cs, INPUT);
+    Set_EXIO(EXIO_PIN4, Low);
+    Mode_EXIO(EXIO_PIN4, TCA9554_INPUT_REG);
 }
 
-void LilyGo_RGBPanel::setBrightness(uint8_t value) {
+void WavesharePanel::setBrightness(uint8_t value) {
     static uint8_t steps = 16;
 
     if (_brightness == value) {
@@ -110,13 +118,13 @@ void LilyGo_RGBPanel::setBrightness(uint8_t value) {
         value = 16;
     }
     if (value == 0) {
-        digitalWrite(BOARD_TFT_BL, 0);
+        digitalWrite(WS_BOARD_TFT_BL, 0);
         delay(3);
         _brightness = 0;
         return;
     }
     if (_brightness == 0) {
-        digitalWrite(BOARD_TFT_BL, 1);
+        digitalWrite(WS_BOARD_TFT_BL, 1);
         _brightness = steps;
         delayMicroseconds(30);
     }
@@ -124,65 +132,65 @@ void LilyGo_RGBPanel::setBrightness(uint8_t value) {
     int to = steps - value;
     int num = (steps + to - from) % steps;
     for (int i = 0; i < num; i++) {
-        digitalWrite(BOARD_TFT_BL, 0);
-        digitalWrite(BOARD_TFT_BL, 1);
+        digitalWrite(WS_BOARD_TFT_BL, 0);
+        digitalWrite(WS_BOARD_TFT_BL, 1);
     }
     _brightness = value;
 }
 
-uint8_t LilyGo_RGBPanel::getBrightness() { return _brightness; }
+uint8_t WavesharePanel::getBrightness() { return _brightness; }
 
-LilyGo_RGBPanel_Type LilyGo_RGBPanel::getModel() {
+WS_RGBPanel_Type WavesharePanel::getModel() {
     if (_touchDrv) {
         const char *model = _touchDrv->getModelName();
         if (model == NULL)
-            return LILYGO_T_RGB_UNKNOWN;
+            return WS_T_RGB_UNKNOWN;
         if (strlen(model) == 0)
-            return LILYGO_T_RGB_UNKNOWN;
+            return WS_T_RGB_UNKNOWN;
         if (strcmp(model, "FT3267") == 0) {
-            _touchType = LILYGO_T_RGB_TOUCH_FT3267;
-            return LILYGO_T_RGB_2_1_INCHES;
+            _touchType = WS_T_RGB_TOUCH_FT3267;
+            return WS_T_RGB_2_1_INCHES;
         } else if (strcmp(model, "CST820") == 0) {
-            _touchType = LILYGO_T_RGB_TOUCH_CST820;
-            return LILYGO_T_RGB_2_1_INCHES;
+            _touchType = WS_T_RGB_TOUCH_CST820;
+            return WS_T_RGB_2_1_INCHES;
         } else if (strcmp(model, "GT911") == 0) {
-            _touchType = LILYGO_T_RGB_TOUCH_GT911;
-            return LILYGO_T_RGB_2_8_INCHES;
+            _touchType = WS_T_RGB_TOUCH_GT911;
+            return WS_T_RGB_2_8_INCHES;
         }
     }
-    return LILYGO_T_RGB_UNKNOWN;
+    return WS_T_RGB_UNKNOWN;
 }
 
-const char *LilyGo_RGBPanel::getTouchModelName() {
+const char *WavesharePanel::getTouchModelName() {
     if (_touchDrv) {
         return _touchDrv->getModelName();
     }
     return "UNKNOWN";
 }
 
-void LilyGo_RGBPanel::enableTouchWakeup() { _wakeupMethod = LILYGO_T_RGB_WAKEUP_FORM_TOUCH; }
+void WavesharePanel::enableTouchWakeup() { _wakeupMethod = WS_T_RGB_WAKEUP_FORM_TOUCH; }
 
-void LilyGo_RGBPanel::enableButtonWakeup() { _wakeupMethod = LILYGO_T_RGB_WAKEUP_FORM_BUTTON; }
+void WavesharePanel::enableButtonWakeup() { _wakeupMethod = WS_T_RGB_WAKEUP_FORM_BUTTON; }
 
-void LilyGo_RGBPanel::enableTimerWakeup(uint64_t time_in_us) {
-    _wakeupMethod = LILYGO_T_RGB_WAKEUP_FORM_TIMER;
+void WavesharePanel::enableTimerWakeup(uint64_t time_in_us) {
+    _wakeupMethod = WS_T_RGB_WAKEUP_FORM_TIMER;
     _sleepTimeUs = time_in_us;
 }
 
 // The sleep method tested CST820 and GT911, and the FTxxxx series should also
 // be usable.
-void LilyGo_RGBPanel::sleep() {
+void WavesharePanel::sleep() {
     // turn off blacklight
     for (int i = _brightness; i >= 0; --i) {
         setBrightness(i);
         delay(30);
     }
 
-    if (LILYGO_T_RGB_WAKEUP_FORM_TOUCH != _wakeupMethod) {
+    if (WS_T_RGB_WAKEUP_FORM_TOUCH != _wakeupMethod) {
         if (_touchDrv) {
-            if (getModel() == LILYGO_T_RGB_2_8_INCHES) {
-                pinMode(BOARD_TOUCH_IRQ, OUTPUT);
-                digitalWrite(BOARD_TOUCH_IRQ,
+            if (getModel() == WS_T_RGB_2_8_INCHES) {
+                pinMode(WS_BOARD_TOUCH_IRQ, OUTPUT);
+                digitalWrite(WS_BOARD_TOUCH_IRQ,
                              LOW); // Before touch to set sleep, it is necessary
                                    // to set INT to LOW
             }
@@ -191,13 +199,13 @@ void LilyGo_RGBPanel::sleep() {
     }
 
     switch (_wakeupMethod) {
-    case LILYGO_T_RGB_WAKEUP_FORM_TOUCH: {
+    case WS_T_RGB_WAKEUP_FORM_TOUCH: {
         int16_t x_array[1];
         int16_t y_array[1];
         uint8_t get_point = 1;
-        pinMode(BOARD_TOUCH_IRQ, INPUT);
+        pinMode(WS_BOARD_TOUCH_IRQ, INPUT);
         // Wait for your finger to be lifted from the screen
-        while (!digitalRead(BOARD_TOUCH_IRQ)) {
+        while (!digitalRead(WS_BOARD_TOUCH_IRQ)) {
             delay(100);
             // Clear touch buffer
             getPoint(x_array, y_array, get_point);
@@ -205,12 +213,12 @@ void LilyGo_RGBPanel::sleep() {
         // Wait for the interrupt level to stabilize
         delay(2000);
         // Set touch irq wakeup
-        esp_sleep_enable_ext1_wakeup(_BV(BOARD_TOUCH_IRQ), ESP_EXT1_WAKEUP_ALL_LOW);
+        esp_sleep_enable_ext1_wakeup(_BV(WS_BOARD_TOUCH_IRQ), ESP_EXT1_WAKEUP_ALL_LOW);
     } break;
-    case LILYGO_T_RGB_WAKEUP_FORM_BUTTON:
+    case WS_T_RGB_WAKEUP_FORM_BUTTON:
         esp_sleep_enable_ext1_wakeup(_BV(0), ESP_EXT1_WAKEUP_ALL_LOW);
         break;
-    case LILYGO_T_RGB_WAKEUP_FORM_TIMER:
+    case WS_T_RGB_WAKEUP_FORM_TIMER:
         esp_sleep_enable_timer_wakeup(_sleepTimeUs);
         break;
     default:
@@ -226,8 +234,8 @@ void LilyGo_RGBPanel::sleep() {
 
     Wire.end();
 
-    pinMode(BOARD_I2C_SDA, OPEN_DRAIN);
-    pinMode(BOARD_I2C_SCL, OPEN_DRAIN);
+    pinMode(WS_BOARD_I2C_SDA, OPEN_DRAIN);
+    pinMode(WS_BOARD_I2C_SCL, OPEN_DRAIN);
 
     Serial.end();
 
@@ -240,19 +248,19 @@ void LilyGo_RGBPanel::sleep() {
     esp_deep_sleep_start();
 }
 
-void LilyGo_RGBPanel::wakeup() {}
+void WavesharePanel::wakeup() {}
 
-uint16_t LilyGo_RGBPanel::width() { return BOARD_TFT_WIDTH; }
+uint16_t WavesharePanel::width() { return WS_BOARD_TFT_WIDTH; }
 
-uint16_t LilyGo_RGBPanel::height() { return BOARD_TFT_HEIGHT; }
+uint16_t WavesharePanel::height() { return WS_BOARD_TFT_HEIGHT; }
 
-uint8_t LilyGo_RGBPanel::getPoint(int16_t *x_array, int16_t *y_array, uint8_t get_point) {
+uint8_t WavesharePanel::getPoint(int16_t *x_array, int16_t *y_array, uint8_t get_point) {
     if (_touchDrv) {
 
         // The FT3267 type touch reading INT level is to read the coordinates
         // after pressing The CST820 interrupt level is not continuous, so the
         // register must be read all the time to obtain continuous coordinates.
-        if (_touchType == LILYGO_T_RGB_TOUCH_FT3267) {
+        if (_touchType == WS_T_RGB_TOUCH_FT3267) {
             if (!_touchDrv->isPressed()) {
                 return 0;
             }
@@ -263,14 +271,14 @@ uint8_t LilyGo_RGBPanel::getPoint(int16_t *x_array, int16_t *y_array, uint8_t ge
     return 0;
 }
 
-bool LilyGo_RGBPanel::isPressed() {
+bool WavesharePanel::isPressed() {
     if (_touchDrv) {
         return _touchDrv->isPressed();
     }
     return 0;
 }
 
-uint16_t LilyGo_RGBPanel::getBattVoltage() {
+uint16_t WavesharePanel::getBattVoltage() {
     esp_adc_cal_characteristics_t adc_chars;
     esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_11, ADC_WIDTH_BIT_12, 1100, &adc_chars);
 
@@ -278,7 +286,7 @@ uint16_t LilyGo_RGBPanel::getBattVoltage() {
     uint32_t sum = 0;
     uint16_t raw_buffer[number_of_samples] = {0};
     for (int i = 0; i < number_of_samples; i++) {
-        raw_buffer[i] = analogRead(BOARD_ADC_DET);
+        raw_buffer[i] = analogRead(WS_BOARD_ADC_DET);
         delay(2);
     }
     for (int i = 0; i < number_of_samples; i++) {
@@ -289,33 +297,56 @@ uint16_t LilyGo_RGBPanel::getBattVoltage() {
     return esp_adc_cal_raw_to_voltage(sum, &adc_chars) * 2;
 }
 
-void LilyGo_RGBPanel::initBUS() {
+void WavesharePanel::initBUS() {
     assert(_init_cmd);
 
     if (_panelDrv) {
         return;
     }
 
-    extension.pinMode(reset, OUTPUT);
-    extension.digitalWrite(reset, LOW);
-    delay(20);
-    extension.digitalWrite(reset, HIGH);
-    delay(10);
+    printf("Initializing SPI\n");
 
-    Wire.setClock(1000000UL);
+    spi_bus_config_t buscfg = {
+        .mosi_io_num = WS_BOARD_TFT_MOSI,
+        .miso_io_num = -1,
+        .sclk_io_num = WS_BOARD_TFT_SCLK,
+        .quadwp_io_num = -1,
+        .quadhd_io_num = -1,
+        .max_transfer_sz = 64, // ESP32 S3 max size is 64Kbytes
+    };
+    spi_bus_initialize(SPI2_HOST, &buscfg, SPI_DMA_CH_AUTO);
+    spi_device_interface_config_t devcfg = {
+        .command_bits = 1,
+        .address_bits = 8,
+        .mode = SPI_MODE0,
+        .clock_speed_hz = 40000000,
+        .spics_io_num = -1,
+        .queue_size = 1, // Not using queues
+    };
+    spi_bus_add_device(SPI2_HOST, &devcfg, &SPI_handle);
+
+
+   	printf("Set up SPI\n");
+
+    ST7701_Reset();
     // uint32_t start = millis();
 
-    extension.beginSPI(mosi, -1, sclk, cs);
+   	printf("Sending Init Data\n");
 
+
+    ST7701_CS_EN();
     int i = 0;
     while (_init_cmd[i].databytes != 0xff) {
         writeCommand(_init_cmd[i].cmd);
-        writeData(_init_cmd[i].data, _init_cmd[i].databytes & 0x1F);
+        for (uint8_t b = 0; b < (_init_cmd[i].databytes & 0x1F); b++) {
+            writeData(_init_cmd[i].data[b], 0);
+        }
         if (_init_cmd[i].databytes & 0x80) {
             delay(100);
         }
         i++;
     }
+ 	ST7701_CS_Dis();
 
     // uint32_t end = millis();
 
@@ -329,26 +360,26 @@ void LilyGo_RGBPanel::initBUS() {
     Wire.setClock(400000UL);
 
     const int bus_rbg_order[SOC_LCD_RGB_DATA_WIDTH] = {
-        // BOARD_TFT_DATA12,    //LSB
-        BOARD_TFT_DATA13,
-        BOARD_TFT_DATA14,
-        BOARD_TFT_DATA15,
-        BOARD_TFT_DATA16,
-        BOARD_TFT_DATA17,
+        // WS_BOARD_TFT_DATA12,    //LSB
+        WS_BOARD_TFT_DATA13,
+        WS_BOARD_TFT_DATA14,
+        WS_BOARD_TFT_DATA15,
+        WS_BOARD_TFT_DATA16,
+        WS_BOARD_TFT_DATA17,
 
-        BOARD_TFT_DATA0,
-        BOARD_TFT_DATA1,
-        BOARD_TFT_DATA2,
-        BOARD_TFT_DATA3,
-        BOARD_TFT_DATA4,
-        BOARD_TFT_DATA5,
+        WS_BOARD_TFT_DATA0,
+        WS_BOARD_TFT_DATA1,
+        WS_BOARD_TFT_DATA2,
+        WS_BOARD_TFT_DATA3,
+        WS_BOARD_TFT_DATA4,
+        WS_BOARD_TFT_DATA5,
 
-        // BOARD_TFT_DATA6,     //LSB
-        BOARD_TFT_DATA7,
-        BOARD_TFT_DATA8,
-        BOARD_TFT_DATA9,
-        BOARD_TFT_DATA10,
-        BOARD_TFT_DATA11,
+        // WS_BOARD_TFT_DATA6,     //LSB
+        WS_BOARD_TFT_DATA7,
+        WS_BOARD_TFT_DATA8,
+        WS_BOARD_TFT_DATA9,
+        WS_BOARD_TFT_DATA10,
+        WS_BOARD_TFT_DATA11,
     };
 
     esp_lcd_rgb_panel_config_t panel_config = {
@@ -356,8 +387,8 @@ void LilyGo_RGBPanel::initBUS() {
         .timings =
             {
                 .pclk_hz = RGB_MAX_PIXEL_CLOCK_HZ,
-                .h_res = BOARD_TFT_WIDTH,
-                .v_res = BOARD_TFT_HEIGHT,
+                .h_res = WS_BOARD_TFT_WIDTH,
+                .v_res = WS_BOARD_TFT_HEIGHT,
                 // The following parameters should refer to LCD spec
                 .hsync_pulse_width = 1,
                 .hsync_back_porch = 30,
@@ -372,32 +403,32 @@ void LilyGo_RGBPanel::initBUS() {
             },
         .data_width = 16, // RGB565 in parallel mode, thus 16bit in width
         .psram_trans_align = 64,
-        .hsync_gpio_num = BOARD_TFT_HSYNC,
-        .vsync_gpio_num = BOARD_TFT_VSYNC,
-        .de_gpio_num = BOARD_TFT_DE,
-        .pclk_gpio_num = BOARD_TFT_PCLK,
+        .hsync_gpio_num = WS_BOARD_TFT_HSYNC,
+        .vsync_gpio_num = WS_BOARD_TFT_VSYNC,
+        .de_gpio_num = WS_BOARD_TFT_DE,
+        .pclk_gpio_num = WS_BOARD_TFT_PCLK,
         .data_gpio_nums =
             {
-                // BOARD_TFT_DATA0,
-                BOARD_TFT_DATA13,
-                BOARD_TFT_DATA14,
-                BOARD_TFT_DATA15,
-                BOARD_TFT_DATA16,
-                BOARD_TFT_DATA17,
+                // WS_BOARD_TFT_DATA0,
+                WS_BOARD_TFT_DATA13,
+                WS_BOARD_TFT_DATA14,
+                WS_BOARD_TFT_DATA15,
+                WS_BOARD_TFT_DATA16,
+                WS_BOARD_TFT_DATA17,
 
-                BOARD_TFT_DATA6,
-                BOARD_TFT_DATA7,
-                BOARD_TFT_DATA8,
-                BOARD_TFT_DATA9,
-                BOARD_TFT_DATA10,
-                BOARD_TFT_DATA11,
-                // BOARD_TFT_DATA12,
+                WS_BOARD_TFT_DATA6,
+                WS_BOARD_TFT_DATA7,
+                WS_BOARD_TFT_DATA8,
+                WS_BOARD_TFT_DATA9,
+                WS_BOARD_TFT_DATA10,
+                WS_BOARD_TFT_DATA11,
+                // WS_BOARD_TFT_DATA12,
 
-                BOARD_TFT_DATA1,
-                BOARD_TFT_DATA2,
-                BOARD_TFT_DATA3,
-                BOARD_TFT_DATA4,
-                BOARD_TFT_DATA5,
+                WS_BOARD_TFT_DATA1,
+                WS_BOARD_TFT_DATA2,
+                WS_BOARD_TFT_DATA3,
+                WS_BOARD_TFT_DATA4,
+                WS_BOARD_TFT_DATA5,
             },
         .disp_gpio_num = GPIO_NUM_NC,
         .on_frame_trans_done = NULL,
@@ -408,13 +439,14 @@ void LilyGo_RGBPanel::initBUS() {
             },
     };
 
-    if (_order == LILYGO_T_RGB_ORDER_BGR) {
+    if (_order == WS_T_RGB_ORDER_BGR) {
 
         // Swap color order
 
-        uint8_t data = 0x00;
+    	ST7701_CS_EN();
         writeCommand(0x36);
-        writeData(&data, 1);
+        writeData(0x00, 1);
+    	ST7701_CS_Dis();
 
         memcpy(panel_config.data_gpio_nums, bus_rbg_order, sizeof(panel_config.data_gpio_nums));
     }
@@ -423,32 +455,29 @@ void LilyGo_RGBPanel::initBUS() {
     ESP_ERROR_CHECK(esp_lcd_panel_init(_panelDrv));
 }
 
-bool LilyGo_RGBPanel::initTouch() {
-    const uint8_t touch_reset_pin = tp_reset | 0x80;
-    const uint8_t touch_irq_pin = BOARD_TOUCH_IRQ;
+bool WavesharePanel::initTouch() {
+    const uint8_t touch_irq_pin = WS_BOARD_TOUCH_IRQ;
     bool result = false;
 
     log_i("=================initTouch====================");
     _touchDrv = new TouchDrvCSTXXX();
     _touchDrv->setGpioCallback(TouchDrvPinMode, TouchDrvDigitalWrite, TouchDrvDigitalRead);
-    _touchDrv->setPins(touch_reset_pin, touch_irq_pin);
-    result = _touchDrv->begin(Wire, CST816_SLAVE_ADDRESS, BOARD_I2C_SDA, BOARD_I2C_SCL);
+    _touchDrv->setPins(0x00, touch_irq_pin);
+    result = _touchDrv->begin(Wire, CST816_SLAVE_ADDRESS, WS_BOARD_I2C_SDA, WS_BOARD_I2C_SCL);
     if (result) {
 
         _init_cmd = st7701_2_1_inches;
 
-#if ARDUHAL_LOG_LEVEL >= ARDUHAL_LOG_LEVEL_INFO
         const char *model = _touchDrv->getModelName();
         log_i("Successfully initialized %s, using %s Driver!\n", model, model);
-#endif
         return true;
     }
     delete _touchDrv;
 
     _touchDrv = new TouchDrvGT911();
     _touchDrv->setGpioCallback(TouchDrvPinMode, TouchDrvDigitalWrite, TouchDrvDigitalRead);
-    _touchDrv->setPins(touch_reset_pin, touch_irq_pin);
-    result = _touchDrv->begin(Wire, GT911_SLAVE_ADDRESS_L, BOARD_I2C_SDA, BOARD_I2C_SCL);
+    _touchDrv->setPins(0x00, touch_irq_pin);
+    result = _touchDrv->begin(Wire, GT911_SLAVE_ADDRESS_L, WS_BOARD_I2C_SDA, WS_BOARD_I2C_SCL);
     if (result) {
         TouchDrvGT911 *tmp = static_cast<TouchDrvGT911 *>(_touchDrv);
         tmp->setInterruptMode(FALLING);
@@ -461,8 +490,8 @@ bool LilyGo_RGBPanel::initTouch() {
 
     _touchDrv = new TouchDrvFT6X36();
     _touchDrv->setGpioCallback(TouchDrvPinMode, TouchDrvDigitalWrite, TouchDrvDigitalRead);
-    _touchDrv->setPins(touch_reset_pin, touch_irq_pin);
-    result = _touchDrv->begin(Wire, FT3267_SLAVE_ADDRESS, BOARD_I2C_SDA, BOARD_I2C_SCL);
+    _touchDrv->setPins(0x00, touch_irq_pin);
+    result = _touchDrv->begin(Wire, FT3267_SLAVE_ADDRESS, WS_BOARD_I2C_SDA, WS_BOARD_I2C_SCL);
     if (result) {
 
         _init_cmd = st7701_2_1_inches;
@@ -470,10 +499,8 @@ bool LilyGo_RGBPanel::initTouch() {
         TouchDrvFT6X36 *tmp = static_cast<TouchDrvFT6X36 *>(_touchDrv);
         tmp->interruptTrigger();
 
-#if ARDUHAL_LOG_LEVEL >= ARDUHAL_LOG_LEVEL_INFO
         const char *model = _touchDrv->getModelName();
         log_i("Successfully initialized %s, using %s Driver!\n", model, model);
-#endif
 
         return true;
     }
@@ -489,47 +516,50 @@ bool LilyGo_RGBPanel::initTouch() {
     return false;
 }
 
-void LilyGo_RGBPanel::writeCommand(const uint8_t cmd) {
-    uint16_t data = cmd;
-    extension.transfer9(data);
+void WavesharePanel::writeCommand(const uint8_t cmd) {
+    spi_transaction_t spi_tran = {
+        .cmd = 0,
+        .addr = cmd,
+        .length = 0,
+        .rxlength = 0,
+    };
+    spi_device_transmit(SPI_handle, &spi_tran);
 }
 
-void LilyGo_RGBPanel::writeData(const uint8_t *data, int len) {
-    uint32_t i = 0;
-    if (len > 0) {
-        do {
-            // The ninth bit of data, 1, represents data, 0 represents command
-            uint16_t pdat = (*(data + i)) | 1 << 8;
-            extension.transfer9(pdat);
-            i++;
-        } while (len--);
-    }
+void WavesharePanel::writeData(uint8_t data, size_t len) {
+    spi_transaction_t spi_tran = {
+        .cmd = 1,
+        .addr = data,
+        .length = 0,
+        .rxlength = 0,
+    };
+    spi_device_transmit(SPI_handle, &spi_tran);
 }
 
-void LilyGo_RGBPanel::pushColors(uint16_t x, uint16_t y, uint16_t width, uint16_t hight, uint16_t *data) {
+void WavesharePanel::pushColors(uint16_t x, uint16_t y, uint16_t width, uint16_t hight, uint16_t *data) {
     assert(_panelDrv);
     esp_lcd_panel_draw_bitmap(_panelDrv, x, y, width, hight, data);
 }
 
 static void TouchDrvDigitalWrite(uint32_t gpio, uint8_t level) {
-    if (gpio & 0x80) {
-        extension.digitalWrite(gpio & 0x7F, level);
+    if (gpio == 0) {
+        Set_EXIO(EXIO_PIN2, level);
     } else {
         digitalWrite(gpio, level);
     }
 }
 
 static int TouchDrvDigitalRead(uint32_t gpio) {
-    if (gpio & 0x80) {
-        return extension.digitalRead(gpio & 0x7F);
+    if (gpio == 0) {
+        return Read_EXIO(EXIO_PIN2);
     } else {
         return digitalRead(gpio);
     }
 }
 
 static void TouchDrvPinMode(uint32_t gpio, uint8_t mode) {
-    if (gpio & 0x80) {
-        extension.pinMode(gpio & 0x7F, mode);
+    if (gpio == 0) {
+        Mode_EXIO(EXIO_PIN2, mode);
     } else {
         pinMode(gpio, mode);
     }

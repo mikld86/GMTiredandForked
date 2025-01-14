@@ -165,22 +165,25 @@ extern lv_obj_t *ui_StatusScreen_tempTarget;
 extern lv_obj_t *ui_StatusScreen_tempGauge;
 extern lv_obj_t *ui_StatusScreen_ImgButton3;
 extern lv_obj_t *ui_StatusScreen_contentPanel2;
-extern lv_obj_t *ui_StatusScreen_mainLabel1;
-extern lv_obj_t *ui_StatusScreen_progressBar;
-extern lv_obj_t *ui_StatusScreen_progressLabel;
 extern lv_obj_t *ui_StatusScreen_targetDuration;
 extern lv_obj_t *ui_StatusScreen_targetTemp;
 void ui_event_StatusScreen_pauseButton(lv_event_t *e);
 extern lv_obj_t *ui_StatusScreen_pauseButton;
 extern lv_obj_t *ui_StatusScreen_Image7;
 extern lv_obj_t *ui_StatusScreen_Image8;
-extern lv_obj_t *ui_StatusScreen_targetDuration1;
-extern lv_obj_t *ui_StatusScreen_infuseIndicator;
-extern lv_obj_t *ui_StatusScreen_brewIndicator;
-extern lv_obj_t *ui_StatusScreen_finishedIndicator;
-extern lv_obj_t *ui_StatusScreen_divider2;
-extern lv_obj_t *ui_StatusScreen_divider1;
 extern lv_obj_t *ui_StatusScreen_currentDuration;
+extern lv_obj_t *ui_StatusScreen_stepLabel;
+extern lv_obj_t *ui_StatusScreen_phaseLabel;
+extern lv_obj_t *ui_StatusScreen_barContainer;
+extern lv_obj_t *ui_StatusScreen_preinfusePumpBar;
+extern lv_obj_t *ui_StatusScreen_preinfuseBloomBar;
+extern lv_obj_t *ui_StatusScreen_brewPumpBar;
+extern lv_obj_t *ui_StatusScreen_brewBar;
+extern lv_obj_t *ui_StatusScreen_labelContainer;
+extern lv_obj_t *ui_StatusScreen_preinfusePumpLabel;
+extern lv_obj_t *ui_StatusScreen_preinfuseBloomLabel;
+extern lv_obj_t *ui_StatusScreen_brewPumpLabel;
+extern lv_obj_t *ui_StatusScreen_brewLabel;
 extern lv_obj_t *ui_StatusScreen_tempText;
 // CUSTOM VARIABLES
 
@@ -230,12 +233,8 @@ LV_IMG_DECLARE(ui_img_1091371356);    // assets/bluetooth-alt-20x20.png
 LV_IMG_DECLARE(ui_img_1765671371);    // assets/refresh-20x20.png
 LV_IMG_DECLARE(ui_img_1732953241);    // assets/tap-60x60.png
 LV_IMG_DECLARE(ui_img_1456692430);    // assets/pause-40x40.png
-LV_IMG_DECLARE(ui_img_1394011568);    // assets/raindrops-40x40.png
-LV_IMG_DECLARE(ui_img_1828633851);    // assets/mug-hot-alt-40x40.png
-LV_IMG_DECLARE(ui_img_631115820);     // assets/check-40x40.png
-LV_IMG_DECLARE(ui_img_189748990);     // assets/menu-dots-40x40.png
-LV_IMG_DECLARE(ui_img_1321592583);    // assets/horizontal-rule-40x40.png
 LV_IMG_DECLARE(ui_img_1829139226);    // assets/angle-down-40x40.png
+LV_IMG_DECLARE(ui_img_631115820);     // assets/check-40x40.png
 
 // UI INIT
 void ui_init(void);

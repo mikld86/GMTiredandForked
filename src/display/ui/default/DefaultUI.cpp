@@ -3,7 +3,8 @@
 #include <WiFi.h>
 #include <display/core/Controller.h>
 #include <display/core/Process.h>
-#include <display/drivers/LilyGo-T-RGB/LV_Helper.h>
+#include <display/drivers/LilyGoDriver.h>
+#include <display/drivers/WaveshareDriver.h>
 
 int16_t calculate_angle(int set_temp) {
     const int16_t angleRange = 3160;
@@ -85,17 +86,13 @@ void DefaultUI::changeScreen(lv_obj_t **screen, void (*target_init)()) {
     targetScreenInit = target_init;
 }
 
-void DefaultUI::setupPanel() {
-    // Initialize T-RGB, if the initialization fails, false will be returned.
-    if (!panel.begin()) {
-        for (uint8_t i = 0; i < 20; i++) {
-            Serial.println("Error, failed to initialize T-RGB");
-            delay(1000);
-        }
-        ESP.restart();
+void DefaultUI::setupPanel() const {
+    delay(5000);
+    if (LilyGoDriver::getInstance()->isCompatible()) {
+        LilyGoDriver::getInstance()->init();
+    } else if (WaveshareDriver::getInstance()->isCompatible()) {
+        WaveshareDriver::getInstance()->init();
     }
-    beginLvglHelper(panel);
-    panel.setBrightness(16);
     ui_init();
 }
 
@@ -147,24 +144,6 @@ void DefaultUI::updateStatusScreen() {
     }
     BrewProcess *brewProcess = static_cast<BrewProcess *>(process);
 
-    lv_img_set_src(ui_StatusScreen_divider1, &ui_img_189748990);
-    switch (brewProcess->phase) {
-    case BrewPhase::FINISHED:
-        ui_object_set_themeable_style_property(ui_StatusScreen_finishedIndicator, LV_PART_MAIN | LV_STATE_DEFAULT,
-                                               LV_STYLE_IMG_RECOLOR, _ui_theme_color_NiceWhite);
-        ui_object_set_themeable_style_property(ui_StatusScreen_divider2, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR,
-                                               _ui_theme_color_NiceWhite);
-        lv_img_set_src(ui_StatusScreen_divider2, &ui_img_1321592583);
-    case BrewPhase::BREW_PUMP:
-    case BrewPhase::BREW_PRESSURIZE:
-        ui_object_set_themeable_style_property(ui_StatusScreen_brewIndicator, LV_PART_MAIN | LV_STATE_DEFAULT,
-                                               LV_STYLE_IMG_RECOLOR, _ui_theme_color_NiceWhite);
-        ui_object_set_themeable_style_property(ui_StatusScreen_divider1, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR,
-                                               _ui_theme_color_NiceWhite);
-        lv_img_set_src(ui_StatusScreen_divider1, &ui_img_1321592583);
-    default:;
-    }
-
     unsigned long now = millis();
     unsigned long phaseDuration = brewProcess->getPhaseDuration();
     unsigned long activeUntil = brewProcess->currentPhaseStarted + phaseDuration;
@@ -180,20 +159,58 @@ void DefaultUI::updateStatusScreen() {
     auto phaseMinutes = (int)(phaseSecondsDouble / 60.0 - 0.5);
     auto phaseSeconds = (int)phaseSecondsDouble % 60;
 
-    if (brewProcess->phase == BrewPhase::BREW_PUMP && brewProcess->target == BrewTarget::VOLUMETRIC) {
-        lv_bar_set_range(ui_StatusScreen_progressBar, 0, brewProcess->brewVolume);
-        lv_bar_set_value(ui_StatusScreen_progressBar, brewProcess->currentVolume, LV_ANIM_OFF);
-        lv_label_set_text_fmt(ui_StatusScreen_progressLabel, "%.2fg", brewProcess->currentVolume);
-        lv_label_set_text_fmt(ui_StatusScreen_targetDuration, "%dg", brewProcess->brewVolume);
-        lv_obj_add_flag(ui_StatusScreen_currentDuration, LV_OBJ_FLAG_HIDDEN);
-    } else {
+    lv_bar_set_range(ui_StatusScreen_preinfusePumpBar, 0, brewProcess->infusionPumpTime / 1000);
+    lv_label_set_text_fmt(ui_StatusScreen_preinfusePumpLabel, "%ds", brewProcess->infusionPumpTime / 1000);
+    lv_bar_set_range(ui_StatusScreen_preinfuseBloomBar, 0, brewProcess->infusionBloomTime / 1000);
+    lv_label_set_text_fmt(ui_StatusScreen_preinfuseBloomLabel, "%ds", brewProcess->infusionBloomTime / 1000);
+    lv_bar_set_range(ui_StatusScreen_brewPumpBar, 0, brewProcess->brewPressurize / 1000);
+    lv_label_set_text_fmt(ui_StatusScreen_brewPumpLabel, "%ds", brewProcess->brewPressurize / 1000);
+    if (brewProcess->target == BrewTarget::TIME) {
+        lv_bar_set_range(ui_StatusScreen_brewBar, 0, brewProcess->brewSeconds / 1000);
+        lv_label_set_text_fmt(ui_StatusScreen_brewLabel, "%ds", brewProcess->brewSeconds / 1000);
         lv_label_set_text_fmt(ui_StatusScreen_targetDuration, "%2d:%02d", targetMinutes, targetSeconds);
+    } else {
+        lv_bar_set_range(ui_StatusScreen_brewBar, 0, brewProcess->brewVolume);
+        lv_label_set_text_fmt(ui_StatusScreen_brewLabel, "%ds", brewProcess->brewVolume);
+        lv_label_set_text_fmt(ui_StatusScreen_targetDuration, "%dg", brewProcess->brewVolume);
+    }
 
-        lv_bar_set_range(ui_StatusScreen_progressBar, 0, max((int)phaseSecondsDouble, 1));
-        lv_bar_set_value(ui_StatusScreen_progressBar, progress / 1000, LV_ANIM_OFF);
-        lv_label_set_text_fmt(ui_StatusScreen_targetDuration1, "%2d:%02d", phaseMinutes, phaseSeconds);
-        lv_label_set_text_fmt(ui_StatusScreen_progressLabel, "%2d:%02d", progressMinutes, progressSeconds);
-        lv_obj_clear_flag(ui_StatusScreen_currentDuration, LV_OBJ_FLAG_HIDDEN);
+    switch (brewProcess->phase) {
+    case BrewPhase::FINISHED:
+        lv_label_set_text(ui_StatusScreen_stepLabel, "BREW");
+        lv_label_set_text(ui_StatusScreen_phaseLabel, "Finished");
+        break;
+    case BrewPhase::BREW_PUMP:
+        if (brewProcess->target == BrewTarget::TIME) {
+            lv_bar_set_value(ui_StatusScreen_brewBar, progress / 1000, LV_ANIM_OFF);
+        } else {
+            lv_bar_set_value(ui_StatusScreen_brewBar, brewProcess->currentVolume, LV_ANIM_OFF);
+        }
+        lv_bar_set_value(ui_StatusScreen_brewPumpBar, brewProcess->brewPressurize / 1000, LV_ANIM_OFF);
+        lv_bar_set_value(ui_StatusScreen_preinfuseBloomBar, brewProcess->infusionBloomTime / 1000, LV_ANIM_OFF);
+        lv_bar_set_value(ui_StatusScreen_preinfusePumpBar, brewProcess->infusionPumpTime / 1000, LV_ANIM_OFF);
+        lv_label_set_text(ui_StatusScreen_stepLabel, "BREW");
+        lv_label_set_text(ui_StatusScreen_phaseLabel, "Flowing...");
+        break;
+    case BrewPhase::BREW_PRESSURIZE:
+        lv_bar_set_value(ui_StatusScreen_brewPumpBar, progress / 1000, LV_ANIM_OFF);
+        lv_bar_set_value(ui_StatusScreen_preinfuseBloomBar, brewProcess->infusionBloomTime / 1000, LV_ANIM_OFF);
+        lv_bar_set_value(ui_StatusScreen_preinfusePumpBar, brewProcess->infusionPumpTime / 1000, LV_ANIM_OFF);
+        lv_label_set_text(ui_StatusScreen_stepLabel, "BREW");
+        lv_label_set_text(ui_StatusScreen_phaseLabel, "Building pressure...");
+        break;
+    case BrewPhase::INFUSION_BLOOM:
+        lv_bar_set_value(ui_StatusScreen_preinfuseBloomBar, progress / 1000, LV_ANIM_OFF);
+        lv_bar_set_value(ui_StatusScreen_preinfusePumpBar, brewProcess->infusionPumpTime / 1000, LV_ANIM_OFF);
+        lv_label_set_text(ui_StatusScreen_stepLabel, "INFUSION");
+        lv_label_set_text(ui_StatusScreen_phaseLabel, "Blooming...");
+        break;
+    case BrewPhase::INFUSION_PUMP:
+        lv_bar_set_value(ui_StatusScreen_preinfusePumpBar, progress / 1000, LV_ANIM_OFF);
+        lv_label_set_text(ui_StatusScreen_stepLabel, "INFUSION");
+        lv_label_set_text(ui_StatusScreen_phaseLabel, "Building pressure...");
+        break;
+    default:;
     }
 
     lv_img_set_src(ui_StatusScreen_Image8, brewProcess->target == BrewTarget::TIME ? &ui_img_360122106 : &ui_img_1424216268);

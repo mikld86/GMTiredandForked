@@ -3,24 +3,18 @@
 #include <scales/acaia.h>
 #include <scales/bookoo.h>
 
-void on_ble_measurement(float value) {
-    BLEScales.onMeasurement(value);
-}
+void on_ble_measurement(float value) { BLEScales.onMeasurement(value); }
 
 BLEScalePlugin::BLEScalePlugin() : device(DiscoveredDevice(dummyDevice)) {}
 
-void BLEScalePlugin::setup(Controller* controller, PluginManager* manager) {
+void BLEScalePlugin::setup(Controller *controller, PluginManager *manager) {
     this->controller = controller;
     this->pluginRegistry = RemoteScalesPluginRegistry::getInstance();
     AcaiaScalesPlugin::apply();
     BookooScalesPlugin::apply();
     this->scanner = new RemoteScalesScanner();
-    manager->on("controller:brew:start", [this](Event const &) {
-       onBrewStart();
-    });
-    manager->on("controller:bluetooth:connect", [this](Event const &) {
-        scanner->initializeAsyncScan();
-    });
+    manager->on("controller:brew:start", [this](Event const &) { onBrewStart(); });
+    // manager->on("controller:bluetooth:connect", [this](Event const &) { scanner->initializeAsyncScan(); });
 }
 
 void BLEScalePlugin::loop() {
@@ -65,7 +59,7 @@ void BLEScalePlugin::onBrewStart() const {
 
 void BLEScalePlugin::establishConnection() {
     scanner->stopAsyncScan();
-    for (DiscoveredDevice d : scanner->getDiscoveredScales()) {
+    for (const DiscoveredDevice &d : scanner->getDiscoveredScales()) {
         if (d.getAddress().toString() == uuid) {
             this->device = DiscoveredDevice{d};
             scale = pluginRegistry->initialiseRemoteScales(device);
@@ -90,12 +84,10 @@ void BLEScalePlugin::onMeasurement(float value) const {
     }
 }
 
-std::vector<DiscoveredDevice> BLEScalePlugin::getDiscoveredScales() const {
-    return scanner->getDiscoveredScales();
-}
+std::vector<DiscoveredDevice> BLEScalePlugin::getDiscoveredScales() const { return scanner->getDiscoveredScales(); }
 
 DiscoveredDevice BLEScalePlugin::findDevice(const std::string &uuid) const {
-    for (const DiscoveredDevice& d : scanner->getDiscoveredScales()) {
+    for (const DiscoveredDevice &d : scanner->getDiscoveredScales()) {
         if (d.getAddress().toString() == uuid) {
             return d;
         }

@@ -3,7 +3,6 @@
 
 #include <display/core/PluginManager.h>
 #include <display/core/constants.h>
-#include <display/drivers/LilyGo-T-RGB/LilyGo_RGBPanel.h>
 
 #include "./lvgl/ui.h"
 
@@ -23,7 +22,7 @@ class DefaultUI {
     void changeScreen(lv_obj_t **screen, void (*target_init)(void));
 
   private:
-    void setupPanel();
+    void setupPanel() const;
 
     void handleScreenChange();
 
@@ -35,7 +34,6 @@ class DefaultUI {
     void updateWaterScreen() const;
     void updateSteamScreen();
 
-    LilyGo_RGBPanel panel;
     Controller *controller;
     PluginManager *pluginManager;
 
