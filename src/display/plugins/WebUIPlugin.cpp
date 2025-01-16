@@ -121,9 +121,9 @@ void WebUIPlugin::handleSettings(AsyncWebServerRequest *request) {
             settings->setSmartGrindToggle(request->hasArg("smartGrindToggle"));
             settings->setHomeAssistant(request->hasArg("homeAssistant"));
             if (request->hasArg("haUser"))
-                settings->setHomeAssistantIP(request->arg("haUser"));
+                settings->setHomeAssistantUser(request->arg("haUser"));
             if (request->hasArg("haPassword"))
-                settings->setHomeAssistantIP(request->arg("haPassword"));
+                settings->setHomeAssistantPassword(request->arg("haPassword"));
             if (request->hasArg("haIP"))
                 settings->setHomeAssistantIP(request->arg("haIP"));
             if (request->hasArg("haPort"))

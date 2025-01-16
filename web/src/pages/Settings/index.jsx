@@ -410,7 +410,7 @@ export function Settings() {
                         name="haUser"
                         type="text"
                         className="input-field"
-                        placeholder="0"
+                        placeholder="user"
                         value={formData.haUser}
                         onChange={onChange('haUser')}
                     />
@@ -424,8 +424,8 @@ export function Settings() {
                         name="haPassword"
                         type="password"
                         className="input-field"
-                        placeholder="0"
-                        value={formData.haUser}
+                        placeholder="password"
+                        value={formData.haPassword}
                         onChange={onChange('haPassword')}
                     />
                   </div>
