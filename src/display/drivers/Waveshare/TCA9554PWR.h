@@ -15,7 +15,7 @@
  * ******************************************************/
 
 #define TCA9554_ADDRESS 0x20 // TCA9554PWR I2C address
-// TCA9554PWR寄存器地址
+
 #define TCA9554_INPUT_REG 0x00  // Input register,input level
 #define TCA9554_OUTPUT_REG 0x01 // Output register, high and low level output
 #define TCA9554_Polarity_REG                                                                                                     \
@@ -36,8 +36,8 @@
 
 /*****************************************************  Operation register REG
  * ****************************************************/
-uint8_t I2C_Read_EXIO(uint8_t REG);                // Read the value of the TCA9554PWR register REG
-uint8_t I2C_Write_EXIO(uint8_t REG, uint8_t Data); // Write Data to the REG register of the TCA9554PWR
+uint8_t I2C_Read_EXIO(uint8_t REG);               // Read the value of the TCA9554PWR register REG
+uint8_t I2C_Read_EXIO(uint8_t REG, uint8_t Data); // Write Data to the REG register of the TCA9554PWR
 /********************************************************** Set EXIO mode
  * **********************************************************/
 void Mode_EXIO(uint8_t Pin, uint8_t State); // Set the mode of the TCA9554PWR Pin. The default is Output mode (output mode or

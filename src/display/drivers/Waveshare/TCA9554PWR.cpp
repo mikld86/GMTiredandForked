@@ -8,13 +8,10 @@ uint8_t I2C_Read_EXIO(uint8_t REG) // Read the value of the TCA9554PWR register 
     Wire.write(REG);
     uint8_t result = Wire.endTransmission();
     if (result != 0) {
-        printf("The I2C transmission fails. - I2C Read EXIO\r\n");
+        printf("Data Transfer Failure !!!\r\n");
     }
     Wire.requestFrom(TCA9554_ADDRESS, 1);
-    uint8_t bitsStatus;
-    if (Wire.available()) {
-        bitsStatus = Wire.read();
-    }
+    uint8_t bitsStatus = Wire.read();
     return bitsStatus;
 }
 uint8_t I2C_Write_EXIO(uint8_t REG, uint8_t Data) // Write Data to the REG register of the TCA9554PWR
@@ -24,7 +21,7 @@ uint8_t I2C_Write_EXIO(uint8_t REG, uint8_t Data) // Write Data to the REG regis
     Wire.write(Data);
     uint8_t result = Wire.endTransmission();
     if (result != 0) {
-        printf("The I2C transmission fails. - I2C Write EXIO\r\n");
+        printf("Data write failure!!!\r\n");
         return -1;
     }
     return 0;

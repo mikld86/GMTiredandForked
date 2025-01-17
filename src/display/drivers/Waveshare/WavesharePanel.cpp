@@ -63,9 +63,13 @@ bool WavesharePanel::begin(WS_RGBPanel_Color_Order order) {
     digitalWrite(WS_BOARD_TFT_BL, LOW);
 
     I2C_Init();
+    delay(120);
+    TCA9554PWR_Init(0x00);
+    Set_EXIO(EXIO_PIN8, Low);
 
     if (!initTouch()) {
         Serial.println("Touch chip not found.");
+        return false;
     }
 
     initBUS();
@@ -298,8 +302,6 @@ uint16_t WavesharePanel::getBattVoltage() {
 }
 
 void WavesharePanel::initBUS() {
-    assert(_init_cmd);
-
     if (_panelDrv) {
         return;
     }
@@ -325,7 +327,6 @@ void WavesharePanel::initBUS() {
         .queue_size = 1, // Not using queues
     };
     spi_bus_add_device(SPI2_HOST, &devcfg, &SPI_handle);
-    Wire.setClock(1000000UL);
 
     printf("Set up SPI\n");
 
@@ -594,8 +595,6 @@ void WavesharePanel::initBUS() {
     writeCommand(0x29);
 
     ST7701_CS_Dis();
-
-    Wire.setClock(400000UL);
 
     esp_lcd_rgb_panel_config_t panel_config = {
         .clk_src = LCD_CLK_SRC_PLL160M,
