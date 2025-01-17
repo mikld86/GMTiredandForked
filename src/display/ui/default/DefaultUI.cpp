@@ -87,7 +87,6 @@ void DefaultUI::changeScreen(lv_obj_t **screen, void (*target_init)()) {
 }
 
 void DefaultUI::setupPanel() const {
-    delay(5000);
     if (LilyGoDriver::getInstance()->isCompatible()) {
         LilyGoDriver::getInstance()->init();
     } else if (WaveshareDriver::getInstance()->isCompatible()) {
@@ -96,7 +95,7 @@ void DefaultUI::setupPanel() const {
     ui_init();
 }
 
-void DefaultUI::handleScreenChange() {
+void DefaultUI::handleScreenChange() const {
     lv_obj_t *current = lv_scr_act();
     if (current != *targetScreen) {
         _ui_screen_change(targetScreen, LV_SCR_LOAD_ANIM_NONE, 0, 0, targetScreenInit);
@@ -123,14 +122,14 @@ void DefaultUI::updateStandbyScreen() const {
                     : lv_obj_add_flag(ui_StandbyScreen_updateIcon, LV_OBJ_FLAG_HIDDEN);
 }
 
-void DefaultUI::updateMenuScreen() {
+void DefaultUI::updateMenuScreen() const {
     lv_arc_set_value(ui_MenuScreen_tempGauge, controller->getCurrentTemp());
     lv_label_set_text_fmt(ui_MenuScreen_tempText, "%d°C", controller->getCurrentTemp());
     int16_t setTemp = controller->getTargetTemp();
     lv_img_set_angle(ui_MenuScreen_tempTarget, calculate_angle(setTemp));
 }
 
-void DefaultUI::updateStatusScreen() {
+void DefaultUI::updateStatusScreen() const {
     lv_arc_set_value(ui_StatusScreen_tempGauge, controller->getCurrentTemp());
     lv_label_set_text_fmt(ui_StatusScreen_tempText, "%d°C", controller->getCurrentTemp());
     int16_t setTemp = controller->getTargetTemp();
@@ -268,7 +267,7 @@ void DefaultUI::updateWaterScreen() const {
                       controller->isActive() ? &ui_img_1456692430 : &ui_img_445946954, nullptr);
 }
 
-void DefaultUI::updateSteamScreen() {
+void DefaultUI::updateSteamScreen() const {
     lv_arc_set_value(ui_SteamScreen_tempGauge, controller->getCurrentTemp());
     lv_label_set_text_fmt(ui_SteamScreen_tempText, "%d°C", controller->getCurrentTemp());
     int16_t setTemp = controller->getTargetTemp();

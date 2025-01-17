@@ -325,38 +325,276 @@ void WavesharePanel::initBUS() {
     };
     spi_bus_add_device(SPI2_HOST, &devcfg, &SPI_handle);
 
-
-   	printf("Set up SPI\n");
+    printf("Set up SPI\n");
 
     ST7701_Reset();
-    // uint32_t start = millis();
 
-   	printf("Sending Init Data\n");
-
+    printf("Sending Init Data\n");
 
     ST7701_CS_EN();
-    int i = 0;
-    while (_init_cmd[i].databytes != 0xff) {
-        writeCommand(_init_cmd[i].cmd);
-        for (uint8_t b = 0; b < (_init_cmd[i].databytes & 0x1F); b++) {
-            writeData(_init_cmd[i].data[b], 0);
-        }
-        if (_init_cmd[i].databytes & 0x80) {
-            delay(100);
-        }
-        i++;
-    }
- 	ST7701_CS_Dis();
 
-    // uint32_t end = millis();
+    // 2.8inch
+    writeCommand(0xFF);
+    writeData(0x77);
+    writeData(0x01);
+    writeData(0x00);
+    writeData(0x00);
+    writeData(0x13);
 
-    // Serial.printf("Initialization took %u milliseconds\n", end - start);
+    writeCommand(0xEF);
+    writeData(0x08);
 
-    // Uses 400k I2C speed : Initialization took about 6229 milliseconds
-    // Uses 1M   I2C speed : Initialization took about 1833 milliseconds
+    writeCommand(0xFF);
+    writeData(0x77);
+    writeData(0x01);
+    writeData(0x00);
+    writeData(0x00);
+    writeData(0x10);
 
-    // Reduce to standard speed, touch does not support access greater than
-    // 400KHZ speed
+    writeCommand(0xC0);
+    writeData(0x3B);
+    writeData(0x00);
+
+    writeCommand(0xC1);
+    writeData(0x10);
+    writeData(0x0C);
+
+    writeCommand(0xC2);
+    writeData(0x07);
+    writeData(0x0A);
+
+    writeCommand(0xC7);
+    writeData(0x00);
+
+    writeCommand(0xCC);
+    writeData(0x10);
+
+    writeCommand(0xCD);
+    writeData(0x08);
+
+    writeCommand(0xB0);
+    writeData(0x05);
+    writeData(0x12);
+    writeData(0x98);
+    writeData(0x0E);
+    writeData(0x0F);
+    writeData(0x07);
+    writeData(0x07);
+    writeData(0x09);
+    writeData(0x09);
+    writeData(0x23);
+    writeData(0x05);
+    writeData(0x52);
+    writeData(0x0F);
+    writeData(0x67);
+    writeData(0x2C);
+    writeData(0x11);
+
+    writeCommand(0xB1);
+    writeData(0x0B);
+    writeData(0x11);
+    writeData(0x97);
+    writeData(0x0C);
+    writeData(0x12);
+    writeData(0x06);
+    writeData(0x06);
+    writeData(0x08);
+    writeData(0x08);
+    writeData(0x22);
+    writeData(0x03);
+    writeData(0x51);
+    writeData(0x11);
+    writeData(0x66);
+    writeData(0x2B);
+    writeData(0x0F);
+
+    writeCommand(0xFF);
+    writeData(0x77);
+    writeData(0x01);
+    writeData(0x00);
+    writeData(0x00);
+    writeData(0x11);
+
+    writeCommand(0xB0);
+    writeData(0x5D);
+
+    writeCommand(0xB1);
+    writeData(0x3E);
+
+    writeCommand(0xB2);
+    writeData(0x81);
+
+    writeCommand(0xB3);
+    writeData(0x80);
+
+    writeCommand(0xB5);
+    writeData(0x4E);
+
+    writeCommand(0xB7);
+    writeData(0x85);
+
+    writeCommand(0xB8);
+    writeData(0x20);
+
+    writeCommand(0xC1);
+    writeData(0x78);
+
+    writeCommand(0xC2);
+    writeData(0x78);
+
+    writeCommand(0xD0);
+    writeData(0x88);
+
+    writeCommand(0xE0);
+    writeData(0x00);
+    writeData(0x00);
+    writeData(0x02);
+
+    writeCommand(0xE1);
+    writeData(0x06);
+    writeData(0x30);
+    writeData(0x08);
+    writeData(0x30);
+    writeData(0x05);
+    writeData(0x30);
+    writeData(0x07);
+    writeData(0x30);
+    writeData(0x00);
+    writeData(0x33);
+    writeData(0x33);
+
+    writeCommand(0xE2);
+    writeData(0x11);
+    writeData(0x11);
+    writeData(0x33);
+    writeData(0x33);
+    writeData(0xF4);
+    writeData(0x00);
+    writeData(0x00);
+    writeData(0x00);
+    writeData(0xF4);
+    writeData(0x00);
+    writeData(0x00);
+    writeData(0x00);
+
+    writeCommand(0xE3);
+    writeData(0x00);
+    writeData(0x00);
+    writeData(0x11);
+    writeData(0x11);
+
+    writeCommand(0xE4);
+    writeData(0x44);
+    writeData(0x44);
+
+    writeCommand(0xE5);
+    writeData(0x0D);
+    writeData(0xF5);
+    writeData(0x30);
+    writeData(0xF0);
+    writeData(0x0F);
+    writeData(0xF7);
+    writeData(0x30);
+    writeData(0xF0);
+    writeData(0x09);
+    writeData(0xF1);
+    writeData(0x30);
+    writeData(0xF0);
+    writeData(0x0B);
+    writeData(0xF3);
+    writeData(0x30);
+    writeData(0xF0);
+
+    writeCommand(0xE6);
+    writeData(0x00);
+    writeData(0x00);
+    writeData(0x11);
+    writeData(0x11);
+
+    writeCommand(0xE7);
+    writeData(0x44);
+    writeData(0x44);
+
+    writeCommand(0xE8);
+    writeData(0x0C);
+    writeData(0xF4);
+    writeData(0x30);
+    writeData(0xF0);
+    writeData(0x0E);
+    writeData(0xF6);
+    writeData(0x30);
+    writeData(0xF0);
+    writeData(0x08);
+    writeData(0xF0);
+    writeData(0x30);
+    writeData(0xF0);
+    writeData(0x0A);
+    writeData(0xF2);
+    writeData(0x30);
+    writeData(0xF0);
+
+    writeCommand(0xE9);
+    writeData(0x36);
+    writeData(0x01);
+
+    writeCommand(0xEB);
+    writeData(0x00);
+    writeData(0x01);
+    writeData(0xE4);
+    writeData(0xE4);
+    writeData(0x44);
+    writeData(0x88);
+    writeData(0x40);
+
+    writeCommand(0xED);
+    writeData(0xFF);
+    writeData(0x10);
+    writeData(0xAF);
+    writeData(0x76);
+    writeData(0x54);
+    writeData(0x2B);
+    writeData(0xCF);
+    writeData(0xFF);
+    writeData(0xFF);
+    writeData(0xFC);
+    writeData(0xB2);
+    writeData(0x45);
+    writeData(0x67);
+    writeData(0xFA);
+    writeData(0x01);
+    writeData(0xFF);
+
+    writeCommand(0xEF);
+    writeData(0x08);
+    writeData(0x08);
+    writeData(0x08);
+    writeData(0x45);
+    writeData(0x3F);
+    writeData(0x54);
+
+    writeCommand(0xFF);
+    writeData(0x77);
+    writeData(0x01);
+    writeData(0x00);
+    writeData(0x00);
+    writeData(0x00);
+
+    writeCommand(0x11);
+    delay(120); // ms
+
+    writeCommand(0x3A);
+    writeData(0x66); // 0x66  /  0x77
+
+    writeCommand(0x36);
+    writeData(0x00);
+
+    writeCommand(0x35);
+    writeData(0x00);
+
+    writeCommand(0x29);
+
+    ST7701_CS_Dis();
+
     Wire.setClock(400000UL);
 
     const int bus_rbg_order[SOC_LCD_RGB_DATA_WIDTH] = {
@@ -390,15 +628,15 @@ void WavesharePanel::initBUS() {
                 .h_res = WS_BOARD_TFT_WIDTH,
                 .v_res = WS_BOARD_TFT_HEIGHT,
                 // The following parameters should refer to LCD spec
-                .hsync_pulse_width = 1,
-                .hsync_back_porch = 30,
+                .hsync_pulse_width = 8,
+                .hsync_back_porch = 10,
                 .hsync_front_porch = 50,
-                .vsync_pulse_width = 1,
-                .vsync_back_porch = 30,
-                .vsync_front_porch = 20,
+                .vsync_pulse_width = 2,
+                .vsync_back_porch = 18,
+                .vsync_front_porch = 8,
                 .flags =
                     {
-                        .pclk_active_neg = 1,
+                        .pclk_active_neg = 0,
                     },
             },
         .data_width = 16, // RGB565 in parallel mode, thus 16bit in width
@@ -409,28 +647,23 @@ void WavesharePanel::initBUS() {
         .pclk_gpio_num = WS_BOARD_TFT_PCLK,
         .data_gpio_nums =
             {
-                // WS_BOARD_TFT_DATA0,
-                WS_BOARD_TFT_DATA13,
-                WS_BOARD_TFT_DATA14,
-                WS_BOARD_TFT_DATA15,
-                WS_BOARD_TFT_DATA16,
-                WS_BOARD_TFT_DATA17,
-
-                WS_BOARD_TFT_DATA6,
-                WS_BOARD_TFT_DATA7,
-                WS_BOARD_TFT_DATA8,
-                WS_BOARD_TFT_DATA9,
-                WS_BOARD_TFT_DATA10,
-                WS_BOARD_TFT_DATA11,
-                // WS_BOARD_TFT_DATA12,
-
-                WS_BOARD_TFT_DATA1,
-                WS_BOARD_TFT_DATA2,
-                WS_BOARD_TFT_DATA3,
-                WS_BOARD_TFT_DATA4,
-                WS_BOARD_TFT_DATA5,
+                ESP_PANEL_LCD_PIN_NUM_RGB_DATA0,
+                ESP_PANEL_LCD_PIN_NUM_RGB_DATA1,
+                ESP_PANEL_LCD_PIN_NUM_RGB_DATA2,
+                ESP_PANEL_LCD_PIN_NUM_RGB_DATA3,
+                ESP_PANEL_LCD_PIN_NUM_RGB_DATA4,
+                ESP_PANEL_LCD_PIN_NUM_RGB_DATA5,
+                ESP_PANEL_LCD_PIN_NUM_RGB_DATA6,
+                ESP_PANEL_LCD_PIN_NUM_RGB_DATA7,
+                ESP_PANEL_LCD_PIN_NUM_RGB_DATA8,
+                ESP_PANEL_LCD_PIN_NUM_RGB_DATA9,
+                ESP_PANEL_LCD_PIN_NUM_RGB_DATA10,
+                ESP_PANEL_LCD_PIN_NUM_RGB_DATA11,
+                ESP_PANEL_LCD_PIN_NUM_RGB_DATA12,
+                ESP_PANEL_LCD_PIN_NUM_RGB_DATA13,
+                ESP_PANEL_LCD_PIN_NUM_RGB_DATA14,
+                ESP_PANEL_LCD_PIN_NUM_RGB_DATA15,
             },
-        .disp_gpio_num = GPIO_NUM_NC,
         .on_frame_trans_done = NULL,
         .user_ctx = NULL,
         .flags =
@@ -438,18 +671,6 @@ void WavesharePanel::initBUS() {
                 .fb_in_psram = 1, // allocate frame buffer in PSRAM
             },
     };
-
-    if (_order == WS_T_RGB_ORDER_BGR) {
-
-        // Swap color order
-
-    	ST7701_CS_EN();
-        writeCommand(0x36);
-        writeData(0x00, 1);
-    	ST7701_CS_Dis();
-
-        memcpy(panel_config.data_gpio_nums, bus_rbg_order, sizeof(panel_config.data_gpio_nums));
-    }
 
     ESP_ERROR_CHECK(esp_lcd_new_rgb_panel(&panel_config, &_panelDrv));
     ESP_ERROR_CHECK(esp_lcd_panel_init(_panelDrv));
@@ -526,7 +747,7 @@ void WavesharePanel::writeCommand(const uint8_t cmd) {
     spi_device_transmit(SPI_handle, &spi_tran);
 }
 
-void WavesharePanel::writeData(uint8_t data, size_t len) {
+void WavesharePanel::writeData(uint8_t data) {
     spi_transaction_t spi_tran = {
         .cmd = 1,
         .addr = data,

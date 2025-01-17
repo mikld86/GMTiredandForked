@@ -92,7 +92,7 @@ class WavesharePanel : public Display {
     void pushColors(uint16_t x, uint16_t y, uint16_t width, uint16_t hight, uint16_t *data) override;
 
   private:
-    void writeData(uint8_t data, size_t len);
+    void writeData(uint8_t data);
 
     void writeCommand(uint8_t cmd);
 

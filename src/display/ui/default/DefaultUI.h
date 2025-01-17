@@ -24,15 +24,15 @@ class DefaultUI {
   private:
     void setupPanel() const;
 
-    void handleScreenChange();
+    void handleScreenChange() const;
 
     void updateStandbyScreen() const;
-    void updateMenuScreen();
-    void updateStatusScreen();
+    void updateMenuScreen() const;
+    void updateStatusScreen() const;
     void updateBrewScreen() const;
     void updateGrindScreen() const;
     void updateWaterScreen() const;
-    void updateSteamScreen();
+    void updateSteamScreen() const;
 
     Controller *controller;
     PluginManager *pluginManager;
