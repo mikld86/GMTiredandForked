@@ -327,8 +327,6 @@ void WavesharePanel::initBUS() {
 
     printf("Set up SPI\n");
 
-    ST7701_Reset();
-
     printf("Sending Init Data\n");
 
     ST7701_CS_EN();
