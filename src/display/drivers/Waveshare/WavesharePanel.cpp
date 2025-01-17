@@ -22,19 +22,19 @@ static const lcd_init_cmd_t *_init_cmd = NULL;
 
 void ST7701_CS_EN() {
     Set_EXIO(EXIO_PIN3, Low);
-    vTaskDelay(pdMS_TO_TICKS(10));
+    delay(10);
 }
 
 void ST7701_CS_Dis() {
     Set_EXIO(EXIO_PIN3, High);
-    vTaskDelay(pdMS_TO_TICKS(10));
+    delay(10);
 }
 
 void ST7701_Reset() {
     Set_EXIO(EXIO_PIN1, Low);
-    vTaskDelay(pdMS_TO_TICKS(10));
+    delay(20);
     Set_EXIO(EXIO_PIN1, High);
-    vTaskDelay(pdMS_TO_TICKS(50));
+    delay(10);
 }
 
 WavesharePanel::WavesharePanel(/* args */)
@@ -305,6 +305,7 @@ void WavesharePanel::initBUS() {
     }
 
     printf("Initializing SPI\n");
+    ST7701_Reset();
 
     spi_bus_config_t buscfg = {
         .mosi_io_num = WS_BOARD_TFT_MOSI,
@@ -324,6 +325,7 @@ void WavesharePanel::initBUS() {
         .queue_size = 1, // Not using queues
     };
     spi_bus_add_device(SPI2_HOST, &devcfg, &SPI_handle);
+    Wire.setClock(1000000UL);
 
     printf("Set up SPI\n");
 
@@ -595,34 +597,11 @@ void WavesharePanel::initBUS() {
 
     Wire.setClock(400000UL);
 
-    const int bus_rbg_order[SOC_LCD_RGB_DATA_WIDTH] = {
-        // WS_BOARD_TFT_DATA12,    //LSB
-        WS_BOARD_TFT_DATA13,
-        WS_BOARD_TFT_DATA14,
-        WS_BOARD_TFT_DATA15,
-        WS_BOARD_TFT_DATA16,
-        WS_BOARD_TFT_DATA17,
-
-        WS_BOARD_TFT_DATA0,
-        WS_BOARD_TFT_DATA1,
-        WS_BOARD_TFT_DATA2,
-        WS_BOARD_TFT_DATA3,
-        WS_BOARD_TFT_DATA4,
-        WS_BOARD_TFT_DATA5,
-
-        // WS_BOARD_TFT_DATA6,     //LSB
-        WS_BOARD_TFT_DATA7,
-        WS_BOARD_TFT_DATA8,
-        WS_BOARD_TFT_DATA9,
-        WS_BOARD_TFT_DATA10,
-        WS_BOARD_TFT_DATA11,
-    };
-
     esp_lcd_rgb_panel_config_t panel_config = {
         .clk_src = LCD_CLK_SRC_PLL160M,
         .timings =
             {
-                .pclk_hz = RGB_MAX_PIXEL_CLOCK_HZ,
+                .pclk_hz = ESP_PANEL_LCD_RGB_TIMING_FREQ_HZ,
                 .h_res = WS_BOARD_TFT_WIDTH,
                 .v_res = WS_BOARD_TFT_HEIGHT,
                 // The following parameters should refer to LCD spec
@@ -671,6 +650,7 @@ void WavesharePanel::initBUS() {
     };
 
     ESP_ERROR_CHECK(esp_lcd_new_rgb_panel(&panel_config, &_panelDrv));
+    ESP_ERROR_CHECK(esp_lcd_panel_reset(_panelDrv));
     ESP_ERROR_CHECK(esp_lcd_panel_init(_panelDrv));
 }
 

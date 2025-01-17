@@ -8,7 +8,7 @@
  */
 #pragma once
 
-#define RGB_MAX_PIXEL_CLOCK_HZ (8000000UL)
+#define ESP_PANEL_LCD_RGB_TIMING_FREQ_HZ (8000000UL)
 
 #define WS_BOARD_TFT_WIDTH (480)
 #define WS_BOARD_TFT_HEIGHT (480)
