@@ -25,10 +25,10 @@
 #include <display/drivers/common/ext.h>
 #include <driver/spi_master.h>
 
-enum WS_RGBPanel_Type {
-    WS_T_RGB_UNKNOWN,
-    WS_T_RGB_2_1_INCHES,
-    WS_T_RGB_2_8_INCHES,
+enum WavesharePanelType {
+    WS_UNKNOWN,
+    WS_2_1_INCHES,
+    WS_2_8_INCHES,
 };
 
 enum WS_RGBPanel_TouchType {
@@ -63,9 +63,9 @@ class WavesharePanel : public Display {
 
     void setBrightness(uint8_t level);
 
-    uint8_t getBrightness();
+    uint8_t getBrightness() const;
 
-    WS_RGBPanel_Type getModel();
+    WavesharePanelType getModel();
 
     const char *getTouchModelName();
 

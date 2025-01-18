@@ -18,7 +18,6 @@
 static void TouchDrvDigitalWrite(uint32_t gpio, uint8_t level);
 static int TouchDrvDigitalRead(uint32_t gpio);
 static void TouchDrvPinMode(uint32_t gpio, uint8_t mode);
-static const lcd_init_cmd_t *_init_cmd = NULL;
 
 void ST7701_CS_EN() {
     Set_EXIO(EXIO_PIN3, Low);
@@ -142,27 +141,24 @@ void WavesharePanel::setBrightness(uint8_t value) {
     _brightness = value;
 }
 
-uint8_t WavesharePanel::getBrightness() { return _brightness; }
+uint8_t WavesharePanel::getBrightness() const { return _brightness; }
 
-WS_RGBPanel_Type WavesharePanel::getModel() {
+WavesharePanelType WavesharePanel::getModel() {
     if (_touchDrv) {
         const char *model = _touchDrv->getModelName();
         if (model == NULL)
-            return WS_T_RGB_UNKNOWN;
+            return WS_UNKNOWN;
         if (strlen(model) == 0)
-            return WS_T_RGB_UNKNOWN;
-        if (strcmp(model, "FT3267") == 0) {
-            _touchType = WS_T_RGB_TOUCH_FT3267;
-            return WS_T_RGB_2_1_INCHES;
-        } else if (strcmp(model, "CST820") == 0) {
+            return WS_UNKNOWN;
+        if (strcmp(model, "CST820") == 0) {
             _touchType = WS_T_RGB_TOUCH_CST820;
-            return WS_T_RGB_2_1_INCHES;
+            return WS_2_1_INCHES;
         } else if (strcmp(model, "GT911") == 0) {
             _touchType = WS_T_RGB_TOUCH_GT911;
-            return WS_T_RGB_2_8_INCHES;
+            return WS_2_8_INCHES;
         }
     }
-    return WS_T_RGB_UNKNOWN;
+    return WS_UNKNOWN;
 }
 
 const char *WavesharePanel::getTouchModelName() {
@@ -192,7 +188,7 @@ void WavesharePanel::sleep() {
 
     if (WS_T_RGB_WAKEUP_FORM_TOUCH != _wakeupMethod) {
         if (_touchDrv) {
-            if (getModel() == WS_T_RGB_2_8_INCHES) {
+            if (getModel() == WS_2_8_INCHES) {
                 pinMode(WS_BOARD_TOUCH_IRQ, OUTPUT);
                 digitalWrite(WS_BOARD_TOUCH_IRQ,
                              LOW); // Before touch to set sleep, it is necessary
@@ -306,7 +302,6 @@ void WavesharePanel::initBUS() {
         return;
     }
 
-    printf("Initializing SPI\n");
     ST7701_Reset();
 
     spi_bus_config_t buscfg = {
@@ -328,271 +323,527 @@ void WavesharePanel::initBUS() {
     };
     spi_bus_add_device(SPI2_HOST, &devcfg, &SPI_handle);
 
-    printf("Set up SPI\n");
-
-    printf("Sending Init Data\n");
-
     ST7701_CS_EN();
 
-    // 2.8inch
-    writeCommand(0xFF);
-    writeData(0x77);
-    writeData(0x01);
-    writeData(0x00);
-    writeData(0x00);
-    writeData(0x13);
+    if (getModel() == WS_2_1_INCHES) {
+        // 2.1inch
 
-    writeCommand(0xEF);
-    writeData(0x08);
+        writeCommand(0xFF);
+        writeData(0x77);
+        writeData(0x01);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x10);
 
-    writeCommand(0xFF);
-    writeData(0x77);
-    writeData(0x01);
-    writeData(0x00);
-    writeData(0x00);
-    writeData(0x10);
+        writeCommand(0xC0);
+        writeData(0x3B); // Scan line
+        writeData(0x00);
 
-    writeCommand(0xC0);
-    writeData(0x3B);
-    writeData(0x00);
+        writeCommand(0xC1);
+        writeData(0x0B); // VBP
+        writeData(0x02);
 
-    writeCommand(0xC1);
-    writeData(0x10);
-    writeData(0x0C);
+        writeCommand(0xC2);
+        writeData(0x07);
+        writeData(0x02);
 
-    writeCommand(0xC2);
-    writeData(0x07);
-    writeData(0x0A);
+        writeCommand(0xCC);
+        writeData(0x10);
 
-    writeCommand(0xC7);
-    writeData(0x00);
+        writeCommand(0xCD); // RGB format
+        writeData(0x08);
 
-    writeCommand(0xCC);
-    writeData(0x10);
+        writeCommand(0xB0); // IPS
+        writeData(0x00);    // 255
+        writeData(0x11);    // 251
+        writeData(0x16);    // 247  down
+        writeData(0x0e);    // 239
+        writeData(0x11);    // 231
+        writeData(0x06);    // 203
+        writeData(0x05);    // 175
+        writeData(0x09);    // 147
+        writeData(0x08);    // 108
+        writeData(0x21);    // 80
+        writeData(0x06);    // 52
+        writeData(0x13);    // 24
+        writeData(0x10);    // 16
+        writeData(0x29);    // 8    down
+        writeData(0x31);    // 4
+        writeData(0x18);    // 0
 
-    writeCommand(0xCD);
-    writeData(0x08);
+        writeCommand(0xB1); //  IPS
+        writeData(0x00);    //  255
+        writeData(0x11);    //  251
+        writeData(0x16);    //  247   down
+        writeData(0x0e);    //  239
+        writeData(0x11);    //  231
+        writeData(0x07);    //  203
+        writeData(0x05);    //  175
+        writeData(0x09);    //  147
+        writeData(0x09);    //  108
+        writeData(0x21);    //  80
+        writeData(0x05);    //  52
+        writeData(0x13);    //  24
+        writeData(0x11);    //  16
+        writeData(0x2a);    //  8  down
+        writeData(0x31);    //  4
+        writeData(0x18);    //  0
 
-    writeCommand(0xB0);
-    writeData(0x05);
-    writeData(0x12);
-    writeData(0x98);
-    writeData(0x0E);
-    writeData(0x0F);
-    writeData(0x07);
-    writeData(0x07);
-    writeData(0x09);
-    writeData(0x09);
-    writeData(0x23);
-    writeData(0x05);
-    writeData(0x52);
-    writeData(0x0F);
-    writeData(0x67);
-    writeData(0x2C);
-    writeData(0x11);
+        writeCommand(0xFF);
+        writeData(0x77);
+        writeData(0x01);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x11);
 
-    writeCommand(0xB1);
-    writeData(0x0B);
-    writeData(0x11);
-    writeData(0x97);
-    writeData(0x0C);
-    writeData(0x12);
-    writeData(0x06);
-    writeData(0x06);
-    writeData(0x08);
-    writeData(0x08);
-    writeData(0x22);
-    writeData(0x03);
-    writeData(0x51);
-    writeData(0x11);
-    writeData(0x66);
-    writeData(0x2B);
-    writeData(0x0F);
+        writeCommand(0xB0); // VOP  3.5375+ *x 0.0125
+        writeData(0x6d);    // 5D
 
-    writeCommand(0xFF);
-    writeData(0x77);
-    writeData(0x01);
-    writeData(0x00);
-    writeData(0x00);
-    writeData(0x11);
+        writeCommand(0xB1); // VCOM amplitude setting
+        writeData(0x37);    //
 
-    writeCommand(0xB0);
-    writeData(0x5D);
+        writeCommand(0xB2); // VGH Voltage setting
+        writeData(0x81);    // 12V
 
-    writeCommand(0xB1);
-    writeData(0x3E);
+        writeCommand(0xB3);
+        writeData(0x80);
 
-    writeCommand(0xB2);
-    writeData(0x81);
+        writeCommand(0xB5); // VGL Voltage setting
+        writeData(0x43);    //-8.3V
 
-    writeCommand(0xB3);
-    writeData(0x80);
+        writeCommand(0xB7);
+        writeData(0x85);
 
-    writeCommand(0xB5);
-    writeData(0x4E);
+        writeCommand(0xB8);
+        writeData(0x20);
 
-    writeCommand(0xB7);
-    writeData(0x85);
+        writeCommand(0xC1);
+        writeData(0x78);
 
-    writeCommand(0xB8);
-    writeData(0x20);
+        writeCommand(0xC2);
+        writeData(0x78);
 
-    writeCommand(0xC1);
-    writeData(0x78);
+        writeCommand(0xD0);
+        writeData(0x88);
 
-    writeCommand(0xC2);
-    writeData(0x78);
+        writeCommand(0xE0);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x02);
 
-    writeCommand(0xD0);
-    writeData(0x88);
+        writeCommand(0xE1);
+        writeData(0x03);
+        writeData(0xA0);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x04);
+        writeData(0xA0);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x20);
+        writeData(0x20);
 
-    writeCommand(0xE0);
-    writeData(0x00);
-    writeData(0x00);
-    writeData(0x02);
+        writeCommand(0xE2);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
 
-    writeCommand(0xE1);
-    writeData(0x06);
-    writeData(0x30);
-    writeData(0x08);
-    writeData(0x30);
-    writeData(0x05);
-    writeData(0x30);
-    writeData(0x07);
-    writeData(0x30);
-    writeData(0x00);
-    writeData(0x33);
-    writeData(0x33);
+        writeCommand(0xE3);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x11);
+        writeData(0x00);
 
-    writeCommand(0xE2);
-    writeData(0x11);
-    writeData(0x11);
-    writeData(0x33);
-    writeData(0x33);
-    writeData(0xF4);
-    writeData(0x00);
-    writeData(0x00);
-    writeData(0x00);
-    writeData(0xF4);
-    writeData(0x00);
-    writeData(0x00);
-    writeData(0x00);
+        writeCommand(0xE4);
+        writeData(0x22);
+        writeData(0x00);
 
-    writeCommand(0xE3);
-    writeData(0x00);
-    writeData(0x00);
-    writeData(0x11);
-    writeData(0x11);
+        writeCommand(0xE5);
+        writeData(0x05);
+        writeData(0xEC);
+        writeData(0xA0);
+        writeData(0xA0);
+        writeData(0x07);
+        writeData(0xEE);
+        writeData(0xA0);
+        writeData(0xA0);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
 
-    writeCommand(0xE4);
-    writeData(0x44);
-    writeData(0x44);
+        writeCommand(0xE6);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x11);
+        writeData(0x00);
 
-    writeCommand(0xE5);
-    writeData(0x0D);
-    writeData(0xF5);
-    writeData(0x30);
-    writeData(0xF0);
-    writeData(0x0F);
-    writeData(0xF7);
-    writeData(0x30);
-    writeData(0xF0);
-    writeData(0x09);
-    writeData(0xF1);
-    writeData(0x30);
-    writeData(0xF0);
-    writeData(0x0B);
-    writeData(0xF3);
-    writeData(0x30);
-    writeData(0xF0);
+        writeCommand(0xE7);
+        writeData(0x22);
+        writeData(0x00);
 
-    writeCommand(0xE6);
-    writeData(0x00);
-    writeData(0x00);
-    writeData(0x11);
-    writeData(0x11);
+        writeCommand(0xE8);
+        writeData(0x06);
+        writeData(0xED);
+        writeData(0xA0);
+        writeData(0xA0);
+        writeData(0x08);
+        writeData(0xEF);
+        writeData(0xA0);
+        writeData(0xA0);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
 
-    writeCommand(0xE7);
-    writeData(0x44);
-    writeData(0x44);
+        writeCommand(0xEB);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x40);
+        writeData(0x40);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
 
-    writeCommand(0xE8);
-    writeData(0x0C);
-    writeData(0xF4);
-    writeData(0x30);
-    writeData(0xF0);
-    writeData(0x0E);
-    writeData(0xF6);
-    writeData(0x30);
-    writeData(0xF0);
-    writeData(0x08);
-    writeData(0xF0);
-    writeData(0x30);
-    writeData(0xF0);
-    writeData(0x0A);
-    writeData(0xF2);
-    writeData(0x30);
-    writeData(0xF0);
+        writeCommand(0xED);
+        writeData(0xFF);
+        writeData(0xFF);
+        writeData(0xFF);
+        writeData(0xBA);
+        writeData(0x0A);
+        writeData(0xBF);
+        writeData(0x45);
+        writeData(0xFF);
+        writeData(0xFF);
+        writeData(0x54);
+        writeData(0xFB);
+        writeData(0xA0);
+        writeData(0xAB);
+        writeData(0xFF);
+        writeData(0xFF);
+        writeData(0xFF);
 
-    writeCommand(0xE9);
-    writeData(0x36);
-    writeData(0x01);
+        writeCommand(0xEF);
+        writeData(0x10);
+        writeData(0x0D);
+        writeData(0x04);
+        writeData(0x08);
+        writeData(0x3F);
+        writeData(0x1F);
 
-    writeCommand(0xEB);
-    writeData(0x00);
-    writeData(0x01);
-    writeData(0xE4);
-    writeData(0xE4);
-    writeData(0x44);
-    writeData(0x88);
-    writeData(0x40);
+        writeCommand(0xFF);
+        writeData(0x77);
+        writeData(0x01);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x13);
 
-    writeCommand(0xED);
-    writeData(0xFF);
-    writeData(0x10);
-    writeData(0xAF);
-    writeData(0x76);
-    writeData(0x54);
-    writeData(0x2B);
-    writeData(0xCF);
-    writeData(0xFF);
-    writeData(0xFF);
-    writeData(0xFC);
-    writeData(0xB2);
-    writeData(0x45);
-    writeData(0x67);
-    writeData(0xFA);
-    writeData(0x01);
-    writeData(0xFF);
+        writeCommand(0xEF);
+        writeData(0x08);
 
-    writeCommand(0xEF);
-    writeData(0x08);
-    writeData(0x08);
-    writeData(0x08);
-    writeData(0x45);
-    writeData(0x3F);
-    writeData(0x54);
+        writeCommand(0xFF);
+        writeData(0x77);
+        writeData(0x01);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
 
-    writeCommand(0xFF);
-    writeData(0x77);
-    writeData(0x01);
-    writeData(0x00);
-    writeData(0x00);
-    writeData(0x00);
+        writeCommand(0x36);
+        writeData(0x00);
 
-    writeCommand(0x11);
-    delay(120); // ms
+        writeCommand(0x3A);
+        writeData(0x66);
 
-    writeCommand(0x3A);
-    writeData(0x66); // 0x66  /  0x77
+        writeCommand(0x11);
 
-    writeCommand(0x36);
-    writeData(0x00);
+        delay(480);
+        vTaskDelay(pdMS_TO_TICKS(480));
 
-    writeCommand(0x35);
-    writeData(0x00);
+        writeCommand(0x20); //
+        delay(120);
+        vTaskDelay(pdMS_TO_TICKS(120));
+        writeCommand(0x29);
+    } else {
 
-    writeCommand(0x29);
+        // 2.8inch
+        writeCommand(0xFF);
+        writeData(0x77);
+        writeData(0x01);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x13);
+
+        writeCommand(0xEF);
+        writeData(0x08);
+
+        writeCommand(0xFF);
+        writeData(0x77);
+        writeData(0x01);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x10);
+
+        writeCommand(0xC0);
+        writeData(0x3B);
+        writeData(0x00);
+
+        writeCommand(0xC1);
+        writeData(0x10);
+        writeData(0x0C);
+
+        writeCommand(0xC2);
+        writeData(0x07);
+        writeData(0x0A);
+
+        writeCommand(0xC7);
+        writeData(0x00);
+
+        writeCommand(0xCC);
+        writeData(0x10);
+
+        writeCommand(0xCD);
+        writeData(0x08);
+
+        writeCommand(0xB0);
+        writeData(0x05);
+        writeData(0x12);
+        writeData(0x98);
+        writeData(0x0E);
+        writeData(0x0F);
+        writeData(0x07);
+        writeData(0x07);
+        writeData(0x09);
+        writeData(0x09);
+        writeData(0x23);
+        writeData(0x05);
+        writeData(0x52);
+        writeData(0x0F);
+        writeData(0x67);
+        writeData(0x2C);
+        writeData(0x11);
+
+        writeCommand(0xB1);
+        writeData(0x0B);
+        writeData(0x11);
+        writeData(0x97);
+        writeData(0x0C);
+        writeData(0x12);
+        writeData(0x06);
+        writeData(0x06);
+        writeData(0x08);
+        writeData(0x08);
+        writeData(0x22);
+        writeData(0x03);
+        writeData(0x51);
+        writeData(0x11);
+        writeData(0x66);
+        writeData(0x2B);
+        writeData(0x0F);
+
+        writeCommand(0xFF);
+        writeData(0x77);
+        writeData(0x01);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x11);
+
+        writeCommand(0xB0);
+        writeData(0x5D);
+
+        writeCommand(0xB1);
+        writeData(0x3E);
+
+        writeCommand(0xB2);
+        writeData(0x81);
+
+        writeCommand(0xB3);
+        writeData(0x80);
+
+        writeCommand(0xB5);
+        writeData(0x4E);
+
+        writeCommand(0xB7);
+        writeData(0x85);
+
+        writeCommand(0xB8);
+        writeData(0x20);
+
+        writeCommand(0xC1);
+        writeData(0x78);
+
+        writeCommand(0xC2);
+        writeData(0x78);
+
+        writeCommand(0xD0);
+        writeData(0x88);
+
+        writeCommand(0xE0);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x02);
+
+        writeCommand(0xE1);
+        writeData(0x06);
+        writeData(0x30);
+        writeData(0x08);
+        writeData(0x30);
+        writeData(0x05);
+        writeData(0x30);
+        writeData(0x07);
+        writeData(0x30);
+        writeData(0x00);
+        writeData(0x33);
+        writeData(0x33);
+
+        writeCommand(0xE2);
+        writeData(0x11);
+        writeData(0x11);
+        writeData(0x33);
+        writeData(0x33);
+        writeData(0xF4);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0xF4);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
+
+        writeCommand(0xE3);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x11);
+        writeData(0x11);
+
+        writeCommand(0xE4);
+        writeData(0x44);
+        writeData(0x44);
+
+        writeCommand(0xE5);
+        writeData(0x0D);
+        writeData(0xF5);
+        writeData(0x30);
+        writeData(0xF0);
+        writeData(0x0F);
+        writeData(0xF7);
+        writeData(0x30);
+        writeData(0xF0);
+        writeData(0x09);
+        writeData(0xF1);
+        writeData(0x30);
+        writeData(0xF0);
+        writeData(0x0B);
+        writeData(0xF3);
+        writeData(0x30);
+        writeData(0xF0);
+
+        writeCommand(0xE6);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x11);
+        writeData(0x11);
+
+        writeCommand(0xE7);
+        writeData(0x44);
+        writeData(0x44);
+
+        writeCommand(0xE8);
+        writeData(0x0C);
+        writeData(0xF4);
+        writeData(0x30);
+        writeData(0xF0);
+        writeData(0x0E);
+        writeData(0xF6);
+        writeData(0x30);
+        writeData(0xF0);
+        writeData(0x08);
+        writeData(0xF0);
+        writeData(0x30);
+        writeData(0xF0);
+        writeData(0x0A);
+        writeData(0xF2);
+        writeData(0x30);
+        writeData(0xF0);
+
+        writeCommand(0xE9);
+        writeData(0x36);
+        writeData(0x01);
+
+        writeCommand(0xEB);
+        writeData(0x00);
+        writeData(0x01);
+        writeData(0xE4);
+        writeData(0xE4);
+        writeData(0x44);
+        writeData(0x88);
+        writeData(0x40);
+
+        writeCommand(0xED);
+        writeData(0xFF);
+        writeData(0x10);
+        writeData(0xAF);
+        writeData(0x76);
+        writeData(0x54);
+        writeData(0x2B);
+        writeData(0xCF);
+        writeData(0xFF);
+        writeData(0xFF);
+        writeData(0xFC);
+        writeData(0xB2);
+        writeData(0x45);
+        writeData(0x67);
+        writeData(0xFA);
+        writeData(0x01);
+        writeData(0xFF);
+
+        writeCommand(0xEF);
+        writeData(0x08);
+        writeData(0x08);
+        writeData(0x08);
+        writeData(0x45);
+        writeData(0x3F);
+        writeData(0x54);
+
+        writeCommand(0xFF);
+        writeData(0x77);
+        writeData(0x01);
+        writeData(0x00);
+        writeData(0x00);
+        writeData(0x00);
+
+        writeCommand(0x11);
+        delay(120); // ms
+
+        writeCommand(0x3A);
+        writeData(0x66); // 0x66  /  0x77
+
+        writeCommand(0x36);
+        writeData(0x00);
+
+        writeCommand(0x35);
+        writeData(0x00);
+
+        writeCommand(0x29);
+    }
 
     ST7701_CS_Dis();
 
@@ -663,9 +914,6 @@ bool WavesharePanel::initTouch() {
     _touchDrv->setPins(0x00, touch_irq_pin);
     result = _touchDrv->begin(Wire, CST816_SLAVE_ADDRESS, WS_BOARD_I2C_SDA, WS_BOARD_I2C_SCL);
     if (result) {
-
-        _init_cmd = st7701_2_1_inches;
-
         const char *model = _touchDrv->getModelName();
         log_i("Successfully initialized %s, using %s Driver!\n", model, model);
         return true;
@@ -680,36 +928,14 @@ bool WavesharePanel::initTouch() {
         TouchDrvGT911 *tmp = static_cast<TouchDrvGT911 *>(_touchDrv);
         tmp->setInterruptMode(FALLING);
 
-        _init_cmd = st7701_2_8_inches;
         log_i("Successfully initialized GT911, using GT911 Driver!");
-        return true;
-    }
-    delete _touchDrv;
-
-    _touchDrv = new TouchDrvFT6X36();
-    _touchDrv->setGpioCallback(TouchDrvPinMode, TouchDrvDigitalWrite, TouchDrvDigitalRead);
-    _touchDrv->setPins(0x00, touch_irq_pin);
-    result = _touchDrv->begin(Wire, FT3267_SLAVE_ADDRESS, WS_BOARD_I2C_SDA, WS_BOARD_I2C_SCL);
-    if (result) {
-
-        _init_cmd = st7701_2_1_inches;
-
-        TouchDrvFT6X36 *tmp = static_cast<TouchDrvFT6X36 *>(_touchDrv);
-        tmp->interruptTrigger();
-
-        const char *model = _touchDrv->getModelName();
-        log_i("Successfully initialized %s, using %s Driver!\n", model, model);
-
         return true;
     }
     delete _touchDrv;
 
     log_e("Unable to find touch device.");
 
-    _touchDrv = NULL;
-
-    // If touch does not exist, add a default initialization sequence
-    _init_cmd = st7701_2_1_inches;
+    _touchDrv = nullptr;
 
     return false;
 }
