@@ -40,6 +40,9 @@ class BrewProcess : public Process {
                          int brewSeconds = 0, int brewVolume = 0)
         : target(target), infusionPumpTime(infusionPumpTime), infusionBloomTime(infusionBloomTime), brewSeconds(brewSeconds),
           brewVolume(brewVolume) {
+        if (infusionBloomTime == 0 || infusionPumpTime == 0) {
+            phase = BrewPhase::BREW_PRESSURIZE;
+        }
         currentPhaseStarted = millis();
     }
 

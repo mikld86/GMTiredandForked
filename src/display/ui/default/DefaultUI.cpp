@@ -154,14 +154,23 @@ void DefaultUI::updateStatusScreen() const {
     double targetSecondsDouble = targetDuration / 1000.0;
     auto targetMinutes = (int)(targetSecondsDouble / 60.0 - 0.5);
     auto targetSeconds = (int)targetSecondsDouble % 60;
-    double phaseSecondsDouble = phaseDuration / 1000.0;
-    auto phaseMinutes = (int)(phaseSecondsDouble / 60.0 - 0.5);
-    auto phaseSeconds = (int)phaseSecondsDouble % 60;
 
-    lv_bar_set_range(ui_StatusScreen_preinfusePumpBar, 0, brewProcess->infusionPumpTime / 1000);
-    lv_label_set_text_fmt(ui_StatusScreen_preinfusePumpLabel, "%ds", brewProcess->infusionPumpTime / 1000);
-    lv_bar_set_range(ui_StatusScreen_preinfuseBloomBar, 0, brewProcess->infusionBloomTime / 1000);
-    lv_label_set_text_fmt(ui_StatusScreen_preinfuseBloomLabel, "%ds", brewProcess->infusionBloomTime / 1000);
+    if (brewProcess->infusionBloomTime == 0 || brewProcess->infusionPumpTime == 0) {
+        lv_obj_add_flag(ui_StatusScreen_preinfusePumpBar, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(ui_StatusScreen_preinfusePumpLabel, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(ui_StatusScreen_preinfuseBloomBar, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(ui_StatusScreen_preinfuseBloomLabel, LV_OBJ_FLAG_HIDDEN);
+    } else {
+        lv_obj_clear_flag(ui_StatusScreen_preinfusePumpBar, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(ui_StatusScreen_preinfusePumpLabel, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(ui_StatusScreen_preinfuseBloomBar, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(ui_StatusScreen_preinfuseBloomLabel, LV_OBJ_FLAG_HIDDEN);
+        lv_bar_set_range(ui_StatusScreen_preinfusePumpBar, 0, brewProcess->infusionPumpTime / 1000);
+        lv_label_set_text_fmt(ui_StatusScreen_preinfusePumpLabel, "%ds", brewProcess->infusionPumpTime / 1000);
+        lv_bar_set_range(ui_StatusScreen_preinfuseBloomBar, 0, brewProcess->infusionBloomTime / 1000);
+        lv_label_set_text_fmt(ui_StatusScreen_preinfuseBloomLabel, "%ds", brewProcess->infusionBloomTime / 1000);
+    }
+
     lv_bar_set_range(ui_StatusScreen_brewPumpBar, 0, brewProcess->brewPressurize / 1000);
     lv_label_set_text_fmt(ui_StatusScreen_brewPumpLabel, "%ds", brewProcess->brewPressurize / 1000);
     if (brewProcess->target == BrewTarget::TIME) {
@@ -173,6 +182,7 @@ void DefaultUI::updateStatusScreen() const {
         lv_label_set_text_fmt(ui_StatusScreen_brewLabel, "%ds", brewProcess->brewVolume);
         lv_label_set_text_fmt(ui_StatusScreen_targetDuration, "%dg", brewProcess->brewVolume);
     }
+
 
     switch (brewProcess->phase) {
     case BrewPhase::FINISHED:
