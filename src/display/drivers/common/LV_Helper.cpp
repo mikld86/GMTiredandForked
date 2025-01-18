@@ -21,15 +21,14 @@ static lv_color_t *buf1 = NULL;
 
 /* Display flushing */
 static void disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p) {
-    static_cast<LilyGo_Display *>(disp_drv->user_data)
-        ->pushColors(area->x1, area->y1, area->x2 + 1, area->y2 + 1, (uint16_t *)color_p);
+    static_cast<Display *>(disp_drv->user_data)->pushColors(area->x1, area->y1, area->x2 + 1, area->y2 + 1, (uint16_t *)color_p);
     lv_disp_flush_ready(disp_drv);
 }
 
 /*Read the touchpad*/
 static void touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data) {
     static int16_t x, y;
-    uint8_t touched = static_cast<LilyGo_Display *>(indev_driver->user_data)->getPoint(&x, &y, 1);
+    uint8_t touched = static_cast<Display *>(indev_driver->user_data)->getPoint(&x, &y, 1);
     if (touched) {
         data->point.x = x;
         data->point.y = y;
@@ -58,7 +57,7 @@ const char *lvgl_helper_get_fs_filename(const char *filename) {
     return path.c_str();
 }
 
-void beginLvglHelper(LilyGo_Display &board, bool debug) {
+void beginLvglHelper(Display &board, bool debug) {
 
     lv_init();
 

@@ -2,7 +2,9 @@
 
 #include <WiFi.h>
 #include <display/core/Controller.h>
-#include <display/drivers/LilyGo-T-RGB/LV_Helper.h>
+#include <display/drivers/common/LV_Helper.h>
+#include <display/drivers/LilyGoDriver.h>
+#include <display/drivers/WaveshareDriver.h>
 
 int16_t calculate_angle(int set_temp) {
     const int16_t angleRange = 3160;
@@ -85,16 +87,11 @@ void DefaultUI::changeScreen(lv_obj_t **screen, void (*target_init)()) {
 }
 
 void DefaultUI::setupPanel() {
-    // Initialize T-RGB, if the initialization fails, false will be returned.
-    if (!panel.begin()) {
-        for (uint8_t i = 0; i < 20; i++) {
-            Serial.println("Error, failed to initialize T-RGB");
-            delay(1000);
-        }
-        ESP.restart();
+    if (LilyGoDriver::getInstance()->isCompatible()) {
+        LilyGoDriver::getInstance()->init();
+    } else if (WaveshareDriver::getInstance()->isCompatible()) {
+        WaveshareDriver::getInstance()->init();
     }
-    beginLvglHelper(panel);
-    panel.setBrightness(16);
     ui_init();
 }
 
