@@ -1,7 +1,3 @@
-//
-// Created by Jochen Ullrich on 14.01.25.
-//
-
 #ifndef DRIVER_H
 #define DRIVER_H
 

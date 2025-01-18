@@ -1,11 +1,3 @@
-/**
- * @file      utilities.h
- * @author    Lewis He (lewishe@outlook.com)
- * @license   MIT
- * @copyright Copyright (c) 2024  Shenzhen Xin Yuan Electronic Technology Co., Ltd
- * @date      2024-01-22
- *
- */
 #pragma once
 
 #define ESP_PANEL_LCD_RGB_TIMING_FREQ_HZ (8000000UL)

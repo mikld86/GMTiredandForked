@@ -1,11 +1,3 @@
-/**
- * @file      LilyGo_Display.h
- * @author    Lewis He (lewishe@outlook.com)
- * @license   MIT
- * @copyright Copyright (c) 2024  Shenzhen Xin Yuan Electronic Technology Co., Ltd
- * @date      2024-01-24
- *
- */
 #pragma once
 
 #include <stdint.h>
