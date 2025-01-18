@@ -5,6 +5,7 @@
 #include <display/core/Process.h>
 #include <display/drivers/LilyGoDriver.h>
 #include <display/drivers/WaveshareDriver.h>
+#include <display/drivers/common/LV_Helper.h>
 
 int16_t calculate_angle(int set_temp) {
     const int16_t angleRange = 3160;

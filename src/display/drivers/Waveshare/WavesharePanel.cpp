@@ -1,12 +1,3 @@
-/**
- * @file      LilyGo_RGBPanel.cpp
- * @author    Lewis He (lewishe@outlook.com)
- * @license   MIT
- * @copyright Copyright (c) 2024  Shenzhen Xin Yuan Electronic Technology Co.,
- * Ltd
- * @date      2024-01-22
- *
- */
 #include "WavesharePanel.h"
 #include "I2C_Driver.h"
 #include "TCA9554PWR.h"
