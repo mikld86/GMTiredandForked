@@ -21,12 +21,8 @@
 #include <esp_lcd_panel_rgb.h>
 #include <esp_lcd_panel_vendor.h>
 
-#include <ExtensionIOXL9555.hpp>
-#include <TouchDrvCSTXXX.hpp>
-#include <TouchDrvFT6X36.hpp>
-#include <TouchDrvGT911.hpp>
-
-#include "LilyGo_Display.h"
+#include <display/drivers/common/Display.h>
+#include <display/drivers/common/ext.h>
 
 enum LilyGo_RGBPanel_Type {
     LILYGO_T_RGB_UNKNOWN,
@@ -52,7 +48,7 @@ enum LilyGo_RGBPanel_Wakeup_Method {
     LILYGO_T_RGB_WAKEUP_FORM_TIMER,
 };
 
-class LilyGo_RGBPanel : public LilyGo_Display {
+class LilyGo_RGBPanel : public Display {
 
   public:
     LilyGo_RGBPanel();
