@@ -184,7 +184,6 @@ void DefaultUI::updateStatusScreen() const {
         lv_label_set_text_fmt(ui_StatusScreen_targetDuration, "%dg", brewProcess->brewVolume);
     }
 
-
     switch (brewProcess->phase) {
     case BrewPhase::FINISHED:
         lv_label_set_text(ui_StatusScreen_stepLabel, "BREW");
