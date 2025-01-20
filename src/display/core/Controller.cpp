@@ -243,7 +243,7 @@ void Controller::activate() {
         return;
     switch (mode) {
     case MODE_BREW:
-        if (settings.isVolumetricTarget()) {
+        if (settings.isVolumetricTarget() && volumetricAvailable) {
             currentProcess = new BrewProcess(BrewTarget::VOLUMETRIC, settings.getInfusePumpTime(), settings.getInfuseBloomTime(),
                                              0, settings.getTargetVolume());
         } else {

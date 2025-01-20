@@ -44,6 +44,8 @@ class Controller {
 
     bool isUpdating() const;
 
+    bool isVolumetricAvailable() const { return volumetricAvailable; }
+
     Process *getProcess() const { return currentProcess; }
     Settings &getSettings() { return settings; }
     DefaultUI *getUI() const { return ui; }
@@ -78,6 +80,8 @@ class Controller {
     void onTargetChange(BrewTarget target);
 
     void onVolumetricMeasurement(double measurement) const;
+
+    void setVolumetricAvailable(bool available) { volumetricAvailable = available; }
 
   private:
     // Initialization methods
@@ -114,6 +118,7 @@ class Controller {
     bool isApConnection = false;
     bool initialized = false;
     bool screenReady = false;
+    bool volumetricAvailable = false;
 };
 
 #endif // CONTROLLER_H

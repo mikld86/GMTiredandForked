@@ -65,6 +65,9 @@ class BrewProcess : public Process {
 
     bool isCurrentPhaseFinished() const {
         if (phase == BrewPhase::BREW_PUMP && target == BrewTarget::VOLUMETRIC) {
+            if (millis() - currentPhaseStarted > BREW_SAFETY_DURATION_MS) {
+                return true;
+            }
             return currentVolume >= brewVolume;
         }
         if (phase != BrewPhase::FINISHED) {

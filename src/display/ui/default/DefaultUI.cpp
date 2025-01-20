@@ -233,7 +233,17 @@ void DefaultUI::updateBrewScreen() const {
     lv_label_set_text_fmt(ui_BrewScreen_targetTemp, "%d°C", setTemp);
     lv_img_set_angle(ui_BrewScreen_tempTarget, calculate_angle(setTemp));
     Settings &settings = controller->getSettings();
-    if (settings.isVolumetricTarget()) {
+
+    bool volumetricAvailable = controller->isVolumetricAvailable();
+    bool volumetricMode = volumetricAvailable && settings.isVolumetricTarget();
+
+    if (volumetricAvailable) {
+        lv_obj_clear_flag(ui_BrewScreen_modeSwitch, LV_OBJ_FLAG_HIDDEN);
+    } else {
+        lv_obj_add_flag(ui_BrewScreen_modeSwitch, LV_OBJ_FLAG_HIDDEN);
+    }
+
+    if (volumetricMode) {
         lv_label_set_text_fmt(ui_BrewScreen_targetDuration, "%dg", settings.getTargetVolume());
     } else {
         double secondsDouble = settings.getTargetDuration() / 1000.0;
@@ -242,15 +252,16 @@ void DefaultUI::updateBrewScreen() const {
         lv_label_set_text_fmt(ui_BrewScreen_targetDuration, "%2d:%02d", minutes, seconds);
     }
 
+    lv_img_set_src(ui_BrewScreen_Image4, volumetricMode ? &ui_img_1424216268 : &ui_img_360122106);
     ui_object_set_themeable_style_property(ui_BrewScreen_timedButton, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_IMG_RECOLOR,
-                                           settings.isVolumetricTarget() ? _ui_theme_color_NiceWhite : _ui_theme_color_Dark);
+                                           volumetricMode ? _ui_theme_color_NiceWhite : _ui_theme_color_Dark);
     ui_object_set_themeable_style_property(ui_BrewScreen_volumetricButton, LV_PART_MAIN | LV_STATE_DEFAULT,
                                            LV_STYLE_BG_IMG_RECOLOR,
-                                           settings.isVolumetricTarget() ? _ui_theme_color_Dark : _ui_theme_color_NiceWhite);
+                                           volumetricMode ? _ui_theme_color_Dark : _ui_theme_color_NiceWhite);
     ui_object_set_themeable_style_property(ui_BrewScreen_modeSwitch, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_COLOR,
-                                           settings.isVolumetricTarget() ? _ui_theme_color_Dark : _ui_theme_color_NiceWhite);
+                                           volumetricMode ? _ui_theme_color_Dark : _ui_theme_color_NiceWhite);
     ui_object_set_themeable_style_property(ui_BrewScreen_modeSwitch, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_GRAD_COLOR,
-                                           settings.isVolumetricTarget() ? _ui_theme_color_NiceWhite : _ui_theme_color_Dark);
+                                           volumetricMode ? _ui_theme_color_NiceWhite : _ui_theme_color_Dark);
 }
 
 void DefaultUI::updateGrindScreen() const {

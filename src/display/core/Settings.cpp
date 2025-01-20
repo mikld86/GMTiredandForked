@@ -19,6 +19,7 @@ Settings::Settings() {
     otaChannel = preferences.getString("oc", DEFAULT_OTA_CHANNEL);
     infusePumpTime = preferences.getInt("ipt", 0);
     infuseBloomTime = preferences.getInt("ibt", 0);
+    savedScale = preferences.getString("ssc", "");
     preferences.end();
 }
 
@@ -50,6 +51,7 @@ void Settings::save() {
     preferences.putString("oc", otaChannel);
     preferences.putInt("ipt", infusePumpTime);
     preferences.putInt("ibt", infuseBloomTime);
+    preferences.putString("ssc", savedScale);
     preferences.end();
 }
 
@@ -135,5 +137,10 @@ void Settings::setVolumetricTarget(bool volumetric_target) {
 
 void Settings::setOTAChannel(const String &otaChannel) {
     this->otaChannel = otaChannel;
+    save();
+}
+
+void Settings::setSavedScale(const String &savedScale) {
+    this->savedScale = savedScale;
     save();
 }

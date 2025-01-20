@@ -6,7 +6,8 @@
 
 void on_ble_measurement(float value);
 
-constexpr unsigned long UPDATE_INTERVAL_MS = 250;
+constexpr unsigned long UPDATE_INTERVAL_MS = 1000;
+constexpr unsigned int RECONNECTION_TRIES = 15;
 
 class BLEScalePlugin : public Plugin {
   public:
@@ -27,18 +28,16 @@ class BLEScalePlugin : public Plugin {
     std::vector<DiscoveredDevice> getDiscoveredScales() const;
 
   private:
+    void update();
     void onBrewStart() const;
 
     void establishConnection();
 
-    DiscoveredDevice findDevice(const std::string &uuid) const;
-
     bool doConnect = false;
     std::string uuid;
-    NimBLEAdvertisedDevice *dummyDevice = new NimBLEAdvertisedDevice();
-    DiscoveredDevice device;
 
     unsigned long lastUpdate = 0;
+    unsigned int reconnectionTries = 0;
 
     Controller *controller = nullptr;
     RemoteScalesPluginRegistry *pluginRegistry = nullptr;

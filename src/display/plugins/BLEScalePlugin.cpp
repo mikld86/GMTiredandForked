@@ -1,11 +1,15 @@
 #include "BLEScalePlugin.h"
+#include "remote_scales.h"
+#include "remote_scales_plugin_registry.h"
 #include <display/core/Controller.h>
 #include <scales/acaia.h>
 #include <scales/bookoo.h>
 
 void on_ble_measurement(float value) { BLEScales.onMeasurement(value); }
 
-BLEScalePlugin::BLEScalePlugin() : device(DiscoveredDevice(dummyDevice)) {}
+BLEScalePlugin BLEScales;
+
+BLEScalePlugin::BLEScalePlugin() = default;
 
 void BLEScalePlugin::setup(Controller *controller, PluginManager *manager) {
     this->controller = controller;
@@ -14,7 +18,7 @@ void BLEScalePlugin::setup(Controller *controller, PluginManager *manager) {
     BookooScalesPlugin::apply();
     this->scanner = new RemoteScalesScanner();
     manager->on("controller:brew:start", [this](Event const &) { onBrewStart(); });
-    // manager->on("controller:bluetooth:connect", [this](Event const &) { scanner->initializeAsyncScan(); });
+    manager->on("controller:bluetooth:connect", [this](Event const &) { scanner->initializeAsyncScan(); });
 }
 
 void BLEScalePlugin::loop() {
@@ -24,8 +28,25 @@ void BLEScalePlugin::loop() {
     const unsigned long now = millis();
     if (now - lastUpdate > UPDATE_INTERVAL_MS) {
         lastUpdate = now;
-        if (doConnect && scale != nullptr) {
-            scale->update();
+        update();
+    }
+}
+
+void BLEScalePlugin::update() {
+    controller->setVolumetricAvailable(scale && scale->isConnected());
+    if (scale != nullptr) {
+        scale->update();
+        if (!scale->isConnected()) {
+            reconnectionTries++;
+            if (reconnectionTries > RECONNECTION_TRIES) {
+                disconnect();
+            }
+        }
+    } else if (controller->getSettings().getSavedScale() != "") {
+        for (const auto &d : scanner->getDiscoveredScales()) {
+            if (d.getAddress().toString() == controller->getSettings().getSavedScale().c_str()) {
+                connect(d.getAddress().toString());
+            }
         }
     }
 }
@@ -33,6 +54,7 @@ void BLEScalePlugin::loop() {
 void BLEScalePlugin::connect(const std::string &uuid) {
     doConnect = true;
     this->uuid = uuid;
+    controller->getSettings().setSavedScale(uuid.data());
 }
 
 void BLEScalePlugin::scan() const {
@@ -46,32 +68,34 @@ void BLEScalePlugin::disconnect() {
     if (scale != nullptr) {
         scale->disconnect();
         scale = nullptr;
+        scanner->initializeAsyncScan();
     }
 }
 
 void BLEScalePlugin::onBrewStart() const {
-    printf("Requesting scale tare");
     if (scale != nullptr && scale->isConnected()) {
         scale->tare();
-        printf("Finished scale tare");
     }
 }
 
 void BLEScalePlugin::establishConnection() {
     scanner->stopAsyncScan();
-    for (const DiscoveredDevice &d : scanner->getDiscoveredScales()) {
+    for (const auto &d : scanner->getDiscoveredScales()) {
         if (d.getAddress().toString() == uuid) {
-            this->device = DiscoveredDevice{d};
-            scale = pluginRegistry->initialiseRemoteScales(device);
+            reconnectionTries = 0;
+            scale = RemoteScalesFactory::getInstance()->create(d);
             if (!scale) {
-                printf("Connection to device %s failed\n", device.getName().c_str());
+                printf("Connection to device %s failed\n", d.getName().c_str());
                 return;
             }
+
+            scale->setLogCallback([](std::string message) { Serial.print(message.c_str()); });
+
+            scale->setWeightUpdatedCallback([](float weight) { BLEScales.onMeasurement(weight); });
+
             if (!scale->connect()) {
                 disconnect();
-                return;
             }
-            scale->setWeightUpdatedCallback(on_ble_measurement, false);
             break;
         }
     }
@@ -79,20 +103,8 @@ void BLEScalePlugin::establishConnection() {
 
 void BLEScalePlugin::onMeasurement(float value) const {
     if (controller != nullptr) {
-        printf("Scale measurement: %.2f", value);
         controller->onVolumetricMeasurement(value);
     }
 }
 
 std::vector<DiscoveredDevice> BLEScalePlugin::getDiscoveredScales() const { return scanner->getDiscoveredScales(); }
-
-DiscoveredDevice BLEScalePlugin::findDevice(const std::string &uuid) const {
-    for (const DiscoveredDevice &d : scanner->getDiscoveredScales()) {
-        if (d.getAddress().toString() == uuid) {
-            return d;
-        }
-    }
-    return nullptr;
-}
-
-BLEScalePlugin BLEScales;

@@ -36,6 +36,7 @@ class Settings {
     bool isHomekit() const { return homekit; }
     bool isVolumetricTarget() const { return volumetricTarget; }
     String getOTAChannel() const { return otaChannel; }
+    String getSavedScale() const { return savedScale; }
     void setTargetBrewTemp(int target_brew_temp);
     void setTargetSteamTemp(int target_steam_temp);
     void setTargetWaterTemp(int target_water_temp);
@@ -53,6 +54,7 @@ class Settings {
     void setHomekit(bool homekit);
     void setVolumetricTarget(bool volumetric_target);
     void setOTAChannel(const String &otaChannel);
+    void setSavedScale(const String &savedScale);
 
   private:
     Preferences preferences;
@@ -72,6 +74,7 @@ class Settings {
     String wifiSsid = "";
     String wifiPassword = "";
     String mdnsName = DEFAULT_MDNS_NAME;
+    String savedScale = "";
     bool homekit = false;
     bool volumetricTarget = false;
 

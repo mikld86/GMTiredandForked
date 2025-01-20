@@ -52,6 +52,7 @@ void WebUIPlugin::start() {
     server.on("/api/scales/info", [this](AsyncWebServerRequest *request) { handleBLEScaleInfo(request); });
     server.on("/ota", [](AsyncWebServerRequest *request) { request->send(SPIFFS, "/index.html"); });
     server.on("/settings", [](AsyncWebServerRequest *request) { request->send(SPIFFS, "/index.html"); });
+    server.on("/scales", [](AsyncWebServerRequest *request) { request->send(SPIFFS, "/index.html"); });
     server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html").setCacheControl("max-age=0");
     server.begin();
     Serial.print("OTA server started");
