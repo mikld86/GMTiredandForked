@@ -2,6 +2,7 @@
 
 #include <WiFi.h>
 #include <display/core/Controller.h>
+#include <display/core/Process.h>
 #include <display/drivers/LilyGoDriver.h>
 #include <display/drivers/WaveshareDriver.h>
 #include <display/drivers/common/LV_Helper.h>
@@ -86,7 +87,7 @@ void DefaultUI::changeScreen(lv_obj_t **screen, void (*target_init)()) {
     targetScreenInit = target_init;
 }
 
-void DefaultUI::setupPanel() {
+void DefaultUI::setupPanel() const {
     if (LilyGoDriver::getInstance()->isCompatible()) {
         LilyGoDriver::getInstance()->init();
     } else if (WaveshareDriver::getInstance()->isCompatible()) {
@@ -95,7 +96,7 @@ void DefaultUI::setupPanel() {
     ui_init();
 }
 
-void DefaultUI::handleScreenChange() {
+void DefaultUI::handleScreenChange() const {
     lv_obj_t *current = lv_scr_act();
     if (current != *targetScreen) {
         _ui_screen_change(targetScreen, LV_SCR_LOAD_ANIM_NONE, 0, 0, targetScreenInit);
@@ -122,14 +123,14 @@ void DefaultUI::updateStandbyScreen() const {
                     : lv_obj_add_flag(ui_StandbyScreen_updateIcon, LV_OBJ_FLAG_HIDDEN);
 }
 
-void DefaultUI::updateMenuScreen() {
+void DefaultUI::updateMenuScreen() const {
     lv_arc_set_value(ui_MenuScreen_tempGauge, controller->getCurrentTemp());
     lv_label_set_text_fmt(ui_MenuScreen_tempText, "%d°C", controller->getCurrentTemp());
     int16_t setTemp = controller->getTargetTemp();
     lv_img_set_angle(ui_MenuScreen_tempTarget, calculate_angle(setTemp));
 }
 
-void DefaultUI::updateStatusScreen() {
+void DefaultUI::updateStatusScreen() const {
     lv_arc_set_value(ui_StatusScreen_tempGauge, controller->getCurrentTemp());
     lv_label_set_text_fmt(ui_StatusScreen_tempText, "%d°C", controller->getCurrentTemp());
     int16_t setTemp = controller->getTargetTemp();
@@ -137,22 +138,92 @@ void DefaultUI::updateStatusScreen() {
     lv_img_set_angle(ui_StatusScreen_tempTarget, calculate_angle(setTemp));
     Settings &settings = controller->getSettings();
 
-    double secondsDouble = settings.getTargetDuration() / 1000.0;
-    auto minutes = (int)(secondsDouble / 60.0 - 0.5);
-    auto seconds = (int)secondsDouble % 60;
-    lv_label_set_text_fmt(ui_StatusScreen_targetDuration, "%2d:%02d", minutes, seconds);
+    Process *process = controller->getProcess();
+    if (process == nullptr || process->getType() != MODE_BREW) {
+        return;
+    }
+    BrewProcess *brewProcess = static_cast<BrewProcess *>(process);
 
-    int targetDuration = settings.getTargetDuration();
     unsigned long now = millis();
-    unsigned long activeUntil = controller->getActiveUntil();
-    unsigned long progress = now - (activeUntil - targetDuration);
+    unsigned long phaseDuration = brewProcess->getPhaseDuration();
+    unsigned long activeUntil = brewProcess->currentPhaseStarted + phaseDuration;
+    unsigned long progress = now - (activeUntil - phaseDuration);
     double progressSecondsDouble = progress / 1000.0;
     auto progressMinutes = (int)(progressSecondsDouble / 60.0 - 0.5);
     auto progressSeconds = (int)progressSecondsDouble % 60;
-    lv_bar_set_range(ui_StatusScreen_progressBar, 0, (int)secondsDouble);
-    lv_bar_set_value(ui_StatusScreen_progressBar, progress / 1000, LV_ANIM_OFF);
-    lv_label_set_text_fmt(ui_StatusScreen_progressLabel, "%2d:%02d / %2d:%02d", progressMinutes, progressSeconds, minutes,
-                          seconds);
+    unsigned long targetDuration = brewProcess->brewSeconds;
+    double targetSecondsDouble = targetDuration / 1000.0;
+    auto targetMinutes = (int)(targetSecondsDouble / 60.0 - 0.5);
+    auto targetSeconds = (int)targetSecondsDouble % 60;
+
+    if (brewProcess->infusionBloomTime == 0 || brewProcess->infusionPumpTime == 0) {
+        lv_obj_add_flag(ui_StatusScreen_preinfusePumpBar, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(ui_StatusScreen_preinfusePumpLabel, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(ui_StatusScreen_preinfuseBloomBar, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(ui_StatusScreen_preinfuseBloomLabel, LV_OBJ_FLAG_HIDDEN);
+    } else {
+        lv_obj_clear_flag(ui_StatusScreen_preinfusePumpBar, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(ui_StatusScreen_preinfusePumpLabel, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(ui_StatusScreen_preinfuseBloomBar, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(ui_StatusScreen_preinfuseBloomLabel, LV_OBJ_FLAG_HIDDEN);
+        lv_bar_set_range(ui_StatusScreen_preinfusePumpBar, 0, brewProcess->infusionPumpTime / 1000);
+        lv_label_set_text_fmt(ui_StatusScreen_preinfusePumpLabel, "%ds", brewProcess->infusionPumpTime / 1000);
+        lv_bar_set_range(ui_StatusScreen_preinfuseBloomBar, 0, brewProcess->infusionBloomTime / 1000);
+        lv_label_set_text_fmt(ui_StatusScreen_preinfuseBloomLabel, "%ds", brewProcess->infusionBloomTime / 1000);
+    }
+
+    lv_bar_set_range(ui_StatusScreen_brewPumpBar, 0, brewProcess->brewPressurize / 1000);
+    lv_label_set_text_fmt(ui_StatusScreen_brewPumpLabel, "%ds", brewProcess->brewPressurize / 1000);
+    if (brewProcess->target == BrewTarget::TIME) {
+        lv_bar_set_range(ui_StatusScreen_brewBar, 0, brewProcess->brewSeconds / 1000);
+        lv_label_set_text_fmt(ui_StatusScreen_brewLabel, "%ds", brewProcess->brewSeconds / 1000);
+        lv_label_set_text_fmt(ui_StatusScreen_targetDuration, "%2d:%02d", targetMinutes, targetSeconds);
+    } else {
+        lv_bar_set_range(ui_StatusScreen_brewBar, 0, brewProcess->brewVolume);
+        lv_label_set_text_fmt(ui_StatusScreen_brewLabel, "%ds", brewProcess->brewVolume);
+        lv_label_set_text_fmt(ui_StatusScreen_targetDuration, "%dg", brewProcess->brewVolume);
+    }
+
+    switch (brewProcess->phase) {
+    case BrewPhase::FINISHED:
+        lv_label_set_text(ui_StatusScreen_stepLabel, "BREW");
+        lv_label_set_text(ui_StatusScreen_phaseLabel, "Finished");
+        break;
+    case BrewPhase::BREW_PUMP:
+        if (brewProcess->target == BrewTarget::TIME) {
+            lv_bar_set_value(ui_StatusScreen_brewBar, progress / 1000, LV_ANIM_OFF);
+        } else {
+            lv_bar_set_value(ui_StatusScreen_brewBar, brewProcess->currentVolume, LV_ANIM_OFF);
+        }
+        lv_bar_set_value(ui_StatusScreen_brewPumpBar, brewProcess->brewPressurize / 1000, LV_ANIM_OFF);
+        lv_bar_set_value(ui_StatusScreen_preinfuseBloomBar, brewProcess->infusionBloomTime / 1000, LV_ANIM_OFF);
+        lv_bar_set_value(ui_StatusScreen_preinfusePumpBar, brewProcess->infusionPumpTime / 1000, LV_ANIM_OFF);
+        lv_label_set_text(ui_StatusScreen_stepLabel, "BREW");
+        lv_label_set_text(ui_StatusScreen_phaseLabel, "Flowing...");
+        break;
+    case BrewPhase::BREW_PRESSURIZE:
+        lv_bar_set_value(ui_StatusScreen_brewPumpBar, progress / 1000, LV_ANIM_OFF);
+        lv_bar_set_value(ui_StatusScreen_preinfuseBloomBar, brewProcess->infusionBloomTime / 1000, LV_ANIM_OFF);
+        lv_bar_set_value(ui_StatusScreen_preinfusePumpBar, brewProcess->infusionPumpTime / 1000, LV_ANIM_OFF);
+        lv_label_set_text(ui_StatusScreen_stepLabel, "BREW");
+        lv_label_set_text(ui_StatusScreen_phaseLabel, "Building pressure...");
+        break;
+    case BrewPhase::INFUSION_BLOOM:
+        lv_bar_set_value(ui_StatusScreen_preinfuseBloomBar, progress / 1000, LV_ANIM_OFF);
+        lv_bar_set_value(ui_StatusScreen_preinfusePumpBar, brewProcess->infusionPumpTime / 1000, LV_ANIM_OFF);
+        lv_label_set_text(ui_StatusScreen_stepLabel, "INFUSION");
+        lv_label_set_text(ui_StatusScreen_phaseLabel, "Blooming...");
+        break;
+    case BrewPhase::INFUSION_PUMP:
+        lv_bar_set_value(ui_StatusScreen_preinfusePumpBar, progress / 1000, LV_ANIM_OFF);
+        lv_label_set_text(ui_StatusScreen_stepLabel, "INFUSION");
+        lv_label_set_text(ui_StatusScreen_phaseLabel, "Building pressure...");
+        break;
+    default:;
+    }
+
+    lv_img_set_src(ui_StatusScreen_Image8, brewProcess->target == BrewTarget::TIME ? &ui_img_360122106 : &ui_img_1424216268);
+    lv_label_set_text_fmt(ui_StatusScreen_currentDuration, "%2d:%02d", progressMinutes, progressSeconds);
 }
 
 void DefaultUI::updateBrewScreen() const {
@@ -162,10 +233,35 @@ void DefaultUI::updateBrewScreen() const {
     lv_label_set_text_fmt(ui_BrewScreen_targetTemp, "%d°C", setTemp);
     lv_img_set_angle(ui_BrewScreen_tempTarget, calculate_angle(setTemp));
     Settings &settings = controller->getSettings();
-    double secondsDouble = settings.getTargetDuration() / 1000.0;
-    auto minutes = (int)(secondsDouble / 60.0 - 0.5);
-    auto seconds = (int)secondsDouble % 60;
-    lv_label_set_text_fmt(ui_BrewScreen_targetDuration, "%2d:%02d", minutes, seconds);
+
+    bool volumetricAvailable = controller->isVolumetricAvailable();
+    bool volumetricMode = volumetricAvailable && settings.isVolumetricTarget();
+
+    if (volumetricAvailable) {
+        lv_obj_clear_flag(ui_BrewScreen_modeSwitch, LV_OBJ_FLAG_HIDDEN);
+    } else {
+        lv_obj_add_flag(ui_BrewScreen_modeSwitch, LV_OBJ_FLAG_HIDDEN);
+    }
+
+    if (volumetricMode) {
+        lv_label_set_text_fmt(ui_BrewScreen_targetDuration, "%dg", settings.getTargetVolume());
+    } else {
+        double secondsDouble = settings.getTargetDuration() / 1000.0;
+        auto minutes = (int)(secondsDouble / 60.0 - 0.5);
+        auto seconds = (int)secondsDouble % 60;
+        lv_label_set_text_fmt(ui_BrewScreen_targetDuration, "%2d:%02d", minutes, seconds);
+    }
+
+    lv_img_set_src(ui_BrewScreen_Image4, volumetricMode ? &ui_img_1424216268 : &ui_img_360122106);
+    ui_object_set_themeable_style_property(ui_BrewScreen_timedButton, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_IMG_RECOLOR,
+                                           volumetricMode ? _ui_theme_color_NiceWhite : _ui_theme_color_Dark);
+    ui_object_set_themeable_style_property(ui_BrewScreen_volumetricButton, LV_PART_MAIN | LV_STATE_DEFAULT,
+                                           LV_STYLE_BG_IMG_RECOLOR,
+                                           volumetricMode ? _ui_theme_color_Dark : _ui_theme_color_NiceWhite);
+    ui_object_set_themeable_style_property(ui_BrewScreen_modeSwitch, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_COLOR,
+                                           volumetricMode ? _ui_theme_color_Dark : _ui_theme_color_NiceWhite);
+    ui_object_set_themeable_style_property(ui_BrewScreen_modeSwitch, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_GRAD_COLOR,
+                                           volumetricMode ? _ui_theme_color_NiceWhite : _ui_theme_color_Dark);
 }
 
 void DefaultUI::updateGrindScreen() const {
@@ -192,7 +288,7 @@ void DefaultUI::updateWaterScreen() const {
                       controller->isActive() ? &ui_img_1456692430 : &ui_img_445946954, nullptr);
 }
 
-void DefaultUI::updateSteamScreen() {
+void DefaultUI::updateSteamScreen() const {
     lv_arc_set_value(ui_SteamScreen_tempGauge, controller->getCurrentTemp());
     lv_label_set_text_fmt(ui_SteamScreen_tempText, "%d°C", controller->getCurrentTemp());
     int16_t setTemp = controller->getTargetTemp();

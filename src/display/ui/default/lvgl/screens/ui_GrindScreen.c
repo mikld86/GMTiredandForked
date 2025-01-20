@@ -62,10 +62,8 @@ void ui_GrindScreen_screen_init(void) {
     lv_obj_set_align(ui_GrindScreen_contentPanel7, LV_ALIGN_CENTER);
     lv_obj_clear_flag(ui_GrindScreen_contentPanel7, LV_OBJ_FLAG_SCROLLABLE); /// Flags
     lv_obj_set_style_radius(ui_GrindScreen_contentPanel7, 180, LV_PART_MAIN | LV_STATE_DEFAULT);
-    ui_object_set_themeable_style_property(ui_GrindScreen_contentPanel7, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_COLOR,
-                                           _ui_theme_color_Transparent);
-    ui_object_set_themeable_style_property(ui_GrindScreen_contentPanel7, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_OPA,
-                                           _ui_theme_alpha_Transparent);
+    lv_obj_set_style_bg_color(ui_GrindScreen_contentPanel7, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_GrindScreen_contentPanel7, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
     ui_object_set_themeable_style_property(ui_GrindScreen_contentPanel7, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BORDER_COLOR,
                                            _ui_theme_color_NiceWhite);
     ui_object_set_themeable_style_property(ui_GrindScreen_contentPanel7, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BORDER_OPA,
@@ -84,25 +82,12 @@ void ui_GrindScreen_screen_init(void) {
                                            _ui_theme_alpha_NiceWhite);
     lv_obj_set_style_text_font(ui_GrindScreen_mainLabel7, &lv_font_montserrat_24, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_GrindScreen_targetPressureHelp1 = lv_label_create(ui_GrindScreen_contentPanel7);
-    lv_obj_set_width(ui_GrindScreen_targetPressureHelp1, LV_SIZE_CONTENT);  /// 1
-    lv_obj_set_height(ui_GrindScreen_targetPressureHelp1, LV_SIZE_CONTENT); /// 1
-    lv_obj_set_x(ui_GrindScreen_targetPressureHelp1, 0);
-    lv_obj_set_y(ui_GrindScreen_targetPressureHelp1, -80);
-    lv_obj_set_align(ui_GrindScreen_targetPressureHelp1, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_GrindScreen_targetPressureHelp1, "Target Duration");
-    ui_object_set_themeable_style_property(ui_GrindScreen_targetPressureHelp1, LV_PART_MAIN | LV_STATE_DEFAULT,
-                                           LV_STYLE_TEXT_COLOR, _ui_theme_color_NiceWhite);
-    ui_object_set_themeable_style_property(ui_GrindScreen_targetPressureHelp1, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_TEXT_OPA,
-                                           _ui_theme_alpha_NiceWhite);
-    lv_obj_set_style_text_font(ui_GrindScreen_targetPressureHelp1, &lv_font_montserrat_12, LV_PART_MAIN | LV_STATE_DEFAULT);
-
     ui_GrindScreen_startButton = lv_imgbtn_create(ui_GrindScreen_contentPanel7);
     lv_imgbtn_set_src(ui_GrindScreen_startButton, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_445946954, NULL);
     lv_obj_set_width(ui_GrindScreen_startButton, 40);
     lv_obj_set_height(ui_GrindScreen_startButton, 40);
     lv_obj_set_x(ui_GrindScreen_startButton, 0);
-    lv_obj_set_y(ui_GrindScreen_startButton, 110);
+    lv_obj_set_y(ui_GrindScreen_startButton, 130);
     lv_obj_set_align(ui_GrindScreen_startButton, LV_ALIGN_CENTER);
     ui_object_set_themeable_style_property(ui_GrindScreen_startButton, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_OUTLINE_COLOR,
                                            _ui_theme_color_Dark);
@@ -116,11 +101,11 @@ void ui_GrindScreen_screen_init(void) {
                                            _ui_theme_alpha_NiceWhite);
 
     ui_GrindScreen_downDurationButton = lv_imgbtn_create(ui_GrindScreen_contentPanel7);
-    lv_imgbtn_set_src(ui_GrindScreen_downDurationButton, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_1829139226, NULL);
+    lv_imgbtn_set_src(ui_GrindScreen_downDurationButton, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_834125362, NULL);
     lv_obj_set_width(ui_GrindScreen_downDurationButton, 40);
     lv_obj_set_height(ui_GrindScreen_downDurationButton, 40);
-    lv_obj_set_x(ui_GrindScreen_downDurationButton, 0);
-    lv_obj_set_y(ui_GrindScreen_downDurationButton, 40);
+    lv_obj_set_x(ui_GrindScreen_downDurationButton, -90);
+    lv_obj_set_y(ui_GrindScreen_downDurationButton, 0);
     lv_obj_set_align(ui_GrindScreen_downDurationButton, LV_ALIGN_CENTER);
     ui_object_set_themeable_style_property(ui_GrindScreen_downDurationButton, LV_PART_MAIN | LV_STATE_DEFAULT,
                                            LV_STYLE_IMG_RECOLOR, _ui_theme_color_NiceWhite);
@@ -128,11 +113,11 @@ void ui_GrindScreen_screen_init(void) {
                                            LV_STYLE_IMG_RECOLOR_OPA, _ui_theme_alpha_NiceWhite);
 
     ui_GrindScreen_upDurationButton = lv_imgbtn_create(ui_GrindScreen_contentPanel7);
-    lv_imgbtn_set_src(ui_GrindScreen_upDurationButton, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_295763949, NULL);
+    lv_imgbtn_set_src(ui_GrindScreen_upDurationButton, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_390988422, NULL);
     lv_obj_set_width(ui_GrindScreen_upDurationButton, 40);
     lv_obj_set_height(ui_GrindScreen_upDurationButton, 40);
-    lv_obj_set_x(ui_GrindScreen_upDurationButton, 0);
-    lv_obj_set_y(ui_GrindScreen_upDurationButton, -40);
+    lv_obj_set_x(ui_GrindScreen_upDurationButton, 90);
+    lv_obj_set_y(ui_GrindScreen_upDurationButton, 0);
     lv_obj_set_align(ui_GrindScreen_upDurationButton, LV_ALIGN_CENTER);
     ui_object_set_themeable_style_property(ui_GrindScreen_upDurationButton, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR,
                                            _ui_theme_color_NiceWhite);
@@ -149,7 +134,21 @@ void ui_GrindScreen_screen_init(void) {
     ui_object_set_themeable_style_property(ui_GrindScreen_targetDuration, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_TEXT_OPA,
                                            _ui_theme_alpha_NiceWhite);
     lv_obj_set_style_text_align(ui_GrindScreen_targetDuration, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_font(ui_GrindScreen_targetDuration, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_GrindScreen_targetDuration, &lv_font_montserrat_24, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_GrindScreen_Image11 = lv_img_create(ui_GrindScreen_contentPanel7);
+    lv_img_set_src(ui_GrindScreen_Image11, &ui_img_360122106);
+    lv_obj_set_width(ui_GrindScreen_Image11, 40);
+    lv_obj_set_height(ui_GrindScreen_Image11, 40);
+    lv_obj_set_x(ui_GrindScreen_Image11, 0);
+    lv_obj_set_y(ui_GrindScreen_Image11, -60);
+    lv_obj_set_align(ui_GrindScreen_Image11, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_GrindScreen_Image11, LV_OBJ_FLAG_ADV_HITTEST);  /// Flags
+    lv_obj_clear_flag(ui_GrindScreen_Image11, LV_OBJ_FLAG_SCROLLABLE); /// Flags
+    ui_object_set_themeable_style_property(ui_GrindScreen_Image11, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR,
+                                           _ui_theme_color_NiceWhite);
+    ui_object_set_themeable_style_property(ui_GrindScreen_Image11, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR_OPA,
+                                           _ui_theme_alpha_NiceWhite);
 
     ui_GrindScreen_tempText = lv_label_create(ui_GrindScreen);
     lv_obj_set_width(ui_GrindScreen_tempText, LV_SIZE_CONTENT);  /// 1

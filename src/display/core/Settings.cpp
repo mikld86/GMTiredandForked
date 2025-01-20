@@ -7,6 +7,7 @@ Settings::Settings() {
     targetSteamTemp = preferences.getInt("ts", 145);
     targetWaterTemp = preferences.getInt("tw", 80);
     targetDuration = preferences.getInt("td", 25000);
+    targetVolume = preferences.getInt("tv", 36);
     targetGrindDuration = preferences.getInt("tgd", 25000);
     temperatureOffset = preferences.getInt("to", DEFAULT_TEMPERATURE_OFFSET);
     pid = preferences.getString("pid", DEFAULT_PID);
@@ -14,7 +15,11 @@ Settings::Settings() {
     wifiPassword = preferences.getString("wp", "");
     mdnsName = preferences.getString("mn", DEFAULT_MDNS_NAME);
     homekit = preferences.getBool("hk", false);
+    volumetricTarget = preferences.getBool("vt", false);
     otaChannel = preferences.getString("oc", DEFAULT_OTA_CHANNEL);
+    infusePumpTime = preferences.getInt("ipt", 0);
+    infuseBloomTime = preferences.getInt("ibt", 0);
+    savedScale = preferences.getString("ssc", "");
     preferences.end();
 }
 
@@ -34,6 +39,7 @@ void Settings::save() {
     preferences.putInt("ts", targetSteamTemp);
     preferences.putInt("tw", targetWaterTemp);
     preferences.putInt("td", targetDuration);
+    preferences.putInt("tv", targetVolume);
     preferences.putInt("tgd", targetGrindDuration);
     preferences.putInt("to", temperatureOffset);
     preferences.putString("pid", pid);
@@ -41,7 +47,11 @@ void Settings::save() {
     preferences.putString("wp", wifiPassword);
     preferences.putString("mn", mdnsName);
     preferences.putBool("hk", homekit);
+    preferences.putBool("vt", volumetricTarget);
     preferences.putString("oc", otaChannel);
+    preferences.putInt("ipt", infusePumpTime);
+    preferences.putInt("ibt", infuseBloomTime);
+    preferences.putString("ssc", savedScale);
     preferences.end();
 }
 
@@ -70,6 +80,11 @@ void Settings::setTargetDuration(const int target_duration) {
     save();
 }
 
+void Settings::setTargetVolume(int target_volume) {
+    targetVolume = target_volume;
+    save();
+}
+
 void Settings::setTargetGrindDuration(const int target_duration) {
     targetGrindDuration = target_duration;
     save();
@@ -77,6 +92,16 @@ void Settings::setTargetGrindDuration(const int target_duration) {
 
 void Settings::setStartupMode(const int startup_mode) {
     startupMode = startup_mode;
+    save();
+}
+
+void Settings::setInfuseBloomTime(int infuse_bloom_time) {
+    infuseBloomTime = infuse_bloom_time;
+    save();
+}
+
+void Settings::setInfusePumpTime(int infuse_pump_time) {
+    infusePumpTime = infuse_pump_time;
     save();
 }
 
@@ -105,7 +130,17 @@ void Settings::setHomekit(const bool homekit) {
     save();
 }
 
+void Settings::setVolumetricTarget(bool volumetric_target) {
+    this->volumetricTarget = volumetric_target;
+    save();
+}
+
 void Settings::setOTAChannel(const String &otaChannel) {
     this->otaChannel = otaChannel;
+    save();
+}
+
+void Settings::setSavedScale(const String &savedScale) {
+    this->savedScale = savedScale;
     save();
 }

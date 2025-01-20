@@ -61,21 +61,29 @@ lv_obj_t *ui_BrewScreen_tempGauge;
 lv_obj_t *ui_BrewScreen_ImgButton5;
 lv_obj_t *ui_BrewScreen_contentPanel4;
 lv_obj_t *ui_BrewScreen_mainLabel3;
-lv_obj_t *ui_BrewScreen_targetTempHelp1;
-lv_obj_t *ui_BrewScreen_targetPressureHelp2;
 void ui_event_BrewScreen_startButton(lv_event_t *e);
 lv_obj_t *ui_BrewScreen_startButton;
+lv_obj_t *ui_BrewScreen_tempText;
+lv_obj_t *ui_BrewScreen_controlContainer;
+lv_obj_t *ui_BrewScreen_modeSwitch;
+void ui_event_BrewScreen_timedButton(lv_event_t *e);
+lv_obj_t *ui_BrewScreen_timedButton;
+void ui_event_BrewScreen_volumetricButton(lv_event_t *e);
+lv_obj_t *ui_BrewScreen_volumetricButton;
+lv_obj_t *ui_BrewScreen_tempContainer;
+lv_obj_t *ui_BrewScreen_targetTemp;
 void ui_event_BrewScreen_downTempButton(lv_event_t *e);
 lv_obj_t *ui_BrewScreen_downTempButton;
 void ui_event_BrewScreen_upTempButton(lv_event_t *e);
 lv_obj_t *ui_BrewScreen_upTempButton;
-void ui_event_BrewScreen_downDurationButton(lv_event_t *e);
-lv_obj_t *ui_BrewScreen_downDurationButton;
+lv_obj_t *ui_BrewScreen_Image5;
+lv_obj_t *ui_BrewScreen_targetContainer;
+lv_obj_t *ui_BrewScreen_targetDuration;
 void ui_event_BrewScreen_upDurationButton(lv_event_t *e);
 lv_obj_t *ui_BrewScreen_upDurationButton;
-lv_obj_t *ui_BrewScreen_targetTemp;
-lv_obj_t *ui_BrewScreen_targetDuration;
-lv_obj_t *ui_BrewScreen_tempText;
+void ui_event_BrewScreen_downDurationButton(lv_event_t *e);
+lv_obj_t *ui_BrewScreen_downDurationButton;
+lv_obj_t *ui_BrewScreen_Image4;
 // CUSTOM VARIABLES
 
 // SCREEN: ui_SteamScreen
@@ -87,7 +95,6 @@ lv_obj_t *ui_SteamScreen_tempGauge;
 lv_obj_t *ui_SteamScreen_ImgButton6;
 lv_obj_t *ui_SteamScreen_contentPanel5;
 lv_obj_t *ui_SteamScreen_mainLabel5;
-lv_obj_t *ui_SteamScreen_targetTempHelp2;
 void ui_event_SteamScreen_goButton(lv_event_t *e);
 lv_obj_t *ui_SteamScreen_goButton;
 void ui_event_SteamScreen_downTempButton(lv_event_t *e);
@@ -95,6 +102,7 @@ lv_obj_t *ui_SteamScreen_downTempButton;
 void ui_event_SteamScreen_upTempButton(lv_event_t *e);
 lv_obj_t *ui_SteamScreen_upTempButton;
 lv_obj_t *ui_SteamScreen_targetTemp;
+lv_obj_t *ui_SteamScreen_Image9;
 lv_obj_t *ui_SteamScreen_tempText;
 // CUSTOM VARIABLES
 
@@ -107,7 +115,6 @@ lv_obj_t *ui_WaterScreen_tempGauge;
 lv_obj_t *ui_WaterScreen_ImgButton7;
 lv_obj_t *ui_WaterScreen_contentPanel6;
 lv_obj_t *ui_WaterScreen_mainLabel6;
-lv_obj_t *ui_WaterScreen_targetTempHelp3;
 void ui_event_WaterScreen_goButton(lv_event_t *e);
 lv_obj_t *ui_WaterScreen_goButton;
 void ui_event_WaterScreen_downTempButton(lv_event_t *e);
@@ -115,6 +122,7 @@ lv_obj_t *ui_WaterScreen_downTempButton;
 void ui_event_WaterScreen_upTempButton(lv_event_t *e);
 lv_obj_t *ui_WaterScreen_upTempButton;
 lv_obj_t *ui_WaterScreen_targetTemp;
+lv_obj_t *ui_WaterScreen_Image10;
 lv_obj_t *ui_WaterScreen_tempText;
 // CUSTOM VARIABLES
 
@@ -139,15 +147,25 @@ lv_obj_t *ui_StatusScreen_tempTarget;
 lv_obj_t *ui_StatusScreen_tempGauge;
 lv_obj_t *ui_StatusScreen_ImgButton3;
 lv_obj_t *ui_StatusScreen_contentPanel2;
-lv_obj_t *ui_StatusScreen_mainLabel1;
-lv_obj_t *ui_StatusScreen_progressBar;
-lv_obj_t *ui_StatusScreen_progressLabel;
-lv_obj_t *ui_StatusScreen_targetTempHelp;
-lv_obj_t *ui_StatusScreen_targetDurationHelp;
 lv_obj_t *ui_StatusScreen_targetDuration;
 lv_obj_t *ui_StatusScreen_targetTemp;
 void ui_event_StatusScreen_pauseButton(lv_event_t *e);
 lv_obj_t *ui_StatusScreen_pauseButton;
+lv_obj_t *ui_StatusScreen_Image7;
+lv_obj_t *ui_StatusScreen_Image8;
+lv_obj_t *ui_StatusScreen_currentDuration;
+lv_obj_t *ui_StatusScreen_stepLabel;
+lv_obj_t *ui_StatusScreen_phaseLabel;
+lv_obj_t *ui_StatusScreen_barContainer;
+lv_obj_t *ui_StatusScreen_preinfusePumpBar;
+lv_obj_t *ui_StatusScreen_preinfuseBloomBar;
+lv_obj_t *ui_StatusScreen_brewPumpBar;
+lv_obj_t *ui_StatusScreen_brewBar;
+lv_obj_t *ui_StatusScreen_labelContainer;
+lv_obj_t *ui_StatusScreen_preinfusePumpLabel;
+lv_obj_t *ui_StatusScreen_preinfuseBloomLabel;
+lv_obj_t *ui_StatusScreen_brewPumpLabel;
+lv_obj_t *ui_StatusScreen_brewLabel;
 lv_obj_t *ui_StatusScreen_tempText;
 // CUSTOM VARIABLES
 
@@ -160,7 +178,6 @@ lv_obj_t *ui_GrindScreen_tempGauge;
 lv_obj_t *ui_GrindScreen_ImgButton2;
 lv_obj_t *ui_GrindScreen_contentPanel7;
 lv_obj_t *ui_GrindScreen_mainLabel7;
-lv_obj_t *ui_GrindScreen_targetPressureHelp1;
 void ui_event_GrindScreen_startButton(lv_event_t *e);
 lv_obj_t *ui_GrindScreen_startButton;
 void ui_event_GrindScreen_downDurationButton(lv_event_t *e);
@@ -168,6 +185,7 @@ lv_obj_t *ui_GrindScreen_downDurationButton;
 void ui_event_GrindScreen_upDurationButton(lv_event_t *e);
 lv_obj_t *ui_GrindScreen_upDurationButton;
 lv_obj_t *ui_GrindScreen_targetDuration;
+lv_obj_t *ui_GrindScreen_Image11;
 lv_obj_t *ui_GrindScreen_tempText;
 // CUSTOM VARIABLES
 
@@ -178,11 +196,15 @@ lv_obj_t *ui____initial_actions0;
 const lv_img_dsc_t *ui_imgset_459451241[1] = {&ui_img_1829139226};
 const lv_img_dsc_t *ui_imgset_434888472[1] = {&ui_img_295763949};
 const lv_img_dsc_t *ui_imgset_1091184723[1] = {&ui_img_1091371356};
+const lv_img_dsc_t *ui_imgset_960046369[1] = {&ui_img_631115820};
 const lv_img_dsc_t *ui_imgset_1525119997[1] = {&ui_img_360122106};
 const lv_img_dsc_t *ui_imgset_1812359778[1] = {&ui_img_363557387};
+const lv_img_dsc_t *ui_imgset_359218129[1] = {&ui_img_1424216268};
+const lv_img_dsc_t *ui_imgset_403384789[1] = {&ui_img_834125362};
 const lv_img_dsc_t *ui_imgset_359534444[1] = {&ui_img_979979123};
 const lv_img_dsc_t *ui_imgset_794559649[1] = {&ui_img_1456692430};
 const lv_img_dsc_t *ui_imgset_1612577215[1] = {&ui_img_445946954};
+const lv_img_dsc_t *ui_imgset_1166435085[1] = {&ui_img_390988422};
 const lv_img_dsc_t *ui_imgset_1010926578[1] = {&ui_img_2044104741};
 const lv_img_dsc_t *ui_imgset_1155213431[1] = {&ui_img_545340440};
 const lv_img_dsc_t *ui_imgset_524469952[1] = {&ui_img_1765671371};
@@ -284,6 +306,22 @@ void ui_event_BrewScreen_startButton(lv_event_t *e) {
     }
 }
 
+void ui_event_BrewScreen_timedButton(lv_event_t *e) {
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if (event_code == LV_EVENT_CLICKED) {
+        onTimedClick(e);
+    }
+}
+
+void ui_event_BrewScreen_volumetricButton(lv_event_t *e) {
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if (event_code == LV_EVENT_CLICKED) {
+        onVolumetricClick(e);
+    }
+}
+
 void ui_event_BrewScreen_downTempButton(lv_event_t *e) {
     lv_event_code_t event_code = lv_event_get_code(e);
 
@@ -300,19 +338,19 @@ void ui_event_BrewScreen_upTempButton(lv_event_t *e) {
     }
 }
 
-void ui_event_BrewScreen_downDurationButton(lv_event_t *e) {
-    lv_event_code_t event_code = lv_event_get_code(e);
-
-    if (event_code == LV_EVENT_CLICKED) {
-        onBrewTimeLower(e);
-    }
-}
-
 void ui_event_BrewScreen_upDurationButton(lv_event_t *e) {
     lv_event_code_t event_code = lv_event_get_code(e);
 
     if (event_code == LV_EVENT_CLICKED) {
         onBrewTimeRaise(e);
+    }
+}
+
+void ui_event_BrewScreen_downDurationButton(lv_event_t *e) {
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if (event_code == LV_EVENT_CLICKED) {
+        onBrewTimeLower(e);
     }
 }
 

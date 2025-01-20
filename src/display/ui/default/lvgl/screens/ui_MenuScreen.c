@@ -103,10 +103,8 @@ void ui_MenuScreen_screen_init(void) {
                           LV_FLEX_ALIGN_SPACE_EVENLY);
     lv_obj_clear_flag(ui_MenuScreen_contentPanel1, LV_OBJ_FLAG_SCROLLABLE); /// Flags
     lv_obj_set_style_radius(ui_MenuScreen_contentPanel1, 180, LV_PART_MAIN | LV_STATE_DEFAULT);
-    ui_object_set_themeable_style_property(ui_MenuScreen_contentPanel1, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_COLOR,
-                                           _ui_theme_color_Transparent);
-    ui_object_set_themeable_style_property(ui_MenuScreen_contentPanel1, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_OPA,
-                                           _ui_theme_alpha_Transparent);
+    lv_obj_set_style_bg_color(ui_MenuScreen_contentPanel1, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_MenuScreen_contentPanel1, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
     ui_object_set_themeable_style_property(ui_MenuScreen_contentPanel1, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BORDER_COLOR,
                                            _ui_theme_color_NiceWhite);
     ui_object_set_themeable_style_property(ui_MenuScreen_contentPanel1, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BORDER_OPA,

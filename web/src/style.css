@@ -7,6 +7,12 @@
   cursor: pointer;
 }
 
+.menu-button-sm {
+    @apply menu-button py-1 px-2;
+    @apply py-2 px-4;
+    cursor: pointer;
+}
+
 .display-field {
   width: 100%;
   padding: 0.5rem;

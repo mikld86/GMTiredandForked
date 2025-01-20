@@ -4,6 +4,8 @@
 #include <AsyncJson.h>
 #include <SPIFFS.h>
 
+#include "BLEScalePlugin.h"
+
 WebUIPlugin::WebUIPlugin() : server(80) {}
 
 void WebUIPlugin::setup(Controller *_controller, PluginManager *_pluginManager) {
@@ -16,6 +18,7 @@ void WebUIPlugin::setup(Controller *_controller, PluginManager *_pluginManager) 
         "display-filesystem.bin");
     pluginManager->on("controller:wifi:connect", [this](Event const &) { start(); });
 }
+
 void WebUIPlugin::loop() {
     if (updating) {
         pluginManager->trigger("ota:update:start");
@@ -43,15 +46,19 @@ void WebUIPlugin::start() {
         serializeJson(doc, *response);
         request->send(response);
     });
+    server.on("/api/scales/list", [this](AsyncWebServerRequest *request) { handleBLEScaleList(request); });
+    server.on("/api/scales/connect", [this](AsyncWebServerRequest *request) { handleBLEScaleConnect(request); });
+    server.on("/api/scales/scan", [this](AsyncWebServerRequest *request) { handleBLEScaleScan(request); });
+    server.on("/api/scales/info", [this](AsyncWebServerRequest *request) { handleBLEScaleInfo(request); });
     server.on("/ota", [](AsyncWebServerRequest *request) { request->send(SPIFFS, "/index.html"); });
     server.on("/settings", [](AsyncWebServerRequest *request) { request->send(SPIFFS, "/index.html"); });
+    server.on("/scales", [](AsyncWebServerRequest *request) { request->send(SPIFFS, "/index.html"); });
     server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html").setCacheControl("max-age=0");
     server.begin();
     Serial.print("OTA server started");
 }
 
 void WebUIPlugin::handleOTA(AsyncWebServerRequest *request) {
-
     if (request->method() == HTTP_POST) {
         if (request->hasArg("channel")) {
             controller->getSettings().setOTAChannel(request->arg("channel") == "latest" ? "latest" : "nightly");
@@ -90,6 +97,10 @@ void WebUIPlugin::handleSettings(AsyncWebServerRequest *request) {
                 settings->setTargetDuration(request->arg("targetDuration").toInt() * 1000);
             if (request->hasArg("temperatureOffset"))
                 settings->setTemperatureOffset(request->arg("temperatureOffset").toInt());
+            if (request->hasArg("infusePumpTime"))
+                settings->setInfusePumpTime(request->arg("infusePumpTime").toInt() * 1000);
+            if (request->hasArg("infuseBloomTime"))
+                settings->setInfuseBloomTime(request->arg("infuseBloomTime").toInt() * 1000);
             if (request->hasArg("pid"))
                 settings->setPid(request->arg("pid"));
             if (request->hasArg("wifiSsid"))
@@ -111,6 +122,8 @@ void WebUIPlugin::handleSettings(AsyncWebServerRequest *request) {
     doc["targetSteamTemp"] = settings.getTargetSteamTemp();
     doc["targetWaterTemp"] = settings.getTargetWaterTemp();
     doc["targetDuration"] = settings.getTargetDuration() / 1000;
+    doc["infusePumpTime"] = settings.getInfusePumpTime() / 1000;
+    doc["infuseBloomTime"] = settings.getInfuseBloomTime() / 1000;
     doc["homekit"] = settings.isHomekit();
     doc["pid"] = settings.getPid();
     doc["wifiSsid"] = settings.getWifiSsid();
@@ -122,4 +135,55 @@ void WebUIPlugin::handleSettings(AsyncWebServerRequest *request) {
 
     if (request->method() == HTTP_POST && request->hasArg("restart"))
         ESP.restart();
+}
+
+void WebUIPlugin::handleBLEScaleList(AsyncWebServerRequest *request) {
+    JsonDocument doc;
+    JsonArray scalesArray = doc.to<JsonArray>();
+    std::vector<DiscoveredDevice> devices = BLEScales.getDiscoveredScales();
+    for (const DiscoveredDevice &device : BLEScales.getDiscoveredScales()) {
+        JsonDocument scale;
+        scale["uuid"] = device.getAddress().toString();
+        scale["name"] = device.getName();
+        scalesArray.add(scale);
+    }
+    AsyncResponseStream *response = request->beginResponseStream("application/json");
+    serializeJson(doc, *response);
+    request->send(response);
+}
+
+void WebUIPlugin::handleBLEScaleScan(AsyncWebServerRequest *request) {
+    if (request->method() != HTTP_POST) {
+        request->send(404);
+        return;
+    }
+    BLEScales.scan();
+    JsonDocument doc;
+    doc["success"] = true;
+    AsyncResponseStream *response = request->beginResponseStream("application/json");
+    serializeJson(doc, *response);
+    request->send(response);
+}
+
+void WebUIPlugin::handleBLEScaleConnect(AsyncWebServerRequest *request) {
+    if (request->method() != HTTP_POST) {
+        request->send(404);
+        return;
+    }
+    BLEScales.connect(request->arg("uuid").c_str());
+    JsonDocument doc;
+    doc["success"] = true;
+    AsyncResponseStream *response = request->beginResponseStream("application/json");
+    serializeJson(doc, *response);
+    request->send(response);
+}
+
+void WebUIPlugin::handleBLEScaleInfo(AsyncWebServerRequest *request) {
+    JsonDocument doc;
+    doc["connected"] = BLEScales.isConnected();
+    doc["name"] = BLEScales.getName();
+    doc["uuid"] = BLEScales.getUUID();
+    AsyncResponseStream *response = request->beginResponseStream("application/json");
+    serializeJson(doc, *response);
+    request->send(response);
 }

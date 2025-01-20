@@ -90,3 +90,11 @@ def onGrindScreen(event_struct):
 def onMenuClick(event_struct):
     return
 
+
+def onTimedClick(event_struct):
+    return
+
+
+def onVolumetricClick(event_struct):
+    return
+

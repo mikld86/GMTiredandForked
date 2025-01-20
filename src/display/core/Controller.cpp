@@ -1,16 +1,12 @@
 #include "Controller.h"
-#include "../config.h"
-#include "../drivers/LilyGo-T-RGB/LV_Helper.h"
-#include "../plugins/HomekitPlugin.h"
-#include "../plugins/WebUIPlugin.h"
-#include "../plugins/mDNSPlugin.h"
-#include "constants.h"
 #include <SPIFFS.h>
 #include <ctime>
-
-Controller::Controller()
-    : timer(nullptr), mode(MODE_BREW), currentTemp(0), activeUntil(0), grindActiveUntil(0), lastPing(0), lastProgress(0),
-      lastAction(0), loaded(false), updating(false) {}
+#include <display/config.h>
+#include <display/core/constants.h>
+#include <display/plugins/BLEScalePlugin.h>
+#include <display/plugins/HomekitPlugin.h>
+#include <display/plugins/WebUIPlugin.h>
+#include <display/plugins/mDNSPlugin.h>
 
 void Controller::setup() {
     mode = settings.getStartupMode();
@@ -22,6 +18,7 @@ void Controller::setup() {
     else
         pluginManager->registerPlugin(new mDNSPlugin());
     pluginManager->registerPlugin(new WebUIPlugin());
+    pluginManager->registerPlugin(&BLEScales);
     pluginManager->setup(this);
 
     if (!SPIFFS.begin(true)) {
@@ -32,6 +29,8 @@ void Controller::setup() {
 }
 
 void Controller::onScreenReady() { screenReady = true; }
+
+void Controller::onTargetChange(BrewTarget target) { settings.setVolumetricTarget(target == BrewTarget::VOLUMETRIC); }
 
 void Controller::connect() {
     if (initialized)
@@ -118,14 +117,18 @@ void Controller::loop() {
     }
 
     if (now - lastProgress > PROGRESS_INTERVAL) {
+        if (currentProcess != nullptr) {
+            currentProcess->progress();
+            if (!isActive()) {
+                deactivate();
+            }
+        }
         clientController.sendTemperatureControl(getTargetTemp() + settings.getTemperatureOffset());
         clientController.sendPidSettings(settings.getPid());
         updateRelay();
         lastProgress = now;
     }
 
-    if (activeUntil != 0 && now > activeUntil)
-        deactivate();
     if (grindActiveUntil != 0 && now > grindActiveUntil)
         deactivateGrind();
     if (mode != MODE_STANDBY && now > lastAction + STANDBY_TIMEOUT_MS)
@@ -173,7 +176,6 @@ int Controller::getTargetDuration() const { return settings.getTargetDuration();
 void Controller::setTargetDuration(int duration) {
     Event event = pluginManager->trigger("controller:targetDuration:change", "value", duration);
     settings.setTargetDuration(event.getInt("value"));
-    updateLastAction();
 }
 
 int Controller::getTargetGrindDuration() const { return settings.getTargetGrindDuration(); }
@@ -196,45 +198,83 @@ void Controller::lowerTemp() {
     setTargetTemp(temp);
 }
 
-void Controller::updateRelay() {
-    bool active = isActive();
-    float pumpValue = active ? mode == MODE_STEAM ? 4.f : 100.f : 0.f;
-    bool valve = (active && mode == MODE_BREW);
+void Controller::raiseBrewTarget() {
+    if (settings.isVolumetricTarget()) {
+        int newTarget = settings.getTargetVolume() + 1;
+        if (newTarget > BREW_MAX_VOLUMETRIC) {
+            newTarget = BREW_MAX_VOLUMETRIC;
+        }
+        settings.setTargetVolume(newTarget);
+    } else {
+        int newDuration = getTargetDuration() + 1000;
+        if (newDuration > BREW_MAX_DURATION_MS) {
+            newDuration = BREW_MIN_DURATION_MS;
+        }
+        setTargetDuration(newDuration);
+    }
+    updateLastAction();
+}
 
-    clientController.sendPumpControl(pumpValue);
-    clientController.sendValveControl(valve);
+void Controller::lowerBrewTarget() {
+    if (settings.isVolumetricTarget()) {
+        int newTarget = settings.getTargetVolume() - 1;
+        if (newTarget < BREW_MIN_VOLUMETRIC) {
+            newTarget = BREW_MIN_VOLUMETRIC;
+        }
+        settings.setTargetVolume(newTarget);
+    } else {
+        int newDuration = getTargetDuration() - 1000;
+        if (newDuration < BREW_MIN_DURATION_MS) {
+            newDuration = BREW_MIN_DURATION_MS;
+        }
+        setTargetDuration(newDuration);
+    }
+    updateLastAction();
+}
+
+void Controller::updateRelay() {
+    clientController.sendPumpControl(isActive() ? currentProcess->getPumpValue() : 0);
+    clientController.sendValveControl(isActive() && currentProcess->isRelayActive());
     clientController.sendAltControl(isGrindActive());
 }
 
 void Controller::activate() {
     if (isActive())
         return;
-    unsigned long duration = 0;
     switch (mode) {
     case MODE_BREW:
-        duration = settings.getTargetDuration();
+        if (settings.isVolumetricTarget() && volumetricAvailable) {
+            currentProcess = new BrewProcess(BrewTarget::VOLUMETRIC, settings.getInfusePumpTime(), settings.getInfuseBloomTime(),
+                                             0, settings.getTargetVolume());
+        } else {
+            currentProcess = new BrewProcess(BrewTarget::TIME, settings.getInfusePumpTime(), settings.getInfuseBloomTime(),
+                                             settings.getTargetDuration(), 0);
+        }
         break;
     case MODE_STEAM:
-        duration = STEAM_SAFETY_DURATION_MS;
+        currentProcess = new SteamProcess();
         break;
     case MODE_WATER:
-        duration = HOT_WATER_SAFETY_DURATION_MS;
+        currentProcess = new WaterProcess();
         break;
     default:;
     }
-    activeUntil = millis() + duration;
     updateRelay();
     updateLastAction();
-    if (mode == MODE_BREW) {
+    if (currentProcess->getType() == MODE_BREW) {
         pluginManager->trigger("controller:brew:start");
     }
 }
 
 void Controller::deactivate() {
-    activeUntil = 0;
-    if (mode == MODE_BREW) {
+    if (currentProcess == nullptr) {
+        return;
+    }
+    if (currentProcess->getType() == MODE_BREW) {
         pluginManager->trigger("controller:brew:end");
     }
+    delete currentProcess;
+    currentProcess = nullptr;
     updateRelay();
     updateLastAction();
 }
@@ -266,7 +306,7 @@ void Controller::deactivateStandby() {
     setMode(MODE_BREW);
 }
 
-bool Controller::isActive() const { return activeUntil > millis(); }
+bool Controller::isActive() const { return currentProcess != nullptr && currentProcess->isActive(); }
 
 bool Controller::isGrindActive() const { return grindActiveUntil > millis(); }
 
@@ -291,4 +331,11 @@ void Controller::updateLastAction() { lastAction = millis(); }
 void Controller::onOTAUpdate() {
     activateStandby();
     updating = true;
+}
+
+void Controller::onVolumetricMeasurement(double measurement) const {
+    if (currentProcess != nullptr && currentProcess->getType() == MODE_BREW) {
+        auto *brewProcess = static_cast<BrewProcess *>(currentProcess);
+        brewProcess->updateVolume(measurement);
+    }
 }
