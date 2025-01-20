@@ -8,8 +8,8 @@
 #include <display/drivers/common/LV_Helper.h>
 
 int16_t calculate_angle(int set_temp) {
-    const int16_t angleRange = 3160;
-    double percentage = ((double)set_temp) / ((double)MAX_TEMP);
+    constexpr int16_t angleRange = 3160;
+    const double percentage = static_cast<double>(set_temp) / static_cast<double>(MAX_TEMP);
     return (percentage * ((double)angleRange)) - angleRange / 2;
 }
 
@@ -18,8 +18,7 @@ DefaultUI::DefaultUI(Controller *controller, PluginManager *pluginManager)
 
 void DefaultUI::init() {
     pluginManager->on("controller:mode:change", [this](Event const &event) {
-        int mode = event.getInt("value");
-        switch (mode) {
+        switch (int mode = event.getInt("value")) {
         case MODE_STANDBY:
             changeScreen(&ui_StandbyScreen, &ui_StandbyScreen_screen_init);
             break;
@@ -62,7 +61,7 @@ void DefaultUI::init() {
     setupPanel();
 }
 
-void DefaultUI::loop() {
+void DefaultUI::loop() const {
     handleScreenChange();
     if (lv_scr_act() == ui_StandbyScreen)
         updateStandbyScreen();
@@ -97,8 +96,7 @@ void DefaultUI::setupPanel() const {
 }
 
 void DefaultUI::handleScreenChange() const {
-    lv_obj_t *current = lv_scr_act();
-    if (current != *targetScreen) {
+    if (const lv_obj_t *current = lv_scr_act(); current != *targetScreen) {
         _ui_screen_change(targetScreen, LV_SCR_LOAD_ANIM_NONE, 0, 0, targetScreenInit);
     }
 }
@@ -126,14 +124,14 @@ void DefaultUI::updateStandbyScreen() const {
 void DefaultUI::updateMenuScreen() const {
     lv_arc_set_value(ui_MenuScreen_tempGauge, controller->getCurrentTemp());
     lv_label_set_text_fmt(ui_MenuScreen_tempText, "%d°C", controller->getCurrentTemp());
-    int16_t setTemp = controller->getTargetTemp();
+    const int16_t setTemp = controller->getTargetTemp();
     lv_img_set_angle(ui_MenuScreen_tempTarget, calculate_angle(setTemp));
 }
 
 void DefaultUI::updateStatusScreen() const {
     lv_arc_set_value(ui_StatusScreen_tempGauge, controller->getCurrentTemp());
     lv_label_set_text_fmt(ui_StatusScreen_tempText, "%d°C", controller->getCurrentTemp());
-    int16_t setTemp = controller->getTargetTemp();
+    const int16_t setTemp = controller->getTargetTemp();
     lv_label_set_text_fmt(ui_StatusScreen_targetTemp, "%d°C", setTemp);
     lv_img_set_angle(ui_StatusScreen_tempTarget, calculate_angle(setTemp));
     Settings &settings = controller->getSettings();
@@ -142,19 +140,19 @@ void DefaultUI::updateStatusScreen() const {
     if (process == nullptr || process->getType() != MODE_BREW) {
         return;
     }
-    BrewProcess *brewProcess = static_cast<BrewProcess *>(process);
+    const auto *brewProcess = static_cast<BrewProcess *>(process);
 
-    unsigned long now = millis();
-    unsigned long phaseDuration = brewProcess->getPhaseDuration();
-    unsigned long activeUntil = brewProcess->currentPhaseStarted + phaseDuration;
-    unsigned long progress = now - (activeUntil - phaseDuration);
-    double progressSecondsDouble = progress / 1000.0;
-    auto progressMinutes = (int)(progressSecondsDouble / 60.0 - 0.5);
-    auto progressSeconds = (int)progressSecondsDouble % 60;
-    unsigned long targetDuration = brewProcess->brewSeconds;
-    double targetSecondsDouble = targetDuration / 1000.0;
-    auto targetMinutes = (int)(targetSecondsDouble / 60.0 - 0.5);
-    auto targetSeconds = (int)targetSecondsDouble % 60;
+    const unsigned long now = millis();
+    const unsigned long phaseDuration = brewProcess->getPhaseDuration();
+    const unsigned long activeUntil = brewProcess->currentPhaseStarted + phaseDuration;
+    const unsigned long progress = now - (activeUntil - phaseDuration);
+    const double progressSecondsDouble = progress / 1000.0;
+    const auto progressMinutes = static_cast<int>(progressSecondsDouble / 60.0 - 0.5);
+    const auto progressSeconds = static_cast<int>(progressSecondsDouble) % 60;
+    const unsigned long targetDuration = brewProcess->brewSeconds;
+    const double targetSecondsDouble = targetDuration / 1000.0;
+    const auto targetMinutes = static_cast<int>(targetSecondsDouble / 60.0 - 0.5);
+    const auto targetSeconds = static_cast<int>(targetSecondsDouble) % 60;
 
     if (brewProcess->infusionBloomTime == 0 || brewProcess->infusionPumpTime == 0) {
         lv_obj_add_flag(ui_StatusScreen_preinfusePumpBar, LV_OBJ_FLAG_HIDDEN);
@@ -180,7 +178,7 @@ void DefaultUI::updateStatusScreen() const {
         lv_label_set_text_fmt(ui_StatusScreen_targetDuration, "%2d:%02d", targetMinutes, targetSeconds);
     } else {
         lv_bar_set_range(ui_StatusScreen_brewBar, 0, brewProcess->brewVolume);
-        lv_label_set_text_fmt(ui_StatusScreen_brewLabel, "%ds", brewProcess->brewVolume);
+        lv_label_set_text_fmt(ui_StatusScreen_brewLabel, "%dg", brewProcess->brewVolume);
         lv_label_set_text_fmt(ui_StatusScreen_targetDuration, "%dg", brewProcess->brewVolume);
     }
 
@@ -206,7 +204,7 @@ void DefaultUI::updateStatusScreen() const {
         lv_bar_set_value(ui_StatusScreen_preinfuseBloomBar, brewProcess->infusionBloomTime / 1000, LV_ANIM_OFF);
         lv_bar_set_value(ui_StatusScreen_preinfusePumpBar, brewProcess->infusionPumpTime / 1000, LV_ANIM_OFF);
         lv_label_set_text(ui_StatusScreen_stepLabel, "BREW");
-        lv_label_set_text(ui_StatusScreen_phaseLabel, "Building pressure...");
+        lv_label_set_text(ui_StatusScreen_phaseLabel, "Pressurizing...");
         break;
     case BrewPhase::INFUSION_BLOOM:
         lv_bar_set_value(ui_StatusScreen_preinfuseBloomBar, progress / 1000, LV_ANIM_OFF);
@@ -217,7 +215,7 @@ void DefaultUI::updateStatusScreen() const {
     case BrewPhase::INFUSION_PUMP:
         lv_bar_set_value(ui_StatusScreen_preinfusePumpBar, progress / 1000, LV_ANIM_OFF);
         lv_label_set_text(ui_StatusScreen_stepLabel, "INFUSION");
-        lv_label_set_text(ui_StatusScreen_phaseLabel, "Building pressure...");
+        lv_label_set_text(ui_StatusScreen_phaseLabel, "Pressurizing...");
         break;
     default:;
     }
@@ -229,13 +227,13 @@ void DefaultUI::updateStatusScreen() const {
 void DefaultUI::updateBrewScreen() const {
     lv_arc_set_value(ui_BrewScreen_tempGauge, controller->getCurrentTemp());
     lv_label_set_text_fmt(ui_BrewScreen_tempText, "%d°C", controller->getCurrentTemp());
-    int16_t setTemp = controller->getTargetTemp();
+    const int16_t setTemp = controller->getTargetTemp();
     lv_label_set_text_fmt(ui_BrewScreen_targetTemp, "%d°C", setTemp);
     lv_img_set_angle(ui_BrewScreen_tempTarget, calculate_angle(setTemp));
-    Settings &settings = controller->getSettings();
+    const Settings &settings = controller->getSettings();
 
-    bool volumetricAvailable = controller->isVolumetricAvailable();
-    bool volumetricMode = volumetricAvailable && settings.isVolumetricTarget();
+    const bool volumetricAvailable = controller->isVolumetricAvailable();
+    const bool volumetricMode = volumetricAvailable && settings.isVolumetricTarget();
 
     if (volumetricAvailable) {
         lv_obj_clear_flag(ui_BrewScreen_modeSwitch, LV_OBJ_FLAG_HIDDEN);
@@ -246,9 +244,9 @@ void DefaultUI::updateBrewScreen() const {
     if (volumetricMode) {
         lv_label_set_text_fmt(ui_BrewScreen_targetDuration, "%dg", settings.getTargetVolume());
     } else {
-        double secondsDouble = settings.getTargetDuration() / 1000.0;
-        auto minutes = (int)(secondsDouble / 60.0 - 0.5);
-        auto seconds = (int)secondsDouble % 60;
+        const double secondsDouble = settings.getTargetDuration() / 1000.0;
+        const auto minutes = static_cast<int>(secondsDouble / 60.0 - 0.5);
+        const auto seconds = static_cast<int>(secondsDouble) % 60;
         lv_label_set_text_fmt(ui_BrewScreen_targetDuration, "%2d:%02d", minutes, seconds);
     }
 
@@ -267,12 +265,12 @@ void DefaultUI::updateBrewScreen() const {
 void DefaultUI::updateGrindScreen() const {
     lv_arc_set_value(ui_GrindScreen_tempGauge, controller->getCurrentTemp());
     lv_label_set_text_fmt(ui_GrindScreen_tempText, "%d°C", controller->getCurrentTemp());
-    int16_t setTemp = controller->getTargetTemp();
+    const int16_t setTemp = controller->getTargetTemp();
     lv_img_set_angle(ui_GrindScreen_tempTarget, calculate_angle(setTemp));
-    Settings &settings = controller->getSettings();
-    double secondsDouble = settings.getTargetGrindDuration() / 1000.0;
-    auto minutes = (int)(secondsDouble / 60.0 - 0.5);
-    auto seconds = (int)secondsDouble % 60;
+    const Settings &settings = controller->getSettings();
+    const double secondsDouble = settings.getTargetGrindDuration() / 1000.0;
+    const auto minutes = static_cast<int>(secondsDouble / 60.0 - 0.5);
+    const auto seconds = static_cast<int>(secondsDouble) % 60;
     lv_label_set_text_fmt(ui_GrindScreen_targetDuration, "%2d:%02d", minutes, seconds);
     lv_imgbtn_set_src(ui_GrindScreen_startButton, LV_IMGBTN_STATE_RELEASED, nullptr,
                       controller->isGrindActive() ? &ui_img_1456692430 : &ui_img_445946954, nullptr);
@@ -281,7 +279,7 @@ void DefaultUI::updateGrindScreen() const {
 void DefaultUI::updateWaterScreen() const {
     lv_arc_set_value(ui_WaterScreen_tempGauge, controller->getCurrentTemp());
     lv_label_set_text_fmt(ui_WaterScreen_tempText, "%d°C", controller->getCurrentTemp());
-    int16_t setTemp = controller->getTargetTemp();
+    const int16_t setTemp = controller->getTargetTemp();
     lv_label_set_text_fmt(ui_WaterScreen_targetTemp, "%d°C", setTemp);
     lv_img_set_angle(ui_WaterScreen_tempTarget, calculate_angle(setTemp));
     lv_imgbtn_set_src(ui_WaterScreen_goButton, LV_IMGBTN_STATE_RELEASED, nullptr,
@@ -291,7 +289,7 @@ void DefaultUI::updateWaterScreen() const {
 void DefaultUI::updateSteamScreen() const {
     lv_arc_set_value(ui_SteamScreen_tempGauge, controller->getCurrentTemp());
     lv_label_set_text_fmt(ui_SteamScreen_tempText, "%d°C", controller->getCurrentTemp());
-    int16_t setTemp = controller->getTargetTemp();
+    const int16_t setTemp = controller->getTargetTemp();
     lv_label_set_text_fmt(ui_SteamScreen_targetTemp, "%d°C", setTemp);
     lv_img_set_angle(ui_SteamScreen_tempTarget, calculate_angle(setTemp));
     lv_imgbtn_set_src(ui_SteamScreen_goButton, LV_IMGBTN_STATE_RELEASED, nullptr,

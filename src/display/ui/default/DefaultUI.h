@@ -16,7 +16,7 @@ class DefaultUI {
 
     // Default work methods
     void init();
-    void loop();
+    void loop() const;
 
     // Interface methods
     void changeScreen(lv_obj_t **screen, void (*target_init)(void));
