@@ -4,6 +4,10 @@
 #include <display/core/Controller.h>
 #include <scales/acaia.h>
 #include <scales/bookoo.h>
+#include <scales/difluid.h>
+#include <scales/eclair.h>
+#include <scales/eureka.h>
+#include <scales/timemore.h>
 
 void on_ble_measurement(float value) { BLEScales.onMeasurement(value); }
 
@@ -16,9 +20,20 @@ void BLEScalePlugin::setup(Controller *controller, PluginManager *manager) {
     this->pluginRegistry = RemoteScalesPluginRegistry::getInstance();
     AcaiaScalesPlugin::apply();
     BookooScalesPlugin::apply();
+    DifluidScalesPlugin::apply();
+    EclairScalesPlugin::apply();
+    EurekaScalesPlugin::apply();
+    TimemoreScalesPlugin::apply();
     this->scanner = new RemoteScalesScanner();
     manager->on("controller:brew:start", [this](Event const &) { onBrewStart(); });
     manager->on("controller:bluetooth:connect", [this](Event const &) { scanner->initializeAsyncScan(); });
+    manager->on("controller:mode:change", [this](Event const &event) {
+        if (event.getInt("value") != MODE_STANDBY) {
+            scan();
+        } else {
+            scanner->stopAsyncScan();
+        }
+    });
 }
 
 void BLEScalePlugin::loop() {
