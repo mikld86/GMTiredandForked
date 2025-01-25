@@ -123,7 +123,11 @@ void Controller::loop() {
                 deactivate();
             }
         }
-        clientController.sendTemperatureControl(getTargetTemp() + settings.getTemperatureOffset());
+        int targetTemp = getTargetTemp();
+        if (targetTemp > 0) {
+            targetTemp = targetTemp + settings.getTemperatureOffset();
+        }
+        clientController.sendTemperatureControl(targetTemp);
         clientController.sendPidSettings(settings.getPid());
         updateRelay();
         lastProgress = now;
@@ -167,7 +171,11 @@ void Controller::setTargetTemp(int temperature) {
     }
     updateLastAction();
     clientController.sendPidSettings(settings.getPid());
-    clientController.sendTemperatureControl(getTargetTemp() + settings.getTemperatureOffset());
+    int targetTemp = getTargetTemp();
+    if (targetTemp > 0) {
+        targetTemp = targetTemp + settings.getTemperatureOffset();
+    }
+    clientController.sendTemperatureControl(targetTemp);
     pluginManager->trigger("boiler:targetTemperature:change", "value", getTargetTemp());
 }
 
