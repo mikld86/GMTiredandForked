@@ -17,6 +17,16 @@ DefaultUI::DefaultUI(Controller *controller, PluginManager *pluginManager)
     : controller(controller), pluginManager(pluginManager) {}
 
 void DefaultUI::init() {
+    auto triggerRender = [this](Event const &) { rerender = true; };
+    pluginManager->on("boiler:currentTemperature:change", triggerRender);
+    pluginManager->on("boiler:targetTemperature:change", triggerRender);
+    pluginManager->on("controller:targetVolume:change", triggerRender);
+    pluginManager->on("controller:grindDuration:change", triggerRender);
+    pluginManager->on("controller:targetDuration:change", triggerRender);
+    pluginManager->on("controller:grind:stop", triggerRender);
+    pluginManager->on("controller:grind:start", triggerRender);
+    pluginManager->on("controller:brew:stop", triggerRender);
+    pluginManager->on("controller:brew:start", triggerRender);
     pluginManager->on("controller:mode:change", [this](Event const &event) {
         switch (int mode = event.getInt("value")) {
         case MODE_STANDBY:
@@ -44,39 +54,59 @@ void DefaultUI::init() {
                       [this](Event const &event) { changeScreen(&ui_BrewScreen, &ui_BrewScreen_screen_init); });
     pluginManager->on("controller:bluetooth:connect", [this](Event const &) {
         bluetoothActive = true;
+        rerender = true;
         if (lv_scr_act() == ui_InitScreen) {
             Settings &settings = controller->getSettings();
             settings.getStartupMode() == MODE_BREW ? changeScreen(&ui_BrewScreen, &ui_BrewScreen_screen_init)
                                                    : changeScreen(&ui_StandbyScreen, &ui_StandbyScreen_screen_init);
         }
     });
-    pluginManager->on("controller:bluetooth:disconnect", [this](Event const &) { bluetoothActive = false; });
-    pluginManager->on("controller:wifi:connect", [this](Event const &event) { apActive = event.getInt("AP"); });
+    pluginManager->on("controller:bluetooth:disconnect", [this](Event const &) {
+        rerender = true;
+        bluetoothActive = false;
+    });
+    pluginManager->on("controller:wifi:connect", [this](Event const &event) {
+        rerender = true;
+        apActive = event.getInt("AP");
+    });
     pluginManager->on("ota:update:start", [this](Event const &) {
         updateActive = true;
+        rerender = true;
         changeScreen(&ui_InitScreen, &ui_InitScreen_screen_init);
     });
-    pluginManager->on("ota:update:status", [this](Event const &event) { updateAvailable = event.getInt("value"); });
+    pluginManager->on("ota:update:status", [this](Event const &event) {
+        rerender = true;
+        updateAvailable = event.getInt("value");
+    });
 
     setupPanel();
 }
 
-void DefaultUI::loop() const {
-    handleScreenChange();
-    if (lv_scr_act() == ui_StandbyScreen)
-        updateStandbyScreen();
-    if (lv_scr_act() == ui_BrewScreen)
-        updateBrewScreen();
-    if (lv_scr_act() == ui_StatusScreen)
-        updateStatusScreen();
-    if (lv_scr_act() == ui_SteamScreen)
-        updateSteamScreen();
-    if (lv_scr_act() == ui_WaterScreen)
-        updateWaterScreen();
-    if (lv_scr_act() == ui_GrindScreen)
-        updateGrindScreen();
-    if (lv_scr_act() == ui_MenuScreen)
-        updateMenuScreen();
+void DefaultUI::loop() {
+    const unsigned long now = millis();
+    const unsigned long diff = now - lastRender;
+    if ((controller->isActive() && diff > RERENDER_INTERVAL_ACTIVE) || diff > RERENDER_INTERVAL_IDLE) {
+        rerender = true;
+    }
+    if (rerender) {
+        rerender = false;
+        lastRender = now;
+        handleScreenChange();
+        if (lv_scr_act() == ui_StandbyScreen)
+            updateStandbyScreen();
+        if (lv_scr_act() == ui_BrewScreen)
+            updateBrewScreen();
+        if (lv_scr_act() == ui_StatusScreen)
+            updateStatusScreen();
+        if (lv_scr_act() == ui_SteamScreen)
+            updateSteamScreen();
+        if (lv_scr_act() == ui_WaterScreen)
+            updateWaterScreen();
+        if (lv_scr_act() == ui_GrindScreen)
+            updateGrindScreen();
+        if (lv_scr_act() == ui_MenuScreen)
+            updateMenuScreen();
+    }
 
     lv_timer_handler();
 }
@@ -84,6 +114,7 @@ void DefaultUI::loop() const {
 void DefaultUI::changeScreen(lv_obj_t **screen, void (*target_init)()) {
     targetScreen = screen;
     targetScreenInit = target_init;
+    rerender = true;
 }
 
 void DefaultUI::setupPanel() const {

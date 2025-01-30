@@ -32,6 +32,8 @@ class Controller {
 
     void setTargetDuration(int duration);
 
+    void setTargetVolume(int volume);
+
     int getTargetGrindDuration() const;
 
     void setTargetGrindDuration(int duration);

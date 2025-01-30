@@ -8,6 +8,9 @@
 
 class Controller;
 
+constexpr uint8_t RERENDER_INTERVAL_IDLE = 2500;
+constexpr uint8_t RERENDER_INTERVAL_ACTIVE = 250;
+
 int16_t calculate_angle(int set_temp);
 
 class DefaultUI {
@@ -16,7 +19,7 @@ class DefaultUI {
 
     // Default work methods
     void init();
-    void loop() const;
+    void loop();
 
     // Interface methods
     void changeScreen(lv_obj_t **screen, void (*target_init)(void));
@@ -42,6 +45,9 @@ class DefaultUI {
     bool updateActive = false;
     bool bluetoothActive = false;
     bool apActive = false;
+
+    bool rerender = false;
+    unsigned long lastRender = 0;
 
     int mode = MODE_STANDBY;
 
