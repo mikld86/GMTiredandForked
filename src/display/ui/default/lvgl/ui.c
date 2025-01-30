@@ -159,12 +159,10 @@ lv_obj_t *ui_StatusScreen_phaseLabel;
 lv_obj_t *ui_StatusScreen_barContainer;
 lv_obj_t *ui_StatusScreen_preinfusePumpBar;
 lv_obj_t *ui_StatusScreen_preinfuseBloomBar;
-lv_obj_t *ui_StatusScreen_brewPumpBar;
 lv_obj_t *ui_StatusScreen_brewBar;
 lv_obj_t *ui_StatusScreen_labelContainer;
 lv_obj_t *ui_StatusScreen_preinfusePumpLabel;
 lv_obj_t *ui_StatusScreen_preinfuseBloomLabel;
-lv_obj_t *ui_StatusScreen_brewPumpLabel;
 lv_obj_t *ui_StatusScreen_brewLabel;
 lv_obj_t *ui_StatusScreen_tempText;
 // CUSTOM VARIABLES

@@ -19,19 +19,19 @@ class Process {
     virtual int getType() = 0;
 };
 
-enum class BrewPhase { INFUSION_PUMP, INFUSION_BLOOM, BREW_PRESSURIZE, BREW_PUMP, FINISHED };
+enum class BrewPhase { INFUSION_PRESSURIZE, INFUSION_PUMP, INFUSION_BLOOM, BREW_PRESSURIZE, BREW_PUMP, FINISHED };
 
 enum class BrewTarget { TIME, VOLUMETRIC };
 
 class BrewProcess : public Process {
   public:
-    BrewPhase phase = BrewPhase::INFUSION_PUMP;
+    BrewPhase phase = BrewPhase::INFUSION_PRESSURIZE;
     BrewTarget target;
     int infusionPumpTime;
     int infusionBloomTime;
     int brewSeconds;
     int brewVolume;
-    int brewPressurize = 3000;
+    int brewPressurize = PRESSURIZE_TIME;
 
     unsigned long currentPhaseStarted = 0;
     double currentVolume = 0;
@@ -50,6 +50,8 @@ class BrewProcess : public Process {
 
     unsigned long getPhaseDuration() const {
         switch (phase) {
+        case BrewPhase::INFUSION_PRESSURIZE:
+            return brewPressurize;
         case BrewPhase::INFUSION_PUMP:
             return infusionPumpTime;
         case BrewPhase::INFUSION_BLOOM:
@@ -76,10 +78,13 @@ class BrewProcess : public Process {
         return true;
     }
 
-    bool isRelayActive() override { return phase == BrewPhase::INFUSION_BLOOM || phase == BrewPhase::BREW_PUMP; }
+    bool isRelayActive() override {
+        return phase == BrewPhase::INFUSION_PUMP || phase == BrewPhase::INFUSION_BLOOM || phase == BrewPhase::BREW_PUMP;
+    }
 
     float getPumpValue() override {
-        if (phase == BrewPhase::INFUSION_PUMP || phase == BrewPhase::BREW_PRESSURIZE || phase == BrewPhase::BREW_PUMP) {
+        if (phase == BrewPhase::INFUSION_PRESSURIZE || phase == BrewPhase::INFUSION_PUMP || phase == BrewPhase::BREW_PRESSURIZE ||
+            phase == BrewPhase::BREW_PUMP) {
             return 100.f;
         }
         return 0.f;
@@ -89,6 +94,9 @@ class BrewProcess : public Process {
         if (isCurrentPhaseFinished()) {
             currentPhaseStarted = millis();
             switch (phase) {
+            case BrewPhase::INFUSION_PRESSURIZE:
+                phase = BrewPhase::INFUSION_PUMP;
+                break;
             case BrewPhase::INFUSION_PUMP:
                 phase = BrewPhase::INFUSION_BLOOM;
                 break;
