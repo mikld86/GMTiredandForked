@@ -14588,7 +14588,7 @@
             "disabled": false,
             "nid": 343591846,
             "strtype": "_event/EventHandler",
-            "strval": "PRESSED",
+            "strval": "RELEASED",
             "childs": [
               {
                 "nid": -1902189047,
@@ -20774,7 +20774,7 @@
     "uiExportFolderPath": "/Users/jniebuhr/work/3d/projects/paros-control/src/display/ui/default/lvgl",
     "projectExportFolderPath": "/Users/jniebuhr/work/3d/projects/paros-control",
     "custom_variable_prefix": "uic",
-    "backup_cnt": 249,
+    "backup_cnt": 251,
     "autosave_cnt": 0,
     "lvgl_version": "8.3.11",
     "callfuncsexport": "CPP_FILE",
