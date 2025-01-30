@@ -201,8 +201,6 @@ void DefaultUI::updateStatusScreen() const {
         lv_label_set_text_fmt(ui_StatusScreen_preinfuseBloomLabel, "%ds", brewProcess->infusionBloomTime / 1000);
     }
 
-    lv_bar_set_range(ui_StatusScreen_brewPumpBar, 0, brewProcess->brewPressurize / 1000);
-    lv_label_set_text_fmt(ui_StatusScreen_brewPumpLabel, "%ds", brewProcess->brewPressurize / 1000);
     if (brewProcess->target == BrewTarget::TIME) {
         lv_bar_set_range(ui_StatusScreen_brewBar, 0, brewProcess->brewSeconds / 1000);
         lv_label_set_text_fmt(ui_StatusScreen_brewLabel, "%ds", brewProcess->brewSeconds / 1000);
@@ -224,14 +222,12 @@ void DefaultUI::updateStatusScreen() const {
         } else {
             lv_bar_set_value(ui_StatusScreen_brewBar, brewProcess->currentVolume, LV_ANIM_OFF);
         }
-        lv_bar_set_value(ui_StatusScreen_brewPumpBar, brewProcess->brewPressurize / 1000, LV_ANIM_OFF);
         lv_bar_set_value(ui_StatusScreen_preinfuseBloomBar, brewProcess->infusionBloomTime / 1000, LV_ANIM_OFF);
         lv_bar_set_value(ui_StatusScreen_preinfusePumpBar, brewProcess->infusionPumpTime / 1000, LV_ANIM_OFF);
         lv_label_set_text(ui_StatusScreen_stepLabel, "BREW");
         lv_label_set_text(ui_StatusScreen_phaseLabel, "Flowing...");
         break;
     case BrewPhase::BREW_PRESSURIZE:
-        lv_bar_set_value(ui_StatusScreen_brewPumpBar, progress / 1000, LV_ANIM_OFF);
         lv_bar_set_value(ui_StatusScreen_preinfuseBloomBar, brewProcess->infusionBloomTime / 1000, LV_ANIM_OFF);
         lv_bar_set_value(ui_StatusScreen_preinfusePumpBar, brewProcess->infusionPumpTime / 1000, LV_ANIM_OFF);
         lv_label_set_text(ui_StatusScreen_stepLabel, "BREW");
@@ -245,6 +241,10 @@ void DefaultUI::updateStatusScreen() const {
         break;
     case BrewPhase::INFUSION_PUMP:
         lv_bar_set_value(ui_StatusScreen_preinfusePumpBar, progress / 1000, LV_ANIM_OFF);
+        lv_label_set_text(ui_StatusScreen_stepLabel, "INFUSION");
+        lv_label_set_text(ui_StatusScreen_phaseLabel, "Flowing...");
+        break;
+    case BrewPhase::INFUSION_PRESSURIZE:
         lv_label_set_text(ui_StatusScreen_stepLabel, "INFUSION");
         lv_label_set_text(ui_StatusScreen_phaseLabel, "Pressurizing...");
         break;
