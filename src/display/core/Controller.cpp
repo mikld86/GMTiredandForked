@@ -218,7 +218,6 @@ void Controller::raiseBrewTarget() {
             newTarget = BREW_MAX_VOLUMETRIC;
         }
         setTargetVolume(newTarget);
-        settings.setTargetVolume(newTarget);
     } else {
         int newDuration = getTargetDuration() + 1000;
         if (newDuration > BREW_MAX_DURATION_MS) {
