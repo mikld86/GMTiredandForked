@@ -146,12 +146,12 @@ class SteamProcess : public Process {
     int getType() override { return MODE_STEAM; }
 };
 
-class WaterProcess : public Process {
+class PumpProcess : public Process {
   public:
     int duration;
     unsigned long started;
 
-    explicit WaterProcess(int duration = HOT_WATER_SAFETY_DURATION_MS) : duration(duration) { started = millis(); }
+    explicit PumpProcess(int duration = HOT_WATER_SAFETY_DURATION_MS) : duration(duration) { started = millis(); }
 
     bool isRelayActive() override { return false; };
 

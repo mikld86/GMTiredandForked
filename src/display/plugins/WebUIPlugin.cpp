@@ -110,6 +110,11 @@ void WebUIPlugin::handleSettings(AsyncWebServerRequest *request) {
             if (request->hasArg("wifiPassword"))
                 settings->setWifiPassword(request->arg("wifiPassword"));
             settings->setHomekit(request->hasArg("homekit"));
+            settings->setBoilerFillActive(request->hasArg("boilerFillActive"));
+            if (request->hasArg("startupFillTime"))
+                settings->setStartupFillTime(request->arg("startupFillTime").toInt() * 1000);
+            if (request->hasArg("steamFillTime"))
+                settings->setSteamFillTime(request->arg("steamFillTime").toInt() * 1000);
         });
         controller->setTargetTemp(controller->getTargetTemp());
     }
@@ -130,6 +135,9 @@ void WebUIPlugin::handleSettings(AsyncWebServerRequest *request) {
     doc["wifiPassword"] = settings.getWifiPassword();
     doc["mdnsName"] = settings.getMdnsName();
     doc["temperatureOffset"] = String(settings.getTemperatureOffset());
+    doc["boilerFillActive"] = settings.isBoilerFillActive();
+    doc["startupFillTime"] = settings.getStartupFillTime() / 1000;
+    doc["steamFillTime"] = settings.getSteamFillTime() / 1000;
     serializeJson(doc, *response);
     request->send(response);
 

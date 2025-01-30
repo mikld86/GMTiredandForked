@@ -48,6 +48,7 @@ class Controller {
 
     bool isVolumetricAvailable() const { return volumetricAvailable; }
 
+    void startProcess(Process *process);
     Process *getProcess() const { return currentProcess; }
     Settings &getSettings() { return settings; }
     DefaultUI *getUI() const { return ui; }
