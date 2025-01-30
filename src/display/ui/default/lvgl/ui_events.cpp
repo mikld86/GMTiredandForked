@@ -73,7 +73,10 @@ void onGrindTimeRaise(lv_event_t *e) {
     controller.setTargetGrindDuration(newDuration);
 }
 
-void onMenuClick(lv_event_t *e) { controller.getUI()->changeScreen(&ui_MenuScreen, &ui_MenuScreen_screen_init); }
+void onMenuClick(lv_event_t *e) {
+    controller.setMode(MODE_BREW);
+    controller.getUI()->changeScreen(&ui_MenuScreen, &ui_MenuScreen_screen_init);
+}
 
 void onGrindScreen(lv_event_t *e) { controller.setMode(MODE_GRIND); }
 
