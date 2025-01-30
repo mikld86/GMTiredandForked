@@ -20774,7 +20774,11 @@
     "uiExportFolderPath": "/Users/jniebuhr/work/3d/projects/paros-control/src/display/ui/default/lvgl",
     "projectExportFolderPath": "/Users/jniebuhr/work/3d/projects/paros-control",
     "custom_variable_prefix": "uic",
+<<<<<<< Updated upstream
     "backup_cnt": 251,
+=======
+    "backup_cnt": 260,
+>>>>>>> Stashed changes
     "autosave_cnt": 0,
     "lvgl_version": "8.3.11",
     "callfuncsexport": "CPP_FILE",

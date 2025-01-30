@@ -2,6 +2,7 @@ import './style.css';
 import {useQuery} from 'preact-fetching';
 import {Spinner} from '../../components/Spinner.jsx';
 import {useState, useEffect, useCallback, useRef} from 'preact/hooks';
+import homekitImage from '../../assets/defaultSetupCode.png';
 
 export function Settings() {
   const [submitting, setSubmitting] = useState(false);
@@ -60,7 +61,7 @@ export function Settings() {
       [setFormData, formRef],
   );
 
-  if (isLoading && false) {
+  if (isLoading) {
     return (
         <div class="p-16 flex flex-row items-center">
           <Spinner size={8}/>
@@ -227,6 +228,15 @@ export function Settings() {
               </label>
               <p>Homekit</p>
             </div>
+            {
+                formData.homekit &&
+                <div className="p-4 flex flex-col gap-4 items-center justify-center">
+                  <img src={homekitImage} alt="Homekit Setup Code" />
+                  <p>
+                    Open the Homekit App, find your GaggiMate device and scan the setup code above to add it.
+                  </p>
+                </div>
+            }
             <div className="flex flex-row w-full gap-4 p-4 bg-gray-50 rounded-b-lg">
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
