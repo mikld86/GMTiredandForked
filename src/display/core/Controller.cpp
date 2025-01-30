@@ -186,6 +186,11 @@ void Controller::setTargetDuration(int duration) {
     settings.setTargetDuration(event.getInt("value"));
 }
 
+void Controller::setTargetVolume(int volume) {
+    Event event = pluginManager->trigger("controller:targetVolume:change", "value", volume);
+    settings.setTargetVolume(volume);
+}
+
 int Controller::getTargetGrindDuration() const { return settings.getTargetGrindDuration(); }
 
 void Controller::setTargetGrindDuration(int duration) {
@@ -212,7 +217,7 @@ void Controller::raiseBrewTarget() {
         if (newTarget > BREW_MAX_VOLUMETRIC) {
             newTarget = BREW_MAX_VOLUMETRIC;
         }
-        settings.setTargetVolume(newTarget);
+        setTargetVolume(newTarget);
     } else {
         int newDuration = getTargetDuration() + 1000;
         if (newDuration > BREW_MAX_DURATION_MS) {
@@ -229,7 +234,7 @@ void Controller::lowerBrewTarget() {
         if (newTarget < BREW_MIN_VOLUMETRIC) {
             newTarget = BREW_MIN_VOLUMETRIC;
         }
-        settings.setTargetVolume(newTarget);
+        setTargetVolume(newTarget);
     } else {
         int newDuration = getTargetDuration() - 1000;
         if (newDuration < BREW_MIN_DURATION_MS) {
