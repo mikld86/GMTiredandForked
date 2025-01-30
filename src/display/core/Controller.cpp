@@ -4,6 +4,7 @@
 #include <display/config.h>
 #include <display/core/constants.h>
 #include <display/plugins/BLEScalePlugin.h>
+#include <display/plugins/BoilerFillPlugin.h>
 #include <display/plugins/HomekitPlugin.h>
 #include <display/plugins/WebUIPlugin.h>
 #include <display/plugins/mDNSPlugin.h>
@@ -17,6 +18,9 @@ void Controller::setup() {
         pluginManager->registerPlugin(new HomekitPlugin(settings.getWifiSsid(), settings.getWifiPassword()));
     else
         pluginManager->registerPlugin(new mDNSPlugin());
+    if (settings.isBoilerFillActive()) {
+        pluginManager->registerPlugin(new BoilerFillPlugin());
+    }
     pluginManager->registerPlugin(new WebUIPlugin());
     pluginManager->registerPlugin(&BLEScales);
     pluginManager->setup(this);
@@ -140,6 +144,14 @@ void Controller::loop() {
 }
 
 bool Controller::isUpdating() const { return updating; }
+
+void Controller::startProcess(Process *process) {
+    if (isActive())
+        return;
+    this->currentProcess = process;
+    updateRelay();
+    updateLastAction();
+}
 
 int Controller::getTargetTemp() {
     switch (mode) {
@@ -268,7 +280,7 @@ void Controller::activate() {
         currentProcess = new SteamProcess();
         break;
     case MODE_WATER:
-        currentProcess = new WaterProcess();
+        currentProcess = new PumpProcess();
         break;
     default:;
     }

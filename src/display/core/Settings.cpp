@@ -20,6 +20,9 @@ Settings::Settings() {
     infusePumpTime = preferences.getInt("ipt", 0);
     infuseBloomTime = preferences.getInt("ibt", 0);
     savedScale = preferences.getString("ssc", "");
+    boilerFillActive = preferences.getBool("bf_a", false);
+    startupFillTime = preferences.getInt("bf_su", 5000);
+    steamFillTime = preferences.getInt("bf_st", 5000);
     preferences.end();
 }
 
@@ -52,6 +55,9 @@ void Settings::save() {
     preferences.putInt("ipt", infusePumpTime);
     preferences.putInt("ibt", infuseBloomTime);
     preferences.putString("ssc", savedScale);
+    preferences.putBool("bf_a", boilerFillActive);
+    preferences.putInt("bf_su", startupFillTime);
+    preferences.putInt("bf_st", steamFillTime);
     preferences.end();
 }
 
@@ -142,5 +148,20 @@ void Settings::setOTAChannel(const String &otaChannel) {
 
 void Settings::setSavedScale(const String &savedScale) {
     this->savedScale = savedScale;
+    save();
+}
+
+void Settings::setBoilerFillActive(bool boiler_fill_active) {
+    boilerFillActive = boiler_fill_active;
+    save();
+}
+
+void Settings::setStartupFillTime(int startup_fill_time) {
+    startupFillTime = startup_fill_time;
+    save();
+}
+
+void Settings::setSteamFillTime(int steam_fill_time) {
+    steamFillTime = steam_fill_time;
     save();
 }
