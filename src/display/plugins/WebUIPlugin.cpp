@@ -115,6 +115,10 @@ void WebUIPlugin::handleSettings(AsyncWebServerRequest *request) {
                 settings->setStartupFillTime(request->arg("startupFillTime").toInt() * 1000);
             if (request->hasArg("steamFillTime"))
                 settings->setSteamFillTime(request->arg("steamFillTime").toInt() * 1000);
+            settings->setSmartGrindActive(request->hasArg("smartGrindActive"));
+            if (request->hasArg("smartGrindIp"))
+                settings->setSmartGrindIp(request->arg("smartGrindIp"));
+            settings->setSmartGrindToggle(request->hasArg("smartGrindToggle"));
         });
         controller->setTargetTemp(controller->getTargetTemp());
     }
@@ -138,6 +142,9 @@ void WebUIPlugin::handleSettings(AsyncWebServerRequest *request) {
     doc["boilerFillActive"] = settings.isBoilerFillActive();
     doc["startupFillTime"] = settings.getStartupFillTime() / 1000;
     doc["steamFillTime"] = settings.getSteamFillTime() / 1000;
+    doc["smartGrindActive"] = settings.isSmartGrindActive();
+    doc["smartGrindIp"] = settings.getSmartGrindIp();
+    doc["smartGrindToggle"] = settings.isSmartGrindToggle();
     serializeJson(doc, *response);
     request->send(response);
 

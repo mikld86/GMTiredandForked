@@ -41,6 +41,9 @@ class Settings {
     bool isBoilerFillActive() const { return boilerFillActive; }
     int getStartupFillTime() const { return startupFillTime; }
     int getSteamFillTime() const { return steamFillTime; }
+    bool isSmartGrindActive() const { return smartGrindActive; }
+    bool isSmartGrindToggle() const { return smartGrindToggle; }
+    String getSmartGrindIp() const { return smartGrindIp; }
     void setTargetBrewTemp(int target_brew_temp);
     void setTargetSteamTemp(int target_steam_temp);
     void setTargetWaterTemp(int target_water_temp);
@@ -63,6 +66,9 @@ class Settings {
     void setBoilerFillActive(bool boiler_fill_active);
     void setStartupFillTime(int startup_fill_time);
     void setSteamFillTime(int steam_fill_time);
+    void setSmartGrindActive(bool smart_grind_active);
+    void setSmartGrindIp(String smart_grind_ip);
+    void setSmartGrindToggle(bool smart_grind_toggle);
 
   private:
     Preferences preferences;
@@ -89,6 +95,9 @@ class Settings {
     bool boilerFillActive = false;
     int startupFillTime = 0;
     int steamFillTime = 0;
+    bool smartGrindActive = false;
+    bool smartGrindToggle = false;
+    String smartGrindIp = "";
 
     String otaChannel = DEFAULT_OTA_CHANNEL;
 };

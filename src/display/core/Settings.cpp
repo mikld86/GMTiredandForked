@@ -24,6 +24,9 @@ Settings::Settings() {
     boilerFillActive = preferences.getBool("bf_a", false);
     startupFillTime = preferences.getInt("bf_su", 5000);
     steamFillTime = preferences.getInt("bf_st", 5000);
+    smartGrindActive = preferences.getBool("sg_a", false);
+    smartGrindIp = preferences.getString("sg_i", "");
+    smartGrindToggle = preferences.getBool("sg_t", false);
     preferences.end();
 }
 
@@ -60,6 +63,9 @@ void Settings::save() {
     preferences.putBool("bf_a", boilerFillActive);
     preferences.putInt("bf_su", startupFillTime);
     preferences.putInt("bf_st", steamFillTime);
+    preferences.putBool("sg_a", smartGrindActive);
+    preferences.putString("sg_i", smartGrindIp);
+    preferences.putBool("sg_t", smartGrindToggle);
     preferences.end();
 }
 
@@ -170,5 +176,20 @@ void Settings::setStartupFillTime(int startup_fill_time) {
 
 void Settings::setSteamFillTime(int steam_fill_time) {
     steamFillTime = steam_fill_time;
+    save();
+}
+
+void Settings::setSmartGrindActive(bool smart_grind_active) {
+    smartGrindActive = smart_grind_active;
+    save();
+}
+
+void Settings::setSmartGrindIp(String smart_grind_ip) {
+    this->smartGrindIp = smart_grind_ip;
+    save();
+}
+
+void Settings::setSmartGrindToggle(bool smart_grind_toggle) {
+    this->smartGrindToggle = smart_grind_toggle;
     save();
 }

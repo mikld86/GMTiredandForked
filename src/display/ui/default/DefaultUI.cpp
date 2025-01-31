@@ -23,9 +23,9 @@ void DefaultUI::init() {
     pluginManager->on("controller:targetVolume:change", triggerRender);
     pluginManager->on("controller:grindDuration:change", triggerRender);
     pluginManager->on("controller:targetDuration:change", triggerRender);
-    pluginManager->on("controller:grind:stop", triggerRender);
+    pluginManager->on("controller:grind:end", triggerRender);
     pluginManager->on("controller:grind:start", triggerRender);
-    pluginManager->on("controller:brew:stop", triggerRender);
+    pluginManager->on("controller:brew:end", triggerRender);
     pluginManager->on("controller:brew:start", triggerRender);
     pluginManager->on("controller:mode:change", [this](Event const &event) {
         switch (int mode = event.getInt("value")) {
@@ -319,7 +319,7 @@ void DefaultUI::updateGrindScreen() const {
     const int16_t setTemp = controller->getTargetTemp();
     lv_img_set_angle(ui_GrindScreen_tempTarget, calculate_angle(setTemp));
     lv_imgbtn_set_src(ui_GrindScreen_startButton, LV_IMGBTN_STATE_RELEASED, nullptr,
-    controller->isGrindActive() ? &ui_img_1456692430 : &ui_img_445946954, nullptr);
+                      controller->isGrindActive() ? &ui_img_1456692430 : &ui_img_445946954, nullptr);
 
     lv_img_set_src(ui_GrindScreen_targetSymbol, volumetricMode ? &ui_img_1424216268 : &ui_img_360122106);
     ui_object_set_themeable_style_property(ui_GrindScreen_timedButton, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_IMG_RECOLOR,

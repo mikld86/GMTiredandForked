@@ -2,7 +2,7 @@ import './style.css';
 import {useQuery} from 'preact-fetching';
 import {Spinner} from '../../components/Spinner.jsx';
 import {useState, useEffect, useCallback, useRef} from 'preact/hooks';
-import homekitImage from '../../assets/defaultSetupCode.png';
+import homekitImage from '../../assets/homekit.png';
 
 export function Settings() {
   const [submitting, setSubmitting] = useState(false);
@@ -33,6 +33,12 @@ export function Settings() {
       }
       if (key === 'boilerFillActive') {
         value = !formData.boilerFillActive;
+      }
+      if (key === 'smartGrindActive') {
+        value = !formData.smartGrindActive;
+      }
+      if (key === 'smartGrindToggle') {
+        value = !formData.smartGrindToggle;
       }
       setFormData({
         ...formData,
@@ -283,6 +289,60 @@ export function Settings() {
                         value={formData.steamFillTime}
                         onChange={onChange('steamFillTime')}
                     />
+                  </div>
+                </div>
+            }
+            <div className="flex flex-row w-full gap-4 p-4 bg-gray-50 rounded-b-lg">
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                    id="smartGrindActive"
+                    name="smartGrindActive"
+                    value="smartGrindActive"
+                    type="checkbox"
+                    className="sr-only peer"
+                    checked={!!formData.smartGrindActive}
+                    onChange={onChange('smartGrindActive')}
+                />
+                <div
+                    className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+              </label>
+              <p>Smart Grind Plugin</p>
+            </div>
+            {
+                formData.smartGrindActive &&
+                <div className="p-4 flex flex-col gap-4">
+                  <p className="flex-auto">
+                    This feature controls a Tasmota Plug to turn off your grinder after the target has been reached.
+                  </p>
+                  <div className="flex-auto">
+                    <label htmlFor="smartGrindIp" className="block font-medium text-[#333333]">
+                      Tasmota IP
+                    </label>
+                    <input
+                        id="smartGrindIp"
+                        name="smartGrindIp"
+                        type="text"
+                        className="input-field"
+                        placeholder="0"
+                        value={formData.smartGrindIp}
+                        onChange={onChange('smartGrindIp')}
+                    />
+                  </div>
+                  <div className="flex-auto flex flex-row gap-2">
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                          id="smartGrindToggle"
+                          name="smartGrindToggle"
+                          value="smartGrindToggle"
+                          type="checkbox"
+                          className="sr-only peer"
+                          checked={!!formData.smartGrindToggle}
+                          onChange={onChange('smartGrindToggle')}
+                      />
+                      <div
+                          className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                    </label>
+                    <p>Toggle Plug</p>
                   </div>
                 </div>
             }
