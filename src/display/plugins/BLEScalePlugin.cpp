@@ -25,7 +25,8 @@ void BLEScalePlugin::setup(Controller *controller, PluginManager *manager) {
     EurekaScalesPlugin::apply();
     TimemoreScalesPlugin::apply();
     this->scanner = new RemoteScalesScanner();
-    manager->on("controller:brew:start", [this](Event const &) { onBrewStart(); });
+    manager->on("controller:brew:start", [this](Event const &) { onProcessStart(); });
+    manager->on("controller:grind:start", [this](Event const &) { onProcessStart(); });
     manager->on("controller:bluetooth:connect", [this](Event const &) { scanner->initializeAsyncScan(); });
     manager->on("controller:mode:change", [this](Event const &event) {
         if (event.getInt("value") != MODE_STANDBY) {
@@ -87,7 +88,7 @@ void BLEScalePlugin::disconnect() {
     }
 }
 
-void BLEScalePlugin::onBrewStart() const {
+void BLEScalePlugin::onProcessStart() const {
     if (scale != nullptr && scale->isConnected()) {
         scale->tare();
     }

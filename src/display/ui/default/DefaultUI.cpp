@@ -201,7 +201,7 @@ void DefaultUI::updateStatusScreen() const {
         lv_label_set_text_fmt(ui_StatusScreen_preinfuseBloomLabel, "%ds", brewProcess->infusionBloomTime / 1000);
     }
 
-    if (brewProcess->target == BrewTarget::TIME) {
+    if (brewProcess->target == ProcessTarget::TIME) {
         lv_bar_set_range(ui_StatusScreen_brewBar, 0, brewProcess->brewSeconds / 1000);
         lv_label_set_text_fmt(ui_StatusScreen_brewLabel, "%ds", brewProcess->brewSeconds / 1000);
         lv_label_set_text_fmt(ui_StatusScreen_targetDuration, "%2d:%02d", targetMinutes, targetSeconds);
@@ -217,7 +217,7 @@ void DefaultUI::updateStatusScreen() const {
         lv_label_set_text(ui_StatusScreen_phaseLabel, "Finished");
         break;
     case BrewPhase::BREW_PUMP:
-        if (brewProcess->target == BrewTarget::TIME) {
+        if (brewProcess->target == ProcessTarget::TIME) {
             lv_bar_set_value(ui_StatusScreen_brewBar, progress / 1000, LV_ANIM_OFF);
         } else {
             lv_bar_set_value(ui_StatusScreen_brewBar, brewProcess->currentVolume, LV_ANIM_OFF);
@@ -251,7 +251,7 @@ void DefaultUI::updateStatusScreen() const {
     default:;
     }
 
-    lv_img_set_src(ui_StatusScreen_Image8, brewProcess->target == BrewTarget::TIME ? &ui_img_360122106 : &ui_img_1424216268);
+    lv_img_set_src(ui_StatusScreen_Image8, brewProcess->target == ProcessTarget::TIME ? &ui_img_360122106 : &ui_img_1424216268);
     lv_label_set_text_fmt(ui_StatusScreen_currentDuration, "%2d:%02d", progressMinutes, progressSeconds);
 }
 
@@ -294,17 +294,43 @@ void DefaultUI::updateBrewScreen() const {
 }
 
 void DefaultUI::updateGrindScreen() const {
+    const Settings &settings = controller->getSettings();
+
+    const bool volumetricAvailable = controller->isVolumetricAvailable();
+    const bool volumetricMode = volumetricAvailable && settings.isVolumetricTarget();
+
+    if (volumetricAvailable) {
+        lv_obj_clear_flag(ui_GrindScreen_modeSwitch, LV_OBJ_FLAG_HIDDEN);
+    } else {
+        lv_obj_add_flag(ui_GrindScreen_modeSwitch, LV_OBJ_FLAG_HIDDEN);
+    }
+
+    if (volumetricMode) {
+        lv_label_set_text_fmt(ui_GrindScreen_targetDuration, "%dg", settings.getTargetGrindVolume());
+    } else {
+        const double secondsDouble = settings.getTargetGrindDuration() / 1000.0;
+        const auto minutes = static_cast<int>(secondsDouble / 60.0 - 0.5);
+        const auto seconds = static_cast<int>(secondsDouble) % 60;
+        lv_label_set_text_fmt(ui_GrindScreen_targetDuration, "%2d:%02d", minutes, seconds);
+    }
+
     lv_arc_set_value(ui_GrindScreen_tempGauge, controller->getCurrentTemp());
     lv_label_set_text_fmt(ui_GrindScreen_tempText, "%d°C", controller->getCurrentTemp());
     const int16_t setTemp = controller->getTargetTemp();
     lv_img_set_angle(ui_GrindScreen_tempTarget, calculate_angle(setTemp));
-    const Settings &settings = controller->getSettings();
-    const double secondsDouble = settings.getTargetGrindDuration() / 1000.0;
-    const auto minutes = static_cast<int>(secondsDouble / 60.0 - 0.5);
-    const auto seconds = static_cast<int>(secondsDouble) % 60;
-    lv_label_set_text_fmt(ui_GrindScreen_targetDuration, "%2d:%02d", minutes, seconds);
     lv_imgbtn_set_src(ui_GrindScreen_startButton, LV_IMGBTN_STATE_RELEASED, nullptr,
-                      controller->isGrindActive() ? &ui_img_1456692430 : &ui_img_445946954, nullptr);
+    controller->isGrindActive() ? &ui_img_1456692430 : &ui_img_445946954, nullptr);
+
+    lv_img_set_src(ui_GrindScreen_targetSymbol, volumetricMode ? &ui_img_1424216268 : &ui_img_360122106);
+    ui_object_set_themeable_style_property(ui_GrindScreen_timedButton, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_IMG_RECOLOR,
+                                           volumetricMode ? _ui_theme_color_NiceWhite : _ui_theme_color_Dark);
+    ui_object_set_themeable_style_property(ui_GrindScreen_volumetricButton, LV_PART_MAIN | LV_STATE_DEFAULT,
+                                           LV_STYLE_BG_IMG_RECOLOR,
+                                           volumetricMode ? _ui_theme_color_Dark : _ui_theme_color_NiceWhite);
+    ui_object_set_themeable_style_property(ui_GrindScreen_modeSwitch, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_COLOR,
+                                           volumetricMode ? _ui_theme_color_Dark : _ui_theme_color_NiceWhite);
+    ui_object_set_themeable_style_property(ui_GrindScreen_modeSwitch, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_BG_GRAD_COLOR,
+                                           volumetricMode ? _ui_theme_color_NiceWhite : _ui_theme_color_Dark);
 }
 
 void DefaultUI::updateWaterScreen() const {

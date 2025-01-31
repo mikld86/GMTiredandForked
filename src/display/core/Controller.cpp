@@ -34,7 +34,7 @@ void Controller::setup() {
 
 void Controller::onScreenReady() { screenReady = true; }
 
-void Controller::onTargetChange(BrewTarget target) { settings.setVolumetricTarget(target == BrewTarget::VOLUMETRIC); }
+void Controller::onTargetChange(ProcessTarget target) { settings.setVolumetricTarget(target == ProcessTarget::VOLUMETRIC); }
 
 void Controller::connect() {
     if (initialized)
@@ -196,11 +196,13 @@ int Controller::getTargetDuration() const { return settings.getTargetDuration();
 void Controller::setTargetDuration(int duration) {
     Event event = pluginManager->trigger("controller:targetDuration:change", "value", duration);
     settings.setTargetDuration(event.getInt("value"));
+    updateLastAction();
 }
 
 void Controller::setTargetVolume(int volume) {
     Event event = pluginManager->trigger("controller:targetVolume:change", "value", volume);
-    settings.setTargetVolume(volume);
+    settings.setTargetVolume(event.getInt("value"));
+    updateLastAction();
 }
 
 int Controller::getTargetGrindDuration() const { return settings.getTargetGrindDuration(); }
@@ -208,6 +210,12 @@ int Controller::getTargetGrindDuration() const { return settings.getTargetGrindD
 void Controller::setTargetGrindDuration(int duration) {
     Event event = pluginManager->trigger("controller:grindDuration:change", "value", duration);
     settings.setTargetGrindDuration(event.getInt("value"));
+    updateLastAction();
+}
+
+void Controller::setTargetGrindVolume(int volume) {
+    Event event = pluginManager->trigger("controller:grindVolume:change", "value", volume);
+    settings.setTargetGrindVolume(event.getInt("value"));
     updateLastAction();
 }
 
@@ -224,7 +232,7 @@ void Controller::lowerTemp() {
 }
 
 void Controller::raiseBrewTarget() {
-    if (settings.isVolumetricTarget()) {
+    if (settings.isVolumetricTarget() && isVolumetricAvailable()) {
         int newTarget = settings.getTargetVolume() + 1;
         if (newTarget > BREW_MAX_VOLUMETRIC) {
             newTarget = BREW_MAX_VOLUMETRIC;
@@ -237,11 +245,10 @@ void Controller::raiseBrewTarget() {
         }
         setTargetDuration(newDuration);
     }
-    updateLastAction();
 }
 
 void Controller::lowerBrewTarget() {
-    if (settings.isVolumetricTarget()) {
+    if (settings.isVolumetricTarget() && isVolumetricAvailable()) {
         int newTarget = settings.getTargetVolume() - 1;
         if (newTarget < BREW_MIN_VOLUMETRIC) {
             newTarget = BREW_MIN_VOLUMETRIC;
@@ -254,13 +261,44 @@ void Controller::lowerBrewTarget() {
         }
         setTargetDuration(newDuration);
     }
-    updateLastAction();
+}
+
+void Controller::raiseGrindTarget() {
+    if (settings.isVolumetricTarget() && isVolumetricAvailable()) {
+        int newTarget = settings.getTargetGrindVolume() + 1;
+        if (newTarget > BREW_MAX_VOLUMETRIC) {
+            newTarget = BREW_MAX_VOLUMETRIC;
+        }
+        setTargetGrindVolume(newTarget);
+    } else {
+        int newDuration = getTargetGrindDuration() + 1000;
+        if (newDuration > BREW_MAX_DURATION_MS) {
+            newDuration = BREW_MAX_DURATION_MS;
+        }
+        setTargetGrindDuration(newDuration);
+    }
+}
+
+void Controller::lowerGrindTarget() {
+    if (settings.isVolumetricTarget() && isVolumetricAvailable()) {
+        int newTarget = settings.getTargetGrindVolume() - 1;
+        if (newTarget < BREW_MIN_VOLUMETRIC) {
+            newTarget = BREW_MIN_VOLUMETRIC;
+        }
+        setTargetGrindVolume(newTarget);
+    } else {
+        int newDuration = getTargetGrindDuration() - 1000;
+        if (newDuration < BREW_MIN_DURATION_MS) {
+            newDuration = BREW_MIN_DURATION_MS;
+        }
+        setTargetGrindDuration(newDuration);
+    }
 }
 
 void Controller::updateRelay() {
     clientController.sendPumpControl(isActive() ? currentProcess->getPumpValue() : 0);
     clientController.sendValveControl(isActive() && currentProcess->isRelayActive());
-    clientController.sendAltControl(isGrindActive());
+    clientController.sendAltControl(isActive() && currentProcess->isAltRelayActive());
 }
 
 void Controller::activate() {
@@ -269,10 +307,10 @@ void Controller::activate() {
     switch (mode) {
     case MODE_BREW:
         if (settings.isVolumetricTarget() && volumetricAvailable) {
-            currentProcess = new BrewProcess(BrewTarget::VOLUMETRIC, settings.getInfusePumpTime(), settings.getInfuseBloomTime(),
-                                             0, settings.getTargetVolume());
+            currentProcess = new BrewProcess(ProcessTarget::VOLUMETRIC, settings.getInfusePumpTime(),
+                                             settings.getInfuseBloomTime(), 0, settings.getTargetVolume());
         } else {
-            currentProcess = new BrewProcess(BrewTarget::TIME, settings.getInfusePumpTime(), settings.getInfuseBloomTime(),
+            currentProcess = new BrewProcess(ProcessTarget::TIME, settings.getInfusePumpTime(), settings.getInfuseBloomTime(),
                                              settings.getTargetDuration(), 0);
         }
         break;
@@ -308,17 +346,18 @@ void Controller::activateGrind() {
     pluginManager->trigger("controller:grind:start");
     if (isGrindActive())
         return;
-    unsigned long duration = settings.getTargetGrindDuration();
-    grindActiveUntil = millis() + duration;
+    if (settings.isVolumetricTarget() && volumetricAvailable) {
+        startProcess(new GrindProcess(ProcessTarget::VOLUMETRIC, 0, settings.getTargetGrindVolume()));
+    } else {
+        startProcess(new GrindProcess(ProcessTarget::TIME, settings.getTargetGrindDuration(), settings.getTargetGrindVolume()));
+    }
     updateRelay();
     updateLastAction();
 }
 
 void Controller::deactivateGrind() {
     pluginManager->trigger("controller:grind:stop");
-    grindActiveUntil = 0;
-    updateRelay();
-    updateLastAction();
+    deactivate();
 }
 
 void Controller::activateStandby() {
@@ -333,7 +372,7 @@ void Controller::deactivateStandby() {
 
 bool Controller::isActive() const { return currentProcess != nullptr && currentProcess->isActive(); }
 
-bool Controller::isGrindActive() const { return grindActiveUntil > millis(); }
+bool Controller::isGrindActive() const { return isActive() && currentProcess->getType() == MODE_GRIND; }
 
 int Controller::getMode() const { return mode; }
 
@@ -359,8 +398,7 @@ void Controller::onOTAUpdate() {
 }
 
 void Controller::onVolumetricMeasurement(double measurement) const {
-    if (currentProcess != nullptr && currentProcess->getType() == MODE_BREW) {
-        auto *brewProcess = static_cast<BrewProcess *>(currentProcess);
-        brewProcess->updateVolume(measurement);
+    if (currentProcess != nullptr) {
+        currentProcess->updateVolume(measurement);
     }
 }

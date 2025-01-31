@@ -25,6 +25,7 @@ class Settings {
     int getTemperatureOffset() const { return temperatureOffset; }
     int getTargetDuration() const { return targetDuration; }
     int getTargetVolume() const { return targetVolume; }
+    int getTargetGrindVolume() const { return targetGrindVolume; }
     int getTargetGrindDuration() const { return targetGrindDuration; }
     int getStartupMode() const { return startupMode; }
     int getInfuseBloomTime() const { return infuseBloomTime; }
@@ -46,6 +47,7 @@ class Settings {
     void setTemperatureOffset(int temperature_offset);
     void setTargetDuration(int target_duration);
     void setTargetVolume(int target_volume);
+    void setTargetGrindVolume(int target_grind_volume);
     void setTargetGrindDuration(int target_duration);
     void setStartupMode(int startup_mode);
     void setInfuseBloomTime(int infuse_bloom_time);
@@ -72,6 +74,7 @@ class Settings {
     int temperatureOffset = DEFAULT_TEMPERATURE_OFFSET;
     int targetDuration = 25000;
     int targetVolume = 36;
+    int targetGrindVolume = 18;
     int targetGrindDuration = 25000;
     int startupMode = MODE_STANDBY;
     int infuseBloomTime = 0;
