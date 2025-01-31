@@ -6,6 +6,7 @@
 #include <display/plugins/BLEScalePlugin.h>
 #include <display/plugins/BoilerFillPlugin.h>
 #include <display/plugins/HomekitPlugin.h>
+#include <display/plugins/SmartGrindPlugin.h>
 #include <display/plugins/WebUIPlugin.h>
 #include <display/plugins/mDNSPlugin.h>
 
@@ -20,6 +21,9 @@ void Controller::setup() {
         pluginManager->registerPlugin(new mDNSPlugin());
     if (settings.isBoilerFillActive()) {
         pluginManager->registerPlugin(new BoilerFillPlugin());
+    }
+    if (settings.isSmartGrindActive()) {
+        pluginManager->registerPlugin(new SmartGrindPlugin());
     }
     pluginManager->registerPlugin(new WebUIPlugin());
     pluginManager->registerPlugin(&BLEScales);
@@ -336,6 +340,9 @@ void Controller::deactivate() {
     if (currentProcess->getType() == MODE_BREW) {
         pluginManager->trigger("controller:brew:end");
     }
+    if (currentProcess->getType() == MODE_GRIND) {
+        pluginManager->trigger("controller:grind:end");
+    }
     delete currentProcess;
     currentProcess = nullptr;
     updateRelay();
@@ -355,10 +362,7 @@ void Controller::activateGrind() {
     updateLastAction();
 }
 
-void Controller::deactivateGrind() {
-    pluginManager->trigger("controller:grind:stop");
-    deactivate();
-}
+void Controller::deactivateGrind() { deactivate(); }
 
 void Controller::activateStandby() {
     setMode(MODE_STANDBY);
