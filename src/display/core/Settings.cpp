@@ -8,6 +8,7 @@ Settings::Settings() {
     targetWaterTemp = preferences.getInt("tw", 80);
     targetDuration = preferences.getInt("td", 25000);
     targetVolume = preferences.getInt("tv", 36);
+    targetGrindVolume = preferences.getInt("tgv", 18);
     targetGrindDuration = preferences.getInt("tgd", 25000);
     temperatureOffset = preferences.getInt("to", DEFAULT_TEMPERATURE_OFFSET);
     pid = preferences.getString("pid", DEFAULT_PID);
@@ -43,6 +44,7 @@ void Settings::save() {
     preferences.putInt("tw", targetWaterTemp);
     preferences.putInt("td", targetDuration);
     preferences.putInt("tv", targetVolume);
+    preferences.putInt("tgv", targetGrindVolume);
     preferences.putInt("tgd", targetGrindDuration);
     preferences.putInt("to", temperatureOffset);
     preferences.putString("pid", pid);
@@ -88,6 +90,11 @@ void Settings::setTargetDuration(const int target_duration) {
 
 void Settings::setTargetVolume(int target_volume) {
     targetVolume = target_volume;
+    save();
+}
+
+void Settings::setTargetGrindVolume(int target_grind_volume) {
+    targetGrindVolume = target_grind_volume;
     save();
 }
 

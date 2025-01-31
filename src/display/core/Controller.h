@@ -38,6 +38,8 @@ class Controller {
 
     void setTargetGrindDuration(int duration);
 
+    void setTargetGrindVolume(int volume);
+
     virtual int getCurrentTemp() const { return currentTemp; }
 
     bool isActive() const;
@@ -64,6 +66,10 @@ class Controller {
 
     void lowerBrewTarget();
 
+    void raiseGrindTarget();
+
+    void lowerGrindTarget();
+
     void activate();
 
     void deactivate();
@@ -80,7 +86,7 @@ class Controller {
 
     void onScreenReady();
 
-    void onTargetChange(BrewTarget target);
+    void onTargetChange(ProcessTarget target);
 
     void onVolumetricMeasurement(double measurement) const;
 

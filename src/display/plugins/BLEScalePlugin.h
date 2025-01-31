@@ -29,7 +29,7 @@ class BLEScalePlugin : public Plugin {
 
   private:
     void update();
-    void onBrewStart() const;
+    void onProcessStart() const;
 
     void establishConnection();
 

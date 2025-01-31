@@ -33,8 +33,8 @@ void onWaterTempRaise(lv_event_t *e);
 void onWakeup(lv_event_t *e);
 void onBrewCancel(lv_event_t *e);
 void onGrindToggle(lv_event_t *e);
-void onGrindTimeLower(lv_event_t *e);
 void onGrindTimeRaise(lv_event_t *e);
+void onGrindTimeLower(lv_event_t *e);
 
 #ifdef __cplusplus
 } /*extern "C"*/

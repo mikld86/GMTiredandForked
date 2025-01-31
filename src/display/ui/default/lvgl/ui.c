@@ -159,10 +159,12 @@ lv_obj_t *ui_StatusScreen_phaseLabel;
 lv_obj_t *ui_StatusScreen_barContainer;
 lv_obj_t *ui_StatusScreen_preinfusePumpBar;
 lv_obj_t *ui_StatusScreen_preinfuseBloomBar;
+lv_obj_t *ui_StatusScreen_brewPumpBar;
 lv_obj_t *ui_StatusScreen_brewBar;
 lv_obj_t *ui_StatusScreen_labelContainer;
 lv_obj_t *ui_StatusScreen_preinfusePumpLabel;
 lv_obj_t *ui_StatusScreen_preinfuseBloomLabel;
+lv_obj_t *ui_StatusScreen_brewPumpLabel;
 lv_obj_t *ui_StatusScreen_brewLabel;
 lv_obj_t *ui_StatusScreen_tempText;
 // CUSTOM VARIABLES
@@ -178,13 +180,19 @@ lv_obj_t *ui_GrindScreen_contentPanel7;
 lv_obj_t *ui_GrindScreen_mainLabel7;
 void ui_event_GrindScreen_startButton(lv_event_t *e);
 lv_obj_t *ui_GrindScreen_startButton;
-void ui_event_GrindScreen_downDurationButton(lv_event_t *e);
-lv_obj_t *ui_GrindScreen_downDurationButton;
+lv_obj_t *ui_GrindScreen_targetContainer;
+lv_obj_t *ui_GrindScreen_targetDuration;
 void ui_event_GrindScreen_upDurationButton(lv_event_t *e);
 lv_obj_t *ui_GrindScreen_upDurationButton;
-lv_obj_t *ui_GrindScreen_targetDuration;
-lv_obj_t *ui_GrindScreen_Image11;
+void ui_event_GrindScreen_downDurationButton(lv_event_t *e);
+lv_obj_t *ui_GrindScreen_downDurationButton;
+lv_obj_t *ui_GrindScreen_targetSymbol;
 lv_obj_t *ui_GrindScreen_tempText;
+lv_obj_t *ui_GrindScreen_modeSwitch;
+void ui_event_GrindScreen_timedButton(lv_event_t *e);
+lv_obj_t *ui_GrindScreen_timedButton;
+void ui_event_GrindScreen_volumetricButton(lv_event_t *e);
+lv_obj_t *ui_GrindScreen_volumetricButton;
 // CUSTOM VARIABLES
 
 // EVENTS
@@ -422,7 +430,7 @@ void ui_event_WaterScreen_upTempButton(lv_event_t *e) {
 void ui_event_StandbyScreen(lv_event_t *e) {
     lv_event_code_t event_code = lv_event_get_code(e);
 
-    if (event_code == LV_EVENT_RELEASED) {
+    if (event_code == LV_EVENT_PRESSED) {
         onWakeup(e);
     }
 }
@@ -463,6 +471,14 @@ void ui_event_GrindScreen_startButton(lv_event_t *e) {
     }
 }
 
+void ui_event_GrindScreen_upDurationButton(lv_event_t *e) {
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if (event_code == LV_EVENT_CLICKED) {
+        onGrindTimeRaise(e);
+    }
+}
+
 void ui_event_GrindScreen_downDurationButton(lv_event_t *e) {
     lv_event_code_t event_code = lv_event_get_code(e);
 
@@ -471,11 +487,19 @@ void ui_event_GrindScreen_downDurationButton(lv_event_t *e) {
     }
 }
 
-void ui_event_GrindScreen_upDurationButton(lv_event_t *e) {
+void ui_event_GrindScreen_timedButton(lv_event_t *e) {
     lv_event_code_t event_code = lv_event_get_code(e);
 
     if (event_code == LV_EVENT_CLICKED) {
-        onGrindTimeRaise(e);
+        onTimedClick(e);
+    }
+}
+
+void ui_event_GrindScreen_volumetricButton(lv_event_t *e) {
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if (event_code == LV_EVENT_CLICKED) {
+        onVolumetricClick(e);
     }
 }
 

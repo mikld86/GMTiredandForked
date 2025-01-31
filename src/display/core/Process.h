@@ -10,6 +10,8 @@ class Process {
 
     virtual bool isRelayActive() = 0;
 
+    virtual bool isAltRelayActive() = 0;
+
     virtual float getPumpValue() = 0;
 
     virtual void progress() = 0;
@@ -17,16 +19,18 @@ class Process {
     virtual bool isActive() = 0;
 
     virtual int getType() = 0;
+
+    virtual void updateVolume(double volume) = 0;
 };
 
 enum class BrewPhase { INFUSION_PRESSURIZE, INFUSION_PUMP, INFUSION_BLOOM, BREW_PRESSURIZE, BREW_PUMP, FINISHED };
 
-enum class BrewTarget { TIME, VOLUMETRIC };
+enum class ProcessTarget { TIME, VOLUMETRIC };
 
 class BrewProcess : public Process {
   public:
     BrewPhase phase = BrewPhase::INFUSION_PRESSURIZE;
-    BrewTarget target;
+    ProcessTarget target;
     int infusionPumpTime;
     int infusionBloomTime;
     int brewSeconds;
@@ -36,7 +40,7 @@ class BrewProcess : public Process {
     unsigned long currentPhaseStarted = 0;
     double currentVolume = 0;
 
-    explicit BrewProcess(BrewTarget target = BrewTarget::TIME, int infusionPumpTime = 0, int infusionBloomTime = 0,
+    explicit BrewProcess(ProcessTarget target = ProcessTarget::TIME, int infusionPumpTime = 0, int infusionBloomTime = 0,
                          int brewSeconds = 0, int brewVolume = 0)
         : target(target), infusionPumpTime(infusionPumpTime), infusionBloomTime(infusionBloomTime), brewSeconds(brewSeconds),
           brewVolume(brewVolume) {
@@ -46,7 +50,7 @@ class BrewProcess : public Process {
         currentPhaseStarted = millis();
     }
 
-    void updateVolume(double volume) { currentVolume = volume; }
+    void updateVolume(double volume) override { currentVolume = volume; };
 
     unsigned long getPhaseDuration() const {
         switch (phase) {
@@ -66,7 +70,7 @@ class BrewProcess : public Process {
     }
 
     bool isCurrentPhaseFinished() const {
-        if (phase == BrewPhase::BREW_PUMP && target == BrewTarget::VOLUMETRIC) {
+        if (phase == BrewPhase::BREW_PUMP && target == ProcessTarget::VOLUMETRIC) {
             if (millis() - currentPhaseStarted > BREW_SAFETY_DURATION_MS) {
                 return true;
             }
@@ -81,6 +85,8 @@ class BrewProcess : public Process {
     bool isRelayActive() override {
         return phase == BrewPhase::INFUSION_PUMP || phase == BrewPhase::INFUSION_BLOOM || phase == BrewPhase::BREW_PUMP;
     }
+
+    bool isAltRelayActive() override { return false; }
 
     float getPumpValue() override {
         if (phase == BrewPhase::INFUSION_PRESSURIZE || phase == BrewPhase::INFUSION_PUMP || phase == BrewPhase::BREW_PRESSURIZE ||
@@ -132,6 +138,8 @@ class SteamProcess : public Process {
 
     bool isRelayActive() override { return false; };
 
+    bool isAltRelayActive() override { return false; };
+
     float getPumpValue() override { return isActive() ? pumpValue : 0.f; };
 
     void progress() override {
@@ -144,6 +152,8 @@ class SteamProcess : public Process {
     };
 
     int getType() override { return MODE_STEAM; }
+
+    void updateVolume(double volume) override {};
 };
 
 class PumpProcess : public Process {
@@ -154,6 +164,8 @@ class PumpProcess : public Process {
     explicit PumpProcess(int duration = HOT_WATER_SAFETY_DURATION_MS) : duration(duration) { started = millis(); }
 
     bool isRelayActive() override { return false; };
+
+    bool isAltRelayActive() override { return false; };
 
     float getPumpValue() override { return isActive() ? 100.f : 0.f; };
 
@@ -167,6 +179,39 @@ class PumpProcess : public Process {
     };
 
     int getType() override { return MODE_WATER; }
+
+    void updateVolume(double volume) override {};
+};
+
+class GrindProcess : public Process {
+  public:
+    ProcessTarget target;
+    int time;
+    int volume;
+    unsigned long started;
+
+    double currentVolume = 0;
+
+    explicit GrindProcess(ProcessTarget target = ProcessTarget::TIME, int time = 0, int volume = 0)
+        : target(target), time(time), volume(volume) {
+        started = millis();
+    }
+
+    void updateVolume(double volume) override { currentVolume = volume; };
+
+    bool isRelayActive() override { return false; }
+
+    bool isAltRelayActive() override { return isActive(); }
+
+    float getPumpValue() override { return 0.f; }
+
+    void progress() override {
+        // Stateless implementation
+    }
+
+    bool isActive() override { return target == ProcessTarget::TIME ? millis() - started < time : currentVolume < volume; }
+
+    int getType() override { return MODE_GRIND; }
 };
 
 #endif // PROCESS_H

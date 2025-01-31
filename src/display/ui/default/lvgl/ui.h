@@ -178,10 +178,12 @@ extern lv_obj_t *ui_StatusScreen_phaseLabel;
 extern lv_obj_t *ui_StatusScreen_barContainer;
 extern lv_obj_t *ui_StatusScreen_preinfusePumpBar;
 extern lv_obj_t *ui_StatusScreen_preinfuseBloomBar;
+extern lv_obj_t *ui_StatusScreen_brewPumpBar;
 extern lv_obj_t *ui_StatusScreen_brewBar;
 extern lv_obj_t *ui_StatusScreen_labelContainer;
 extern lv_obj_t *ui_StatusScreen_preinfusePumpLabel;
 extern lv_obj_t *ui_StatusScreen_preinfuseBloomLabel;
+extern lv_obj_t *ui_StatusScreen_brewPumpLabel;
 extern lv_obj_t *ui_StatusScreen_brewLabel;
 extern lv_obj_t *ui_StatusScreen_tempText;
 // CUSTOM VARIABLES
@@ -197,13 +199,19 @@ extern lv_obj_t *ui_GrindScreen_contentPanel7;
 extern lv_obj_t *ui_GrindScreen_mainLabel7;
 void ui_event_GrindScreen_startButton(lv_event_t *e);
 extern lv_obj_t *ui_GrindScreen_startButton;
-void ui_event_GrindScreen_downDurationButton(lv_event_t *e);
-extern lv_obj_t *ui_GrindScreen_downDurationButton;
+extern lv_obj_t *ui_GrindScreen_targetContainer;
+extern lv_obj_t *ui_GrindScreen_targetDuration;
 void ui_event_GrindScreen_upDurationButton(lv_event_t *e);
 extern lv_obj_t *ui_GrindScreen_upDurationButton;
-extern lv_obj_t *ui_GrindScreen_targetDuration;
-extern lv_obj_t *ui_GrindScreen_Image11;
+void ui_event_GrindScreen_downDurationButton(lv_event_t *e);
+extern lv_obj_t *ui_GrindScreen_downDurationButton;
+extern lv_obj_t *ui_GrindScreen_targetSymbol;
 extern lv_obj_t *ui_GrindScreen_tempText;
+extern lv_obj_t *ui_GrindScreen_modeSwitch;
+void ui_event_GrindScreen_timedButton(lv_event_t *e);
+extern lv_obj_t *ui_GrindScreen_timedButton;
+void ui_event_GrindScreen_volumetricButton(lv_event_t *e);
+extern lv_obj_t *ui_GrindScreen_volumetricButton;
 // CUSTOM VARIABLES
 
 // EVENTS

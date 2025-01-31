@@ -98,3 +98,11 @@ def onTimedClick(event_struct):
 def onVolumetricClick(event_struct):
     return
 
+
+def onGrindTimedClick(event_struct):
+    return
+
+
+def onGrindVolumetricClick(event_struct):
+    return
+
