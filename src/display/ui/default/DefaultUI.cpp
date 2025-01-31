@@ -25,7 +25,6 @@ void DefaultUI::init() {
     pluginManager->on("controller:targetDuration:change", triggerRender);
     pluginManager->on("controller:grind:end", triggerRender);
     pluginManager->on("controller:grind:start", triggerRender);
-    pluginManager->on("controller:brew:end", triggerRender);
     pluginManager->on("controller:brew:start", triggerRender);
     pluginManager->on("controller:mode:change", [this](Event const &event) {
         switch (int mode = event.getInt("value")) {
@@ -180,7 +179,7 @@ void DefaultUI::updateStatusScreen() const {
     const double progressSecondsDouble = progress / 1000.0;
     const auto progressMinutes = static_cast<int>(progressSecondsDouble / 60.0 - 0.5);
     const auto progressSeconds = static_cast<int>(progressSecondsDouble) % 60;
-    const unsigned long targetDuration = brewProcess->brewSeconds;
+    const unsigned long targetDuration = brewProcess->brewTime;
     const double targetSecondsDouble = targetDuration / 1000.0;
     const auto targetMinutes = static_cast<int>(targetSecondsDouble / 60.0 - 0.5);
     const auto targetSeconds = static_cast<int>(targetSecondsDouble) % 60;
@@ -202,8 +201,8 @@ void DefaultUI::updateStatusScreen() const {
     }
 
     if (brewProcess->target == ProcessTarget::TIME) {
-        lv_bar_set_range(ui_StatusScreen_brewBar, 0, brewProcess->brewSeconds / 1000);
-        lv_label_set_text_fmt(ui_StatusScreen_brewLabel, "%ds", brewProcess->brewSeconds / 1000);
+        lv_bar_set_range(ui_StatusScreen_brewBar, 0, brewProcess->brewTime / 1000);
+        lv_label_set_text_fmt(ui_StatusScreen_brewLabel, "%ds", brewProcess->brewTime / 1000);
         lv_label_set_text_fmt(ui_StatusScreen_targetDuration, "%2d:%02d", targetMinutes, targetSeconds);
     } else {
         lv_bar_set_range(ui_StatusScreen_brewBar, 0, brewProcess->brewVolume);

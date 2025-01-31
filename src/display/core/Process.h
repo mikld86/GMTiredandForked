@@ -2,6 +2,10 @@
 #define PROCESS_H
 
 #include "constants.h"
+#include <queue>
+
+constexpr int PREDICTIVE_MEASUREMENTS = 30; // 3s
+constexpr int PREDICTIVE_TIME_MS = 1000;
 
 class Process {
   public:
@@ -33,16 +37,16 @@ class BrewProcess : public Process {
     ProcessTarget target;
     int infusionPumpTime;
     int infusionBloomTime;
-    int brewSeconds;
+    int brewTime;
     int brewVolume;
     int brewPressurize = PRESSURIZE_TIME;
-
     unsigned long currentPhaseStarted = 0;
     double currentVolume = 0;
+    std::queue<double> measurements;
 
     explicit BrewProcess(ProcessTarget target = ProcessTarget::TIME, int infusionPumpTime = 0, int infusionBloomTime = 0,
-                         int brewSeconds = 0, int brewVolume = 0)
-        : target(target), infusionPumpTime(infusionPumpTime), infusionBloomTime(infusionBloomTime), brewSeconds(brewSeconds),
+                         int brewTime = 0, int brewVolume = 0)
+        : target(target), infusionPumpTime(infusionPumpTime), infusionBloomTime(infusionBloomTime), brewTime(brewTime),
           brewVolume(brewVolume) {
         if (infusionBloomTime == 0 || infusionPumpTime == 0) {
             phase = BrewPhase::BREW_PRESSURIZE;
@@ -63,10 +67,18 @@ class BrewProcess : public Process {
         case BrewPhase::BREW_PRESSURIZE:
             return brewPressurize;
         case BrewPhase::BREW_PUMP:
-            return brewSeconds;
+            return brewTime;
         default:
             return 0;
         }
+    }
+
+    double volumePerSecond() const {
+        double sum = 0.0;
+        for (auto p: measurements) {
+            sum += p;
+        }
+        return sum / measurements.size() * (1000.0 / PROGRESS_INTERVAL);
     }
 
     bool isCurrentPhaseFinished() const {
@@ -74,7 +86,8 @@ class BrewProcess : public Process {
             if (millis() - currentPhaseStarted > BREW_SAFETY_DURATION_MS) {
                 return true;
             }
-            return currentVolume >= brewVolume;
+            const double predictiveFactor = volumePerSecond() / 1000.0 * PREDICTIVE_TIME_MS;
+            return currentVolume + predictiveFactor >= brewVolume;
         }
         if (phase != BrewPhase::FINISHED) {
             return millis() - currentPhaseStarted > getPhaseDuration();
@@ -97,6 +110,12 @@ class BrewProcess : public Process {
     }
 
     void progress() override {
+        // Progress should be called around every 100ms, as defined in PROGRESS_INTERVAL
+        measurements.push(currentVolume);
+        while (measurements.size() > PREDICTIVE_MEASUREMENTS) {
+            measurements.pop();
+        }
+
         if (isCurrentPhaseFinished()) {
             currentPhaseStarted = millis();
             switch (phase) {
@@ -189,12 +208,21 @@ class GrindProcess : public Process {
     int time;
     int volume;
     unsigned long started;
+    std::queue<double> measurements;
 
     double currentVolume = 0;
 
     explicit GrindProcess(ProcessTarget target = ProcessTarget::TIME, int time = 0, int volume = 0)
         : target(target), time(time), volume(volume) {
         started = millis();
+    }
+
+    double volumePerSecond() const {
+        double sum = 0.0;
+        for (auto p: measurements) {
+            sum += p;
+        }
+        return sum / measurements.size() * (1000.0 / PROGRESS_INTERVAL);
     }
 
     void updateVolume(double volume) override { currentVolume = volume; };
@@ -206,10 +234,20 @@ class GrindProcess : public Process {
     float getPumpValue() override { return 0.f; }
 
     void progress() override {
-        // Stateless implementation
+        // Progress should be called around every 100ms, as defined in PROGRESS_INTERVAL
+        measurements.push(currentVolume);
+        while (measurements.size() > PREDICTIVE_MEASUREMENTS) {
+            measurements.pop();
+        }
     }
 
-    bool isActive() override { return target == ProcessTarget::TIME ? millis() - started < time : currentVolume < volume; }
+    bool isActive() override {
+        if (target == ProcessTarget::TIME) {
+            return millis() - started < time;
+        }
+        const double predictiveFactor = volumePerSecond() / 1000.0 * PREDICTIVE_TIME_MS;
+        return currentVolume + predictiveFactor < volume;
+    }
 
     int getType() override { return MODE_GRIND; }
 };
