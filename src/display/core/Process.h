@@ -42,6 +42,7 @@ class BrewProcess : public Process {
     int brewPressurize = PRESSURIZE_TIME;
     unsigned long currentPhaseStarted = 0;
     double currentVolume = 0;
+    double lastVolume = 0;
     std::queue<double> measurements;
 
     explicit BrewProcess(ProcessTarget target = ProcessTarget::TIME, int infusionPumpTime = 0, int infusionBloomTime = 0,
@@ -111,7 +112,12 @@ class BrewProcess : public Process {
 
     void progress() override {
         // Progress should be called around every 100ms, as defined in PROGRESS_INTERVAL
-        measurements.push(currentVolume);
+        double diff = currentVolume - lastVolume;
+        if (diff < 0.0) {
+            diff = 0.0;
+        }
+        lastVolume = currentVolume;
+        measurements.push(diff);
         while (measurements.size() > PREDICTIVE_MEASUREMENTS) {
             measurements.pop();
         }
@@ -211,6 +217,7 @@ class GrindProcess : public Process {
     std::queue<double> measurements;
 
     double currentVolume = 0;
+    double lastVolume = 0;
 
     explicit GrindProcess(ProcessTarget target = ProcessTarget::TIME, int time = 0, int volume = 0)
         : target(target), time(time), volume(volume) {
@@ -235,7 +242,12 @@ class GrindProcess : public Process {
 
     void progress() override {
         // Progress should be called around every 100ms, as defined in PROGRESS_INTERVAL
-        measurements.push(currentVolume);
+        double diff = currentVolume - lastVolume;
+        if (diff < 0.0) {
+            diff = 0.0;
+        }
+        lastVolume = currentVolume;
+        measurements.push(diff);
         while (measurements.size() > PREDICTIVE_MEASUREMENTS) {
             measurements.pop();
         }
