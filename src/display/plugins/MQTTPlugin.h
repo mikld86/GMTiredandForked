@@ -11,7 +11,9 @@ class MQTTPlugin : public Plugin {
 public:
     void setup(Controller *controller, PluginManager *pluginManager) override;
     bool connect(Controller *controller);
-    void loop() override {};
+    void loop() override {
+        // Event based plugin, no loop needed
+    };
 private:
     void publish(const std::string& topic, const std::string &message);
     MQTTClient client;
