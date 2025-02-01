@@ -10,7 +10,6 @@ class BoilerFillPlugin : public Plugin {
     void loop() override {};
 
   private:
-    bool initialized = false;
     Controller *controller = nullptr;
 };
 
