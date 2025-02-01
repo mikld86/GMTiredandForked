@@ -117,6 +117,7 @@ class Controller {
     int currentTemp = 0;
 
     Process *currentProcess = nullptr;
+    Process *lastProcess = nullptr;
 
     unsigned long grindActiveUntil = 0;
     unsigned long lastPing = 0;

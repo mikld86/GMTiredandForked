@@ -337,14 +337,17 @@ void Controller::deactivate() {
     if (currentProcess == nullptr) {
         return;
     }
+    if (lastProcess != nullptr) {
+        delete lastProcess;
+    }
+    lastProcess = currentProcess;
+    currentProcess = nullptr;
     if (currentProcess->getType() == MODE_BREW) {
         pluginManager->trigger("controller:brew:end");
     }
     if (currentProcess->getType() == MODE_GRIND) {
         pluginManager->trigger("controller:grind:end");
     }
-    delete currentProcess;
-    currentProcess = nullptr;
     updateRelay();
     updateLastAction();
 }

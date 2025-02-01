@@ -98,7 +98,6 @@ class BrewProcess : public Process {
 
     void progress() override {
         if (isCurrentPhaseFinished()) {
-            currentPhaseStarted = millis();
             switch (phase) {
             case BrewPhase::INFUSION_PRESSURIZE:
                 phase = BrewPhase::INFUSION_PUMP;
@@ -114,9 +113,10 @@ class BrewProcess : public Process {
                 break;
             case BrewPhase::BREW_PUMP:
                 phase = BrewPhase::FINISHED;
-                break;
+                return;
             default:;
             }
+            currentPhaseStarted = millis();
         }
     }
 
