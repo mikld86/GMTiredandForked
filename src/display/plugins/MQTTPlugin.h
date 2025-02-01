@@ -13,6 +13,7 @@ public:
     bool connect(Controller *controller);
     void loop() override {};
 private:
+    void publish(const std::string& topic, const std::string &message);
     MQTTClient client;
     WiFiClient net;
 };
