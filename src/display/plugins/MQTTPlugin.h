@@ -4,10 +4,13 @@
 #include <MQTT.h>
 #include <WiFi.h>
 
+constexpr int MQTT_CONNECTION_RETRIES = 5;
+constexpr int MQTT_CONNECTION_DELAY = 1000;
+
 class MQTTPlugin : public Plugin {
 public:
     void setup(Controller *controller, PluginManager *pluginManager) override;
-    void connect(Controller *controller);
+    bool connect(Controller *controller);
     void loop() override {};
 private:
     MQTTClient client;
