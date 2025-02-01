@@ -3,6 +3,8 @@
 
 #define ELEGANTOTA_USE_ASYNC_WEBSERVER 1
 
+#include <DNSServer.h>
+
 #include "../core/Plugin.h"
 #include "GitHubOTA.h"
 #include <ESPAsyncWebServer.h>
@@ -31,6 +33,7 @@ class WebUIPlugin : public Plugin {
     AsyncWebServer server;
     Controller *controller = nullptr;
     PluginManager *pluginManager = nullptr;
+    DNSServer *dnsServer = nullptr;
 
     long lastUpdateCheck = 0;
     bool updating = false;
