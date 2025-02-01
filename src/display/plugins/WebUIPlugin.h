@@ -20,7 +20,7 @@ class WebUIPlugin : public Plugin {
     void loop() override;
 
   private:
-    void start();
+    void start(bool apMode);
 
     void handleOTA(AsyncWebServerRequest *request);
     void handleSettings(AsyncWebServerRequest *request);
