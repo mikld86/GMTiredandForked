@@ -2,10 +2,11 @@
 #define PROCESS_H
 
 #include "constants.h"
-#include <queue>
+#include <deque>
+#include <numeric>
 
 constexpr int PREDICTIVE_MEASUREMENTS = 30; // 3s
-constexpr int PREDICTIVE_TIME_MS = 1000;
+constexpr int PREDICTIVE_TIME_MS = 1500;
 
 class Process {
   public:
@@ -43,7 +44,7 @@ class BrewProcess : public Process {
     unsigned long currentPhaseStarted = 0;
     double currentVolume = 0;
     double lastVolume = 0;
-    std::queue<double> measurements;
+    std::deque<double> measurements;
 
     explicit BrewProcess(ProcessTarget target = ProcessTarget::TIME, int infusionPumpTime = 0, int infusionBloomTime = 0,
                          int brewTime = 0, int brewVolume = 0)
@@ -75,10 +76,7 @@ class BrewProcess : public Process {
     }
 
     double volumePerSecond() const {
-        double sum = 0.0;
-        for (auto p: measurements) {
-            sum += p;
-        }
+        double sum = std::accumulate(measurements.begin(), measurements.end(), 0);
         return sum / measurements.size() * (1000.0 / PROGRESS_INTERVAL);
     }
 
@@ -117,9 +115,9 @@ class BrewProcess : public Process {
             diff = 0.0;
         }
         lastVolume = currentVolume;
-        measurements.push(diff);
+        measurements.push_back(diff);
         while (measurements.size() > PREDICTIVE_MEASUREMENTS) {
-            measurements.pop();
+            measurements.pop_front();
         }
 
         if (isCurrentPhaseFinished()) {
@@ -214,7 +212,7 @@ class GrindProcess : public Process {
     int time;
     int volume;
     unsigned long started;
-    std::queue<double> measurements;
+    std::deque<double> measurements;
 
     double currentVolume = 0;
     double lastVolume = 0;
@@ -225,10 +223,7 @@ class GrindProcess : public Process {
     }
 
     double volumePerSecond() const {
-        double sum = 0.0;
-        for (auto p: measurements) {
-            sum += p;
-        }
+        double sum = std::accumulate(measurements.begin(), measurements.end(), 0);
         return sum / measurements.size() * (1000.0 / PROGRESS_INTERVAL);
     }
 
@@ -247,9 +242,9 @@ class GrindProcess : public Process {
             diff = 0.0;
         }
         lastVolume = currentVolume;
-        measurements.push(diff);
+        measurements.push_back(diff);
         while (measurements.size() > PREDICTIVE_MEASUREMENTS) {
-            measurements.pop();
+            measurements.pop_front();
         }
     }
 
