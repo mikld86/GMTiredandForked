@@ -115,6 +115,7 @@ void Controller::loop() {
             loaded = true;
             if (settings.getStartupMode() == MODE_STANDBY)
                 activateStandby();
+            pluginManager->trigger("controller:ready");
         }
     }
 

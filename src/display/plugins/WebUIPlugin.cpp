@@ -1,8 +1,9 @@
 #include "WebUIPlugin.h"
-#include "../core/Controller.h"
 #include <ArduinoJson.h>
 #include <AsyncJson.h>
+#include <DNSServer.h>
 #include <SPIFFS.h>
+#include <display/core/Controller.h>
 
 #include "BLEScalePlugin.h"
 
@@ -16,7 +17,10 @@ void WebUIPlugin::setup(Controller *_controller, PluginManager *_pluginManager) 
         [this](uint8_t phase) { pluginManager->trigger("ota:update:phase", "phase", phase); },
         [this](int progress) { pluginManager->trigger("ota:update:progress", "progress", progress); }, "display-firmware.bin",
         "display-filesystem.bin");
-    pluginManager->on("controller:wifi:connect", [this](Event const &) { start(); });
+    pluginManager->on("controller:wifi:connect", [this](Event const &event) {
+        const int apMode = event.getInt("AP");
+        start(apMode);
+    });
 }
 
 void WebUIPlugin::loop() {
@@ -34,7 +38,7 @@ void WebUIPlugin::loop() {
     }
 }
 
-void WebUIPlugin::start() {
+void WebUIPlugin::start(bool apMode) {
     server.on("/api/ota", [this](AsyncWebServerRequest *request) { handleOTA(request); });
     server.on("/api/settings", [this](AsyncWebServerRequest *request) { handleSettings(request); });
     server.on("/api/status", [this](AsyncWebServerRequest *request) {
@@ -55,7 +59,12 @@ void WebUIPlugin::start() {
     server.on("/scales", [](AsyncWebServerRequest *request) { request->send(SPIFFS, "/index.html"); });
     server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html").setCacheControl("max-age=0");
     server.begin();
-    Serial.print("OTA server started");
+    printf("Webserver started\n");
+    if (apMode) {
+        dnsServer = new DNSServer();
+        dnsServer->start(53, "*", WiFi.softAPIP());
+        printf("Started catchall DNS for captive portal\n");
+    }
 }
 
 void WebUIPlugin::handleOTA(AsyncWebServerRequest *request) {

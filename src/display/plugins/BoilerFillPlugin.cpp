@@ -5,10 +5,7 @@
 
 void BoilerFillPlugin::setup(Controller *controller, PluginManager *pluginManager) {
     this->controller = controller;
-    pluginManager->on("controller:bluetooth:connect", [this](Event const &event) {
-        if (initialized)
-            return;
-        initialized = true;
+    pluginManager->on("controller:ready", [this](Event const &event) {
         this->controller->startProcess(new PumpProcess(this->controller->getSettings().getStartupFillTime()));
     });
     pluginManager->on("controller:mode:change", [this](Event const &event) {
