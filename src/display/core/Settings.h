@@ -80,7 +80,6 @@ class Settings {
     void setHomeAssistantIP(const String &homeAssistantIP);
     void setHomeAssistantPort(int homeAssistantPort);
 
-
   private:
     Preferences preferences;
     bool inBatch = false;
