@@ -29,9 +29,9 @@ This project upgrades a Gaggia espresso machine with smart controls to improve y
 <img src="docs/assets/brew-screen.png" alt="Brew Screen" width="250px" />
 <img src="docs/assets/pcb_render.jpg" alt="PCB Render" width="250px" />
 
-### Group Buy for kits
+### Availability of kits
 
-The first round of the group buy is filled up but I'll keep the form open. You can register there to get notified about the second round which will hopefully start at the beginning of 2025.
+The group buy we did in 2024 is filled up but I'll keep the form open. You can register there to get notified about the second batch and from then on also general availability which is supposed to start in February 2025.
 
 https://forms.gle/KEXdpgJGCZbsFdKD7
 
