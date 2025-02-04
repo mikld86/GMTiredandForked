@@ -18,6 +18,8 @@ private:
     void publish(const std::string& topic, const std::string &message);
     MQTTClient client;
     WiFiClient net;
+
+    float lastTemperature = 0;
 };
 
 #endif // MQTTPLUGIN_H

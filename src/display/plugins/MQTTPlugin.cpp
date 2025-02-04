@@ -49,8 +49,11 @@ void MQTTPlugin::setup(Controller *controller, PluginManager *pluginManager) {
             return;
         char json[50];
         const float temp = event.getFloat("value");
-        snprintf(json, sizeof(json), R"***({"temperature":%02f})***", temp);
-        publish("boilers/0/temperature", json);
+        if (temp != lastTemperature) {
+            snprintf(json, sizeof(json), R"***({"temperature":%02f})***", temp);
+            publish("boilers/0/temperature", json);
+        }
+        lastTemperature = temp;
     });
 
     pluginManager->on("boiler:targetTemperature:change", [this](const Event &event) {
