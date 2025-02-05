@@ -6,7 +6,7 @@
 #include <numeric>
 
 constexpr int PREDICTIVE_MEASUREMENTS = 30; // 3s
-constexpr int PREDICTIVE_TIME_MS = 1000;
+constexpr double PREDICTIVE_TIME_MS = 1000.0;
 
 class Process {
   public:
@@ -230,8 +230,11 @@ class GrindProcess : public Process {
     }
 
     double volumePerSecond() const {
-        double sum = std::accumulate(measurements.begin(), measurements.end(), 0);
-        return sum / measurements.size() * (1000.0 / PROGRESS_INTERVAL);
+        double sum = 0.0;
+        for (const auto n : measurements) {
+            sum += n;
+        }
+        return sum / static_cast<double>(measurements.size()) * (1000.0 / static_cast<double>(PROGRESS_INTERVAL));
     }
 
     void updateVolume(double volume) override { currentVolume = volume; };
