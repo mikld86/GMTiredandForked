@@ -40,18 +40,20 @@ class BrewProcess : public Process {
     int infusionBloomTime;
     int brewTime;
     int brewVolume;
-    int brewPressurize = PRESSURIZE_TIME;
+    int brewPressurize;
     unsigned long currentPhaseStarted = 0;
     double currentVolume = 0;
     double lastVolume = 0;
     std::deque<double> measurements;
 
-    explicit BrewProcess(ProcessTarget target = ProcessTarget::TIME, int infusionPumpTime = 0, int infusionBloomTime = 0,
-                         int brewTime = 0, int brewVolume = 0)
+    explicit BrewProcess(ProcessTarget target = ProcessTarget::TIME, int pressurizeTime = 0, int infusionPumpTime = 0,
+                         int infusionBloomTime = 0, int brewTime = 0, int brewVolume = 0)
         : target(target), infusionPumpTime(infusionPumpTime), infusionBloomTime(infusionBloomTime), brewTime(brewTime),
-          brewVolume(brewVolume) {
+          brewVolume(brewVolume), brewPressurize(pressurizeTime) {
         if (infusionBloomTime == 0 || infusionPumpTime == 0) {
             phase = BrewPhase::BREW_PRESSURIZE;
+        } else if (pressurizeTime == 0) {
+            phase == BrewPhase::INFUSION_PUMP;
         }
         currentPhaseStarted = millis();
     }
@@ -76,8 +78,11 @@ class BrewProcess : public Process {
     }
 
     double volumePerSecond() const {
-        double sum = std::accumulate(measurements.begin(), measurements.end(), 0);
-        return sum / measurements.size() * (1000.0 / PROGRESS_INTERVAL);
+        double sum = 0.0;
+        for (const auto n : measurements) {
+            sum += n;
+        }
+        return sum / static_cast<double>(measurements.size()) * (1000.0 / static_cast<double>(PROGRESS_INTERVAL));
     }
 
     bool isCurrentPhaseFinished() const {
@@ -85,6 +90,7 @@ class BrewProcess : public Process {
             if (millis() - currentPhaseStarted > BREW_SAFETY_DURATION_MS) {
                 return true;
             }
+            printf("Volume per second: %.2f\n", volumePerSecond());
             const double predictiveFactor = volumePerSecond() / 1000.0 * PREDICTIVE_TIME_MS;
             return currentVolume + predictiveFactor >= brewVolume;
         }
@@ -111,6 +117,7 @@ class BrewProcess : public Process {
     void progress() override {
         // Progress should be called around every 100ms, as defined in PROGRESS_INTERVAL
         double diff = currentVolume - lastVolume;
+        printf("Last Diff: %.2f\n", diff);
         if (diff < 0.0) {
             diff = 0.0;
         }

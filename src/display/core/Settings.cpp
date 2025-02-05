@@ -20,6 +20,7 @@ Settings::Settings() {
     otaChannel = preferences.getString("oc", DEFAULT_OTA_CHANNEL);
     infusePumpTime = preferences.getInt("ipt", 0);
     infuseBloomTime = preferences.getInt("ibt", 0);
+    pressurizeTime = preferences.getInt("pt", 0);
     savedScale = preferences.getString("ssc", "");
     boilerFillActive = preferences.getBool("bf_a", false);
     startupFillTime = preferences.getInt("bf_su", 5000);
@@ -27,6 +28,11 @@ Settings::Settings() {
     smartGrindActive = preferences.getBool("sg_a", false);
     smartGrindIp = preferences.getString("sg_i", "");
     smartGrindToggle = preferences.getBool("sg_t", false);
+    homeAssistant = preferences.getBool("ha_a", false);
+    homeAssistantIP = preferences.getString("ha_i", "");
+    homeAssistantPort = preferences.getInt("ha_p", 1883);
+    homeAssistantUser = preferences.getString("ha_u", "");
+    homeAssistantPassword = preferences.getString("ha_pw", "");
     preferences.end();
 }
 
@@ -59,6 +65,7 @@ void Settings::save() {
     preferences.putString("oc", otaChannel);
     preferences.putInt("ipt", infusePumpTime);
     preferences.putInt("ibt", infuseBloomTime);
+    preferences.putInt("pt", pressurizeTime);
     preferences.putString("ssc", savedScale);
     preferences.putBool("bf_a", boilerFillActive);
     preferences.putInt("bf_su", startupFillTime);
@@ -66,6 +73,11 @@ void Settings::save() {
     preferences.putBool("sg_a", smartGrindActive);
     preferences.putString("sg_i", smartGrindIp);
     preferences.putBool("sg_t", smartGrindToggle);
+    preferences.putBool("ha_a", homeAssistant);
+    preferences.putString("ha_i", homeAssistantIP);
+    preferences.putInt("ha_p", homeAssistantPort);
+    preferences.putString("ha_u", homeAssistantUser);
+    preferences.putString("ha_pw", homeAssistantPassword);
     preferences.end();
 }
 
@@ -121,6 +133,11 @@ void Settings::setInfuseBloomTime(int infuse_bloom_time) {
 
 void Settings::setInfusePumpTime(int infuse_pump_time) {
     infusePumpTime = infuse_pump_time;
+    save();
+}
+
+void Settings::setPressurizeTime(int pressurize_time) {
+    pressurizeTime = pressurize_time;
     save();
 }
 
@@ -191,5 +208,28 @@ void Settings::setSmartGrindIp(String smart_grind_ip) {
 
 void Settings::setSmartGrindToggle(bool smart_grind_toggle) {
     this->smartGrindToggle = smart_grind_toggle;
+    save();
+}
+
+void Settings::setHomeAssistant(const bool homeAssistant) {
+    this->homeAssistant = homeAssistant;
+    save();
+}
+
+void Settings::setHomeAssistantIP(const String &homeAssistantIP) {
+    this->homeAssistantIP = homeAssistantIP;
+    save();
+}
+
+void Settings::setHomeAssistantPort(const int homeAssistantPort) {
+    this->homeAssistantPort = homeAssistantPort;
+    save();
+}
+void Settings::setHomeAssistantUser(const String &homeAssistantUser) {
+    this->homeAssistantUser = homeAssistantUser;
+    save();
+}
+void Settings::setHomeAssistantPassword(const String &homeAssistantPassword) {
+    this->homeAssistantPassword = homeAssistantPassword;
     save();
 }

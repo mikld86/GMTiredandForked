@@ -9,7 +9,7 @@ import { Home } from './pages/Home/index.jsx';
 import { NotFound } from './pages/_404.jsx';
 import { Settings } from './pages/Settings/index.jsx';
 import { OTA } from './pages/OTA/index.jsx';
-import {Scales} from './pages/Scales/index.jsx';
+import { Scales } from './pages/Scales/index.jsx';
 
 export function App() {
   return (

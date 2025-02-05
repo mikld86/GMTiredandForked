@@ -6,6 +6,7 @@
 #include <display/plugins/BLEScalePlugin.h>
 #include <display/plugins/BoilerFillPlugin.h>
 #include <display/plugins/HomekitPlugin.h>
+#include <display/plugins/MQTTPlugin.h>
 #include <display/plugins/SmartGrindPlugin.h>
 #include <display/plugins/WebUIPlugin.h>
 #include <display/plugins/mDNSPlugin.h>
@@ -24,6 +25,9 @@ void Controller::setup() {
     }
     if (settings.isSmartGrindActive()) {
         pluginManager->registerPlugin(new SmartGrindPlugin());
+    }
+    if (settings.isHomeAssistant()) {
+        pluginManager->registerPlugin(new MQTTPlugin());
     }
     pluginManager->registerPlugin(new WebUIPlugin());
     pluginManager->registerPlugin(&BLEScales);
@@ -312,11 +316,12 @@ void Controller::activate() {
     switch (mode) {
     case MODE_BREW:
         if (settings.isVolumetricTarget() && volumetricAvailable) {
-            currentProcess = new BrewProcess(ProcessTarget::VOLUMETRIC, settings.getInfusePumpTime(),
-                                             settings.getInfuseBloomTime(), 0, settings.getTargetVolume());
+            currentProcess =
+                new BrewProcess(ProcessTarget::VOLUMETRIC, settings.getPressurizeTime(), settings.getInfusePumpTime(),
+                                settings.getInfuseBloomTime(), 0, settings.getTargetVolume());
         } else {
-            currentProcess = new BrewProcess(ProcessTarget::TIME, settings.getInfusePumpTime(), settings.getInfuseBloomTime(),
-                                             settings.getTargetDuration(), 0);
+            currentProcess = new BrewProcess(ProcessTarget::TIME, settings.getPressurizeTime(), settings.getInfusePumpTime(),
+                                             settings.getInfuseBloomTime(), settings.getTargetDuration(), 0);
         }
         break;
     case MODE_STEAM:

@@ -110,6 +110,8 @@ void WebUIPlugin::handleSettings(AsyncWebServerRequest *request) {
                 settings->setInfusePumpTime(request->arg("infusePumpTime").toInt() * 1000);
             if (request->hasArg("infuseBloomTime"))
                 settings->setInfuseBloomTime(request->arg("infuseBloomTime").toInt() * 1000);
+            if (request->hasArg("pressurizeTime"))
+                settings->setPressurizeTime(request->arg("pressurizeTime").toInt() * 1000);
             if (request->hasArg("pid"))
                 settings->setPid(request->arg("pid"));
             if (request->hasArg("wifiSsid"))
@@ -128,6 +130,15 @@ void WebUIPlugin::handleSettings(AsyncWebServerRequest *request) {
             if (request->hasArg("smartGrindIp"))
                 settings->setSmartGrindIp(request->arg("smartGrindIp"));
             settings->setSmartGrindToggle(request->hasArg("smartGrindToggle"));
+            settings->setHomeAssistant(request->hasArg("homeAssistant"));
+            if (request->hasArg("haUser"))
+                settings->setHomeAssistantUser(request->arg("haUser"));
+            if (request->hasArg("haPassword"))
+                settings->setHomeAssistantPassword(request->arg("haPassword"));
+            if (request->hasArg("haIP"))
+                settings->setHomeAssistantIP(request->arg("haIP"));
+            if (request->hasArg("haPort"))
+                settings->setHomeAssistantPort(request->arg("haPort").toInt());
         });
         controller->setTargetTemp(controller->getTargetTemp());
     }
@@ -142,7 +153,13 @@ void WebUIPlugin::handleSettings(AsyncWebServerRequest *request) {
     doc["targetDuration"] = settings.getTargetDuration() / 1000;
     doc["infusePumpTime"] = settings.getInfusePumpTime() / 1000;
     doc["infuseBloomTime"] = settings.getInfuseBloomTime() / 1000;
+    doc["pressurizeTime"] = settings.getPressurizeTime() / 1000;
     doc["homekit"] = settings.isHomekit();
+    doc["homeAssistant"] = settings.isHomeAssistant();
+    doc["haUser"] = settings.getHomeAssistantUser();
+    doc["haPassword"] = settings.getHomeAssistantPassword();
+    doc["haIP"] = settings.getHomeAssistantIP();
+    doc["haPort"] = settings.getHomeAssistantPort();
     doc["pid"] = settings.getPid();
     doc["wifiSsid"] = settings.getWifiSsid();
     doc["wifiPassword"] = settings.getWifiPassword();

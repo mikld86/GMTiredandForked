@@ -30,6 +30,7 @@ class Settings {
     int getStartupMode() const { return startupMode; }
     int getInfuseBloomTime() const { return infuseBloomTime; }
     int getInfusePumpTime() const { return infusePumpTime; }
+    int getPressurizeTime() const { return pressurizeTime; }
     String getPid() const { return pid; }
     String getWifiSsid() const { return wifiSsid; }
     String getWifiPassword() const { return wifiPassword; }
@@ -44,6 +45,11 @@ class Settings {
     bool isSmartGrindActive() const { return smartGrindActive; }
     bool isSmartGrindToggle() const { return smartGrindToggle; }
     String getSmartGrindIp() const { return smartGrindIp; }
+    bool isHomeAssistant() const { return homeAssistant; }
+    String getHomeAssistantIP() const { return homeAssistantIP; }
+    String getHomeAssistantUser() const { return homeAssistantUser; }
+    String getHomeAssistantPassword() const { return homeAssistantPassword; }
+    int getHomeAssistantPort() const { return homeAssistantPort; }
     void setTargetBrewTemp(int target_brew_temp);
     void setTargetSteamTemp(int target_steam_temp);
     void setTargetWaterTemp(int target_water_temp);
@@ -55,6 +61,7 @@ class Settings {
     void setStartupMode(int startup_mode);
     void setInfuseBloomTime(int infuse_bloom_time);
     void setInfusePumpTime(int infuse_pump_time);
+    void setPressurizeTime(int pressurize_time);
     void setPid(const String &pid);
     void setWifiSsid(const String &wifiSsid);
     void setWifiPassword(const String &wifiPassword);
@@ -69,6 +76,11 @@ class Settings {
     void setSmartGrindActive(bool smart_grind_active);
     void setSmartGrindIp(String smart_grind_ip);
     void setSmartGrindToggle(bool smart_grind_toggle);
+    void setHomeAssistant(bool homeAssistant);
+    void setHomeAssistantUser(const String &homeAssistantUser);
+    void setHomeAssistantPassword(const String &homeAssistantPassword);
+    void setHomeAssistantIP(const String &homeAssistantIP);
+    void setHomeAssistantPort(int homeAssistantPort);
 
   private:
     Preferences preferences;
@@ -85,6 +97,7 @@ class Settings {
     int startupMode = MODE_STANDBY;
     int infuseBloomTime = 0;
     int infusePumpTime = 0;
+    int pressurizeTime = 0;
     String pid = DEFAULT_PID;
     String wifiSsid = "";
     String wifiPassword = "";
@@ -98,6 +111,11 @@ class Settings {
     bool smartGrindActive = false;
     bool smartGrindToggle = false;
     String smartGrindIp = "";
+    bool homeAssistant = false;
+    String homeAssistantUser = "";
+    String homeAssistantPassword = "";
+    String homeAssistantIP = "";
+    int homeAssistantPort = 1883;
 
     String otaChannel = DEFAULT_OTA_CHANNEL;
 };

@@ -8,8 +8,8 @@
 
 class Controller;
 
-constexpr uint8_t RERENDER_INTERVAL_IDLE = 2500;
-constexpr uint8_t RERENDER_INTERVAL_ACTIVE = 250;
+constexpr int RERENDER_INTERVAL_IDLE = 2500;
+constexpr int RERENDER_INTERVAL_ACTIVE = 250;
 
 int16_t calculate_angle(int set_temp);
 
