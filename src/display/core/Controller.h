@@ -52,6 +52,7 @@ class Controller {
 
     void startProcess(Process *process);
     Process *getProcess() const { return currentProcess; }
+    Process *getLastProcess() const { return lastProcess; }
     Settings &getSettings() { return settings; }
     DefaultUI *getUI() const { return ui; }
 
@@ -73,6 +74,8 @@ class Controller {
     void activate();
 
     void deactivate();
+
+    void clear();
 
     void activateGrind();
 
@@ -117,6 +120,7 @@ class Controller {
     int currentTemp = 0;
 
     Process *currentProcess = nullptr;
+    Process *lastProcess = nullptr;
 
     unsigned long grindActiveUntil = 0;
     unsigned long lastPing = 0;

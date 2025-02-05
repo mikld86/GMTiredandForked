@@ -49,7 +49,7 @@ void DefaultUI::init() {
     });
     pluginManager->on("controller:brew:start",
                       [this](Event const &event) { changeScreen(&ui_StatusScreen, &ui_StatusScreen_screen_init); });
-    pluginManager->on("controller:brew:end",
+    pluginManager->on("controller:brew:clear",
                       [this](Event const &event) { changeScreen(&ui_BrewScreen, &ui_BrewScreen_screen_init); });
     pluginManager->on("controller:bluetooth:connect", [this](Event const &) {
         bluetoothActive = true;
@@ -167,12 +167,18 @@ void DefaultUI::updateStatusScreen() const {
     Settings &settings = controller->getSettings();
 
     Process *process = controller->getProcess();
-    if (process == nullptr || process->getType() != MODE_BREW) {
+    if (process == nullptr) {
+        process = controller->getLastProcess();
+    }
+    if (process->getType() != MODE_BREW) {
         return;
     }
     const auto *brewProcess = static_cast<BrewProcess *>(process);
 
-    const unsigned long now = millis();
+    unsigned long now = millis();
+    if (!process->isActive()) {
+        now = brewProcess->previousPhaseFinished;
+    }
     const unsigned long phaseDuration = brewProcess->getPhaseDuration();
     const unsigned long activeUntil = brewProcess->currentPhaseStarted + phaseDuration;
     const unsigned long progress = now - (activeUntil - phaseDuration);
@@ -252,6 +258,19 @@ void DefaultUI::updateStatusScreen() const {
 
     lv_img_set_src(ui_StatusScreen_Image8, brewProcess->target == ProcessTarget::TIME ? &ui_img_360122106 : &ui_img_1424216268);
     lv_label_set_text_fmt(ui_StatusScreen_currentDuration, "%2d:%02d", progressMinutes, progressSeconds);
+
+    // Brew finished adjustments
+    if (process->isActive()) {
+        lv_obj_add_flag(ui_StatusScreen_brewVolume, LV_OBJ_FLAG_HIDDEN);
+    } else {
+        if (brewProcess->target == ProcessTarget::VOLUMETRIC) {
+            lv_obj_clear_flag(ui_StatusScreen_brewVolume, LV_OBJ_FLAG_HIDDEN);
+        }
+        lv_obj_add_flag(ui_StatusScreen_barContainer, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(ui_StatusScreen_labelContainer, LV_OBJ_FLAG_HIDDEN);
+        lv_label_set_text_fmt(ui_StatusScreen_brewVolume, "%.1lfg", brewProcess->currentVolume);
+        lv_imgbtn_set_src(ui_StatusScreen_pauseButton, LV_IMGBTN_STATE_RELEASED, nullptr, &ui_img_631115820, nullptr);
+    }
 }
 
 void DefaultUI::updateBrewScreen() const {

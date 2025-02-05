@@ -343,16 +343,25 @@ void Controller::deactivate() {
     if (currentProcess == nullptr) {
         return;
     }
-    if (currentProcess->getType() == MODE_BREW) {
+    delete lastProcess;
+    lastProcess = currentProcess;
+    currentProcess = nullptr;
+    if (lastProcess->getType() == MODE_BREW) {
         pluginManager->trigger("controller:brew:end");
     }
-    if (currentProcess->getType() == MODE_GRIND) {
+    if (lastProcess->getType() == MODE_GRIND) {
         pluginManager->trigger("controller:grind:end");
     }
-    delete currentProcess;
-    currentProcess = nullptr;
     updateRelay();
     updateLastAction();
+}
+
+void Controller::clear() {
+    if (lastProcess->getType() == MODE_BREW) {
+        pluginManager->trigger("controller:brew:clear");
+    }
+    delete lastProcess;
+    lastProcess = nullptr;
 }
 
 void Controller::activateGrind() {
@@ -410,5 +419,8 @@ void Controller::onOTAUpdate() {
 void Controller::onVolumetricMeasurement(double measurement) const {
     if (currentProcess != nullptr) {
         currentProcess->updateVolume(measurement);
+    }
+    if (lastProcess != nullptr) {
+        lastProcess->updateVolume(measurement);
     }
 }
