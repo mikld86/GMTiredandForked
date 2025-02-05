@@ -110,6 +110,8 @@ void WebUIPlugin::handleSettings(AsyncWebServerRequest *request) {
                 settings->setInfusePumpTime(request->arg("infusePumpTime").toInt() * 1000);
             if (request->hasArg("infuseBloomTime"))
                 settings->setInfuseBloomTime(request->arg("infuseBloomTime").toInt() * 1000);
+            if (request->hasArg("pressurizeTime"))
+                settings->setPressurizeTime(request->arg("pressurizeTime").toInt() * 1000);
             if (request->hasArg("pid"))
                 settings->setPid(request->arg("pid"));
             if (request->hasArg("wifiSsid"))
@@ -151,6 +153,7 @@ void WebUIPlugin::handleSettings(AsyncWebServerRequest *request) {
     doc["targetDuration"] = settings.getTargetDuration() / 1000;
     doc["infusePumpTime"] = settings.getInfusePumpTime() / 1000;
     doc["infuseBloomTime"] = settings.getInfuseBloomTime() / 1000;
+    doc["pressurizeTime"] = settings.getPressurizeTime() / 1000;
     doc["homekit"] = settings.isHomekit();
     doc["homeAssistant"] = settings.isHomeAssistant();
     doc["haUser"] = settings.getHomeAssistantUser();

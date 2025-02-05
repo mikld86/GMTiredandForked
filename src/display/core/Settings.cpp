@@ -20,6 +20,7 @@ Settings::Settings() {
     otaChannel = preferences.getString("oc", DEFAULT_OTA_CHANNEL);
     infusePumpTime = preferences.getInt("ipt", 0);
     infuseBloomTime = preferences.getInt("ibt", 0);
+    pressurizeTime = preferences.getInt("pt", 0);
     savedScale = preferences.getString("ssc", "");
     boilerFillActive = preferences.getBool("bf_a", false);
     startupFillTime = preferences.getInt("bf_su", 5000);
@@ -64,6 +65,7 @@ void Settings::save() {
     preferences.putString("oc", otaChannel);
     preferences.putInt("ipt", infusePumpTime);
     preferences.putInt("ibt", infuseBloomTime);
+    preferences.putInt("pt", pressurizeTime);
     preferences.putString("ssc", savedScale);
     preferences.putBool("bf_a", boilerFillActive);
     preferences.putInt("bf_su", startupFillTime);
@@ -131,6 +133,11 @@ void Settings::setInfuseBloomTime(int infuse_bloom_time) {
 
 void Settings::setInfusePumpTime(int infuse_pump_time) {
     infusePumpTime = infuse_pump_time;
+    save();
+}
+
+void Settings::setPressurizeTime(int pressurize_time) {
+    pressurizeTime = pressurize_time;
     save();
 }
 

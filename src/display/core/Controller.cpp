@@ -316,11 +316,12 @@ void Controller::activate() {
     switch (mode) {
     case MODE_BREW:
         if (settings.isVolumetricTarget() && volumetricAvailable) {
-            currentProcess = new BrewProcess(ProcessTarget::VOLUMETRIC, settings.getInfusePumpTime(),
-                                             settings.getInfuseBloomTime(), 0, settings.getTargetVolume());
+            currentProcess =
+                new BrewProcess(ProcessTarget::VOLUMETRIC, settings.getPressurizeTime(), settings.getInfusePumpTime(),
+                                settings.getInfuseBloomTime(), 0, settings.getTargetVolume());
         } else {
-            currentProcess = new BrewProcess(ProcessTarget::TIME, settings.getInfusePumpTime(), settings.getInfuseBloomTime(),
-                                             settings.getTargetDuration(), 0);
+            currentProcess = new BrewProcess(ProcessTarget::TIME, settings.getPressurizeTime(), settings.getInfusePumpTime(),
+                                             settings.getInfuseBloomTime(), settings.getTargetDuration(), 0);
         }
         break;
     case MODE_STEAM:
