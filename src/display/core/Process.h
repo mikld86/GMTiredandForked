@@ -40,16 +40,16 @@ class BrewProcess : public Process {
     int infusionBloomTime;
     int brewTime;
     int brewVolume;
-    int brewPressurize = PRESSURIZE_TIME;
+    int brewPressurize;
     unsigned long currentPhaseStarted = 0;
     double currentVolume = 0;
     double lastVolume = 0;
     std::deque<double> measurements;
 
-    explicit BrewProcess(ProcessTarget target = ProcessTarget::TIME, int infusionPumpTime = 0, int infusionBloomTime = 0,
-                         int brewTime = 0, int brewVolume = 0)
+    explicit BrewProcess(ProcessTarget target = ProcessTarget::TIME, int pressurizeTime, int infusionPumpTime = 0,
+                         int infusionBloomTime = 0, int brewTime = 0, int brewVolume = 0)
         : target(target), infusionPumpTime(infusionPumpTime), infusionBloomTime(infusionBloomTime), brewTime(brewTime),
-          brewVolume(brewVolume) {
+          brewVolume(brewVolume), brewPressurize(pressurizeTime) {
         if (infusionBloomTime == 0 || infusionPumpTime == 0) {
             phase = BrewPhase::BREW_PRESSURIZE;
         }
