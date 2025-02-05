@@ -7,7 +7,10 @@
 #include "ui.h"
 #include <Arduino.h>
 
-void onBrewCancel(lv_event_t *e) { controller.deactivate(); }
+void onBrewCancel(lv_event_t *e) {
+    controller.deactivate();
+    controller.clear();
+}
 
 void onBrewStart(lv_event_t *e) { controller.activate(); }
 

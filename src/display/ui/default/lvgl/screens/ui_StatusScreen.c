@@ -297,6 +297,18 @@ void ui_StatusScreen_screen_init(void) {
     lv_obj_set_style_text_align(ui_StatusScreen_brewLabel, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_StatusScreen_brewLabel, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
 
+    ui_StatusScreen_brewVolume = lv_label_create(ui_StatusScreen_contentPanel2);
+    lv_obj_set_width(ui_StatusScreen_brewVolume, 120);
+    lv_obj_set_height(ui_StatusScreen_brewVolume, 30);
+    lv_obj_set_align(ui_StatusScreen_brewVolume, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_StatusScreen_brewVolume, "36g");
+    ui_object_set_themeable_style_property(ui_StatusScreen_brewVolume, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_TEXT_COLOR,
+                                           _ui_theme_color_NiceWhite);
+    ui_object_set_themeable_style_property(ui_StatusScreen_brewVolume, LV_PART_MAIN | LV_STATE_DEFAULT, LV_STYLE_TEXT_OPA,
+                                           _ui_theme_alpha_NiceWhite);
+    lv_obj_set_style_text_align(ui_StatusScreen_brewVolume, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_StatusScreen_brewVolume, &lv_font_montserrat_24, LV_PART_MAIN | LV_STATE_DEFAULT);
+
     ui_StatusScreen_tempText = lv_label_create(ui_StatusScreen);
     lv_obj_set_width(ui_StatusScreen_tempText, LV_SIZE_CONTENT);  /// 1
     lv_obj_set_height(ui_StatusScreen_tempText, LV_SIZE_CONTENT); /// 1

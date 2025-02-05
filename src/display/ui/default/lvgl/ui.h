@@ -183,6 +183,7 @@ extern lv_obj_t *ui_StatusScreen_labelContainer;
 extern lv_obj_t *ui_StatusScreen_preinfusePumpLabel;
 extern lv_obj_t *ui_StatusScreen_preinfuseBloomLabel;
 extern lv_obj_t *ui_StatusScreen_brewLabel;
+extern lv_obj_t *ui_StatusScreen_brewVolume;
 extern lv_obj_t *ui_StatusScreen_tempText;
 // CUSTOM VARIABLES
 

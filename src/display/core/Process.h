@@ -6,7 +6,7 @@
 #include <numeric>
 
 constexpr int PREDICTIVE_MEASUREMENTS = 30; // 3s
-constexpr int PREDICTIVE_TIME_MS = 1500;
+constexpr int PREDICTIVE_TIME_MS = 1000;
 
 class Process {
   public:
@@ -42,6 +42,7 @@ class BrewProcess : public Process {
     int brewVolume;
     int brewPressurize;
     unsigned long currentPhaseStarted = 0;
+    unsigned long previousPhaseFinished = 0;
     double currentVolume = 0;
     double lastVolume = 0;
     std::deque<double> measurements;
@@ -53,7 +54,7 @@ class BrewProcess : public Process {
         if (infusionBloomTime == 0 || infusionPumpTime == 0) {
             phase = BrewPhase::BREW_PRESSURIZE;
         } else if (pressurizeTime == 0) {
-            phase == BrewPhase::INFUSION_PUMP;
+            phase = BrewPhase::INFUSION_PUMP;
         }
         currentPhaseStarted = millis();
     }
@@ -90,7 +91,6 @@ class BrewProcess : public Process {
             if (millis() - currentPhaseStarted > BREW_SAFETY_DURATION_MS) {
                 return true;
             }
-            printf("Volume per second: %.2f\n", volumePerSecond());
             const double predictiveFactor = volumePerSecond() / 1000.0 * PREDICTIVE_TIME_MS;
             return currentVolume + predictiveFactor >= brewVolume;
         }
@@ -117,7 +117,6 @@ class BrewProcess : public Process {
     void progress() override {
         // Progress should be called around every 100ms, as defined in PROGRESS_INTERVAL
         double diff = currentVolume - lastVolume;
-        printf("Last Diff: %.2f\n", diff);
         if (diff < 0.0) {
             diff = 0.0;
         }
@@ -128,6 +127,7 @@ class BrewProcess : public Process {
         }
 
         if (isCurrentPhaseFinished()) {
+            previousPhaseFinished = millis();
             switch (phase) {
             case BrewPhase::INFUSION_PRESSURIZE:
                 phase = BrewPhase::INFUSION_PUMP;

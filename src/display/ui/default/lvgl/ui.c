@@ -164,6 +164,7 @@ lv_obj_t *ui_StatusScreen_labelContainer;
 lv_obj_t *ui_StatusScreen_preinfusePumpLabel;
 lv_obj_t *ui_StatusScreen_preinfuseBloomLabel;
 lv_obj_t *ui_StatusScreen_brewLabel;
+lv_obj_t *ui_StatusScreen_brewVolume;
 lv_obj_t *ui_StatusScreen_tempText;
 // CUSTOM VARIABLES
 
