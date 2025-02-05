@@ -234,8 +234,8 @@ export function Settings() {
           <b>Plugins</b>
         </div>
 
-        <div className="flex flex-col rounded-lg divide-y border-gray-200 border">
-          <div className="flex flex-row w-full gap-4 p-4 bg-gray-50 rounded-t-lg">
+        <div className="flex flex-col rounded-lg divide-y divide-[#ccc] border-[#ccc] dark:border-gray-600 dark:divide-gray-600 border">
+          <div className="flex flex-row w-full gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-t-lg">
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 id="homekit"
@@ -256,7 +256,7 @@ export function Settings() {
               <p>Open the Homekit App, find your GaggiMate device and scan the setup code above to add it.</p>
             </div>
           )}
-          <div className="flex flex-row w-full gap-4 p-4 bg-gray-50 rounded-b-lg">
+          <div className="flex flex-row w-full gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-b-lg">
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 id="boilerFillActive"
@@ -303,7 +303,7 @@ export function Settings() {
               </div>
             </div>
           )}
-          <div className="flex flex-row w-full gap-4 p-4 bg-gray-50 rounded-b-lg">
+          <div className="flex flex-row w-full gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-b-lg">
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 id="smartGrindActive"
@@ -355,7 +355,7 @@ export function Settings() {
             </div>
           )}
 
-          <div className="flex flex-row w-full gap-4 p-4 bg-gray-50 rounded-b-lg">
+          <div className="flex flex-row w-full gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-b-lg">
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 id="homeAssistant"
