@@ -66,7 +66,7 @@ void GitHubOTA::update() {
         }
 
         this->_phase_callback(PHASE_DISPLAY_FS);
-        result = update_filesystem(_latest_url + _firmware_name);
+        result = update_filesystem(_latest_url + _filesystem_name);
 
         if (result != HTTP_UPDATE_OK) {
             ESP_LOGI(TAG, "Filesystem Update failed: %s\n", Updater.getLastErrorString().c_str());
