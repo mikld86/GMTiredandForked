@@ -1,5 +1,6 @@
 #include "MQTTPlugin.h"
 #include "../core/Controller.h"
+#include <ctime>
 
 bool MQTTPlugin::connect(Controller *controller) {
     const Settings settings = controller->getSettings();
@@ -29,9 +30,15 @@ void MQTTPlugin::publish(const std::string &topic, const std::string &message) {
     String mac = WiFi.macAddress();
     mac.replace(":", "_");
     const char *cmac = mac.c_str();
-    char publishTopic[50];
+    char publishTopic[80];
     snprintf(publishTopic, sizeof(publishTopic), "gaggimate/%s/%s", cmac, topic.c_str());
     client.publish(publishTopic, message.c_str());
+}
+void MQTTPlugin::publishBrewState(const char *state) {
+    char json[100]; 
+    std::time_t now = std::time(nullptr); // Get current timestame
+    snprintf(json, sizeof(json), R"({"state":"%s","timestamp":%ld})", state, now);
+    publish("controller/brew/state", json);
 }
 
 void MQTTPlugin::setup(Controller *controller, PluginManager *pluginManager) {
@@ -68,7 +75,6 @@ void MQTTPlugin::setup(Controller *controller, PluginManager *pluginManager) {
         snprintf(json, sizeof(json), R"***({"temperature":%02f})***", temp);
         publish("boilers/0/targetTemperature", json);
     });
-
     pluginManager->on("controller:mode:change", [this](Event const &event) {
         int newMode = event.getInt("value");
         const char* modeStr;
@@ -83,19 +89,11 @@ void MQTTPlugin::setup(Controller *controller, PluginManager *pluginManager) {
         snprintf(json, sizeof(json), R"({"mode":%d,"mode_str":"%s"})", newMode, modeStr);
         publish("controller/mode", json);
     });
-    pluginManager->on("controller:brew:start", [this](Event const &event) {
-        char json[50];
-        snprintf(json, sizeof(json), R"({"Brew":%s})", "Started");
-        publish("controller/brew", json);
-    }); 
-    pluginManager->on("controller:brew:stop", [this](Event const &event) {
-        char json[50];
-        snprintf(json, sizeof(json), R"({"Brew":%s})", "Ended");
-        publish("controller/brew", json);
-    }); 
-    pluginManager->on("BLEScalePlugin:brew:stop", [this](Event const &event) {
-        char json[50];
-        snprintf(json, sizeof(json), R"({"Brew":%s})", "Ended");
-        publish("controller/brew", json);
-    }); 
+    pluginManager->on("controller:brew:start", [this](Event const &) {
+        publishBrewState("brewing");
+    });
+
+    pluginManager->on("controller:brew:end", [this](Event const &) {
+        publishBrewState("not brewing");
+    });
 }
