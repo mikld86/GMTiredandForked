@@ -83,6 +83,7 @@ void MQTTPlugin::setup(Controller *controller, PluginManager *pluginManager) {
             case 1: modeStr = "Brew"; break;
             case 2: modeStr = "Steam"; break;
             case 3: modeStr = "Water"; break;
+            case 4: modeStr = "Grind"; break;
             default: modeStr = "Unknown"; break; // Fallback in case of unexpected value
         }
         char json[100];
