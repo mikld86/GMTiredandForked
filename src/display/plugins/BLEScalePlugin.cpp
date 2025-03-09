@@ -7,6 +7,7 @@
 #include <scales/difluid.h>
 #include <scales/eclair.h>
 #include <scales/eureka.h>
+#include <scales/felicitaScale.h>
 #include <scales/timemore.h>
 
 void on_ble_measurement(float value) { BLEScales.onMeasurement(value); }
@@ -24,6 +25,7 @@ void BLEScalePlugin::setup(Controller *controller, PluginManager *manager) {
     EclairScalesPlugin::apply();
     EurekaScalesPlugin::apply();
     TimemoreScalesPlugin::apply();
+    FelicitaScalePlugin::apply();
     this->scanner = new RemoteScalesScanner();
     manager->on("controller:brew:start", [this](Event const &) { onProcessStart(); });
     manager->on("controller:grind:start", [this](Event const &) { onProcessStart(); });
