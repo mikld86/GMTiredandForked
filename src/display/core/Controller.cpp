@@ -135,6 +135,17 @@ void Controller::loop() {
         if (currentProcess != nullptr) {
             currentProcess->progress();
             if (!isActive()) {
+                if (currentProcess->getType() == MODE_BREW) {
+                    if (auto const *brewProcess = static_cast<BrewProcess *>(currentProcess);
+                        brewProcess->target == ProcessTarget::VOLUMETRIC) {
+                        settings.setBrewDelay(brewProcess->getNewDelayTime());
+                    }
+                } else if (currentProcess->getType() == MODE_GRIND) {
+                    if (auto const *grindProcess = static_cast<GrindProcess *>(currentProcess);
+                        grindProcess->target == ProcessTarget::VOLUMETRIC) {
+                        settings.setGrindDelay(grindProcess->getNewDelayTime());
+                    }
+                }
                 deactivate();
             }
         }
@@ -320,10 +331,10 @@ void Controller::activate() {
         if (settings.isVolumetricTarget() && volumetricAvailable) {
             currentProcess =
                 new BrewProcess(ProcessTarget::VOLUMETRIC, settings.getPressurizeTime(), settings.getInfusePumpTime(),
-                                settings.getInfuseBloomTime(), 0, settings.getTargetVolume());
+                                settings.getInfuseBloomTime(), 0, settings.getTargetVolume(), settings.getBrewDelay());
         } else {
             currentProcess = new BrewProcess(ProcessTarget::TIME, settings.getPressurizeTime(), settings.getInfusePumpTime(),
-                                             settings.getInfuseBloomTime(), settings.getTargetDuration(), 0);
+                                             settings.getInfuseBloomTime(), settings.getTargetDuration(), 0, 0.0);
         }
         break;
     case MODE_STEAM:
@@ -371,9 +382,10 @@ void Controller::activateGrind() {
     if (isGrindActive())
         return;
     if (settings.isVolumetricTarget() && volumetricAvailable) {
-        startProcess(new GrindProcess(ProcessTarget::VOLUMETRIC, 0, settings.getTargetGrindVolume()));
+        startProcess(new GrindProcess(ProcessTarget::VOLUMETRIC, 0, settings.getTargetGrindVolume(), settings.getGrindDelay()));
     } else {
-        startProcess(new GrindProcess(ProcessTarget::TIME, settings.getTargetGrindDuration(), settings.getTargetGrindVolume()));
+        startProcess(
+            new GrindProcess(ProcessTarget::TIME, settings.getTargetGrindDuration(), settings.getTargetGrindVolume(), 0.0));
     }
     updateRelay();
     updateLastAction();
