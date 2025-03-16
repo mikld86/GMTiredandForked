@@ -15,6 +15,8 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
+          fetch-tags: 'true'
+          fetch-depth: '100'
           submodules: 'recursive'
       - uses: actions/cache@v4
         with:
@@ -35,6 +37,7 @@ jobs:
       - name: Add version
         run: |
           mkdir -p out
+          git tag -d nightly
           git describe --tags --dirty > out/version.txt
       - name: Build Web
         run: ./scripts/build_spiffs.sh
