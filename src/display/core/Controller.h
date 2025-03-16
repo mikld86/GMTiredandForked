@@ -2,6 +2,7 @@
 #define CONTROLLER_H
 
 #include "NimBLEClientController.h"
+#include "NimBLEComm.h"
 #include "PluginManager.h"
 #include "Settings.h"
 #include <WiFi.h>
@@ -55,6 +56,8 @@ class Controller {
     Process *getLastProcess() const { return lastProcess; }
     Settings &getSettings() { return settings; }
     DefaultUI *getUI() const { return ui; }
+    bool isErrorState() const { return error > 0; }
+    int getError() const { return error; }
 
     // Event callback methods
     void updateLastAction();
@@ -95,13 +98,16 @@ class Controller {
 
     void setVolumetricAvailable(bool available) { volumetricAvailable = available; }
 
+    SystemInfo getSystemInfo() const { return systemInfo; }
+
+    NimBLEClientController *getClientController() { return &clientController; }
+
   private:
     // Initialization methods
     void setupPanel();
-
     void setupWifi();
-
     void setupBluetooth();
+    void setupInfos();
 
     // Functional methods
     void updateRelay();
@@ -125,6 +131,8 @@ class Controller {
     int mode = MODE_BREW;
     int currentTemp = 0;
 
+    SystemInfo systemInfo{};
+
     Process *currentProcess = nullptr;
     Process *lastProcess = nullptr;
 
@@ -138,6 +146,7 @@ class Controller {
     bool initialized = false;
     bool screenReady = false;
     bool volumetricAvailable = false;
+    int error = 0;
 };
 
 #endif // CONTROLLER_H

@@ -22,6 +22,8 @@ class NimBLEClientController : public NimBLEAdvertisedDeviceCallbacks, NimBLECli
     void registerRemoteErrorCallback(const remote_err_callback_t &callback);
     void registerBrewBtnCallback(const brew_callback_t &callback);
     void registerSteamBtnCallback(const steam_callback_t &callback);
+    const char *readInfo() const;
+    NimBLEClient *getClient() const { return client; };
 
   private:
     NimBLEClient *client;
@@ -37,6 +39,7 @@ class NimBLEClientController : public NimBLEAdvertisedDeviceCallbacks, NimBLECli
     NimBLERemoteCharacteristic *autotuneChar;
     NimBLERemoteCharacteristic *brewBtnChar;
     NimBLERemoteCharacteristic *steamBtnChar;
+    NimBLERemoteCharacteristic *infoChar;
     NimBLEAdvertisedDevice *serverDevice;
     bool readyForConnection = false;
 
