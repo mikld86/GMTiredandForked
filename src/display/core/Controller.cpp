@@ -93,7 +93,6 @@ void Controller::setupInfos() {
 
 void Controller::setupWifi() {
     if (settings.getWifiSsid() != "" && settings.getWifiPassword() != "") {
-        WiFi.setSleep(WIFI_PS_NONE);
         WiFi.mode(WIFI_STA);
         WiFi.begin(settings.getWifiSsid(), settings.getWifiPassword());
         for (int attempts = 0; attempts < WIFI_CONNECT_ATTEMPTS; attempts++) {
