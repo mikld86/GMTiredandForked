@@ -2,7 +2,7 @@
 #define PRESSURESENSOR_H
 
 #include <Arduino.h>
-#include <ADS1x15.h>
+#include <ADS1X15.h>
 
 constexpr int PRESSURE_READ_INTERVAL_MS = 500;
 constexpr float ADC_STEP = 6.144f / 32767.0f;

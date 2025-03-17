@@ -22,7 +22,7 @@
     "dlloydev/QuickPID": "^3.1.9",
     "dlloydev/sTune": "^2.4.0",
     "PSM": "https://github.com/banoz/PSM.Library.git",
-    "ADS1x15": "https://github.com/RobTillaart/ADS1X15.git",
+    "robtillaart/ADS1X15": "^0.5.2",
     "Wire": "*"
   }
 }
