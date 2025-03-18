@@ -73,20 +73,20 @@ void Controller::setupBluetooth() {
 }
 
 void Controller::setupInfos() {
-    const char *info = clientController.readInfo();
-    printf("System info: %s\n", info);
+    const std::string info = clientController.readInfo();
+    printf("System info: %s\n", info.c_str());
     JsonDocument doc;
-    DeserializationError err = deserializeJson(doc, String(info));
+    DeserializationError err = deserializeJson(doc, info);
     if (err) {
         printf("Error deserializing JSON: %s\n", err.c_str());
         systemInfo = SystemInfo{
             .hardware = "GaggiMate Standard 1.x", .version = "v1.0.0", .capabilities = {.dimming = false, .pressure = false}};
     } else {
-        systemInfo = SystemInfo{.hardware = doc["hardware"].as<String>(),
-                                .version = doc["version"].as<String>(),
+        systemInfo = SystemInfo{.hardware = doc["hw"].as<String>(),
+                                .version = doc["v"].as<String>(),
                                 .capabilities = SystemCapabilities{
-                                    .dimming = doc["capabilities"]["dimming"].as<bool>(),
-                                    .pressure = doc["capabilities"]["pressure"].as<bool>(),
+                                    .dimming = doc["cp"]["dm"].as<bool>(),
+                                    .pressure = doc["cp"]["ps"].as<bool>(),
                                 }};
     }
 }
@@ -167,18 +167,24 @@ void Controller::loop() {
         if (currentProcess != nullptr) {
             currentProcess->progress();
             if (!isActive()) {
-                if (currentProcess->getType() == MODE_BREW) {
-                    if (auto const *brewProcess = static_cast<BrewProcess *>(currentProcess);
-                        brewProcess->target == ProcessTarget::VOLUMETRIC) {
-                        settings.setBrewDelay(brewProcess->getNewDelayTime());
-                    }
-                } else if (currentProcess->getType() == MODE_GRIND) {
-                    if (auto const *grindProcess = static_cast<GrindProcess *>(currentProcess);
-                        grindProcess->target == ProcessTarget::VOLUMETRIC) {
-                        settings.setGrindDelay(grindProcess->getNewDelayTime());
-                    }
-                }
                 deactivate();
+            }
+        }
+        if (lastProcess != nullptr && !lastProcess->isComplete()) {
+            lastProcess->progress();
+        }
+        if (lastProcess != nullptr && lastProcess->isComplete() && !processCompleted) {
+            processCompleted = true;
+            if (lastProcess->getType() == MODE_BREW) {
+                if (auto const *brewProcess = static_cast<BrewProcess *>(lastProcess);
+                    brewProcess->target == ProcessTarget::VOLUMETRIC) {
+                    settings.setBrewDelay(brewProcess->getNewDelayTime());
+                }
+            } else if (lastProcess->getType() == MODE_GRIND) {
+                if (auto const *grindProcess = static_cast<GrindProcess *>(lastProcess);
+                    grindProcess->target == ProcessTarget::VOLUMETRIC) {
+                    settings.setGrindDelay(grindProcess->getNewDelayTime());
+                }
             }
         }
         int targetTemp = getTargetTemp();
@@ -377,6 +383,7 @@ void Controller::activate() {
         break;
     default:;
     }
+    processCompleted = false;
     updateRelay();
     updateLastAction();
     if (currentProcess->getType() == MODE_BREW) {
@@ -402,6 +409,7 @@ void Controller::deactivate() {
 }
 
 void Controller::clear() {
+    processCompleted = true;
     if (lastProcess != nullptr && lastProcess->getType() == MODE_BREW) {
         pluginManager->trigger("controller:brew:clear");
     }
@@ -411,6 +419,7 @@ void Controller::clear() {
 
 void Controller::activateGrind() {
     pluginManager->trigger("controller:grind:start");
+    processCompleted = false;
     if (isGrindActive())
         return;
     if (settings.isVolumetricTarget() && volumetricAvailable) {
