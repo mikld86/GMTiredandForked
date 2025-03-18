@@ -110,7 +110,7 @@ void ControllerOTA::sendData(uint8_t *data, uint16_t len) const {
         return;
     }
     rxChar->writeValue(data, len, true);
-    delay(10);
+    delay(25);
 }
 
 void ControllerOTA::notifyUpdate() const {
