@@ -110,7 +110,7 @@ void ControllerOTA::sendData(uint8_t *data, uint16_t len) const {
         return;
     }
     rxChar->writeValue(data, len, true);
-    delay(25);
+    delay(50);
 }
 
 void ControllerOTA::fillBuffer(Stream &in, uint8_t *buffer, uint16_t len) const {

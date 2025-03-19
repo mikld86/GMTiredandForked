@@ -21,8 +21,8 @@ void Heater::setup() {
 }
 
 void Heater::loop() {
-    if (temperature == 0 || setpoint == 0) {
-        digitalWrite(heaterPin, LOW);
+    if (temperature <= 0 || setpoint <= 0) {
+        analogWrite(heaterPin, 0);
         temperature = sensor->read();
         return;
     }

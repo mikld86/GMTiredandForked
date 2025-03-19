@@ -256,6 +256,7 @@ class GrindProcess : public Process {
             active = millis() - started < time;
         } else {
             double currentRate = volumetricRateCalculator->getRate();
+            ESP_LOGI("GrindProcess", "Current rate: %f, Current volume: %f, Expected Offset: %f", currentRate, currentVolume, currentRate * grindDelay);
             if (currentVolume + currentRate * grindDelay > grindVolume && active) {
                 active = false;
                 finished = millis();
@@ -265,6 +266,7 @@ class GrindProcess : public Process {
 
     double getNewDelayTime() const {
         double newDelay = grindDelay + volumetricRateCalculator->getOvershootAdjustMillis(double(grindVolume), currentVolume);
+        ESP_LOGI("GrindProcess", "Setting new delay time - Old: %2f, Expected Volume: %d, Actual Volume: %2f, New Delay: %f", grindDelay, grindVolume, currentVolume, newDelay);
         return newDelay;
     }
 
