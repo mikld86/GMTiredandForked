@@ -28,7 +28,8 @@ void Heater::loop() {
     }
 
     if (pid->Compute()) {
-        temperature = sensor->read();
+        float rawTemp = sensor->read();
+        temperature = 0.2 * rawTemp + 0.8 * temperature;
         analogWrite(heaterPin, output);
     }
 }
@@ -39,8 +40,10 @@ void Heater::setSetpoint(float setpoint) {
 }
 
 void Heater::setTunings(float Kp, float Ki, float Kd) {
-    pid->SetTunings(Kp, Ki, Kd);
-    ESP_LOGV(LOG_TAG, "Set tunings to Kp: %f, Ki: %f, Kd: %f", Kp, Ki, Kd);
+    if (pid->GetKp() != Kp || pid->GetKi() != Ki || pid->GetKd() != Kd) {
+        pid->SetTunings(Kp, Ki, Kd);
+        ESP_LOGV(LOG_TAG, "Set tunings to Kp: %f, Ki: %f, Kd: %f", Kp, Ki, Kd);
+    }
 }
 
 void Heater::loopTask(void *arg) {
