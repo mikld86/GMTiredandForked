@@ -99,6 +99,7 @@ void GaggiMateController::detectAddon() {
 void GaggiMateController::handlePingTimeout() {
     ESP_LOGE(LOG_TAG, "Ping timeout detected. Turning off heater and pump for safety.\n");
     // Turn off the heater and pump as a safety measure
+    this->heater->setSetpoint(0);
     this->pump->setPower(0);
     this->valve->set(false);
     this->alt->set(false);
@@ -108,6 +109,7 @@ void GaggiMateController::handlePingTimeout() {
 void GaggiMateController::thermalRunawayShutdown() {
     ESP_LOGE(LOG_TAG, "Thermal runaway detected! Turning off heater and pump!\n");
     // Turn off the heater and pump immediately
+    this->heater->setSetpoint(0);
     this->pump->setPower(0);
     this->valve->set(false);
     this->alt->set(false);
