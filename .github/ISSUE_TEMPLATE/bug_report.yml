@@ -29,7 +29,7 @@ body:
     validations:
       required: true
 
-- type: dropdown
+  - type: dropdown
     id: reproducibility
     attributes:
       label: "Are you able to reproduce the issue?"
