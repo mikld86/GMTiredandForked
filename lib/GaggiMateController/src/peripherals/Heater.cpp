@@ -11,7 +11,7 @@ Heater::Heater(TemperatureSensor *sensor, uint8_t heaterPin, const heater_error_
 
 void Heater::setup() {
     pinMode(heaterPin, OUTPUT);
-    setupAutotune();
+    setupPid();
     xTaskCreate(loopTask, "Heater::loop", configMINIMAL_STACK_SIZE * 4, this, 1, &taskHandle);
 }
 
@@ -37,7 +37,7 @@ void Heater::loop() {
         return;
     }
 
-    loopAutotune();
+    loopPid();
 }
 
 void Heater::setSetpoint(float setpoint) {
@@ -46,12 +46,10 @@ void Heater::setSetpoint(float setpoint) {
 }
 
 void Heater::setTunings(float Kp, float Ki, float Kd) {
-    /*
     if (pid->GetKp() != Kp || pid->GetKi() != Ki || pid->GetKd() != Kd) {
         pid->SetTunings(Kp, Ki, Kd);
         ESP_LOGV(LOG_TAG, "Set tunings to Kp: %f, Ki: %f, Kd: %f", Kp, Ki, Kd);
     }
-    */
 }
 
 void Heater::loopPid() {
