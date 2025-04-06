@@ -151,7 +151,7 @@ void WebUIPlugin::handleOTASettings(uint32_t clientId, JsonDocument &request) {
     updateOTAStatus("Checking...");
 }
 
-void WebUIPlugin::handleOTAStart(uint32_t clientId,  JsonDocument &request) {
+void WebUIPlugin::handleOTAStart(uint32_t clientId, JsonDocument &request) {
     updating = true;
     if (request["cp"].is<String>()) {
         updateComponent = request["cp"].as<String>();

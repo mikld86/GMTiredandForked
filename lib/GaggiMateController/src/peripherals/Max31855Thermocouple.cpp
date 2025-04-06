@@ -1,7 +1,7 @@
 #include "Max31855Thermocouple.h"
-#include <freertos/FreeRTOS.h>
 #include <Arduino.h>
 #include <SPI.h>
+#include <freertos/FreeRTOS.h>
 
 Max31855Thermocouple::Max31855Thermocouple(const int csPin, const int misoPin, const int sckPin,
                                            const temperature_callback_t &callback,

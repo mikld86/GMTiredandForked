@@ -1,9 +1,9 @@
 #include "GaggiMateController.h"
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
 #include "utilities.h"
 #include <Arduino.h>
 #include <SPI.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 
 GaggiMateController::GaggiMateController() {
     configs.push_back(GM_STANDARD_REV_1X);

@@ -1,11 +1,11 @@
 #ifndef HEATER_H
 #define HEATER_H
-#include <QuickPID.h>
-#include <sTune.h>
-#include <freertos/FreeRTOS.h>
 #include "Max31855Thermocouple.h"
 #include "TemperatureSensor.h"
+#include <QuickPID.h>
+#include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
+#include <sTune.h>
 
 constexpr float TUNER_INPUT_SPAN = 150.0f;
 constexpr float TUNER_OUTPUT_SPAN = 1000.0f;
@@ -45,7 +45,6 @@ class Heater {
     float Kp = 2.4;
     float Ki = 40;
     float Kd = 10;
-
 
     // Autotune variables
     float outputStart = 0;

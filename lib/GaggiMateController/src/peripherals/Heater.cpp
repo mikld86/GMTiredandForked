@@ -26,7 +26,8 @@ void Heater::setupPid() {
 }
 
 void Heater::setupAutotune() {
-    tune->Configure(TUNER_INPUT_SPAN, TUNER_OUTPUT_SPAN, outputStart, outputStep, TEST_TIME_SEC_AUTOTUNE, SETTLE_TIME_SEC_AUTOTUNE, TUNER_SAMPLES_AUTOTUNE);
+    tune->Configure(TUNER_INPUT_SPAN, TUNER_OUTPUT_SPAN, outputStart, outputStep, TEST_TIME_SEC_AUTOTUNE,
+                    SETTLE_TIME_SEC_AUTOTUNE, TUNER_SAMPLES_AUTOTUNE);
     tune->SetEmergencyStop(120);
 }
 
@@ -65,35 +66,35 @@ void Heater::loopAutotune() {
     float rawTemp = 0;
     float optimumOutput = tune->softPwm(heaterPin, temperature, output, setpoint, TUNER_OUTPUT_SPAN, debounce);
     switch (tune->Run()) {
-        case tune->sample: // active once per sample during test
-            rawTemp = sensor->read();
-            temperature = 0.2 * rawTemp + 0.8 * temperature;
-            tune->plotter(temperature, output, setpoint, 0.1f, 3); // output scale 0.5, plot every 3rd sample
-            break;
-        case tune->tunings: // active just once when sTune is done
-            tune->GetAutoTunings(&Kp, &Ki, &Kd); // sketch variables updated by sTune
-            pid->SetOutputLimits(0, TUNER_OUTPUT_SPAN);
-            pid->SetSampleTimeUs((TUNER_OUTPUT_SPAN - 1) * 1000);
-            debounce = 0; // ssr mode
-            output = outputStep;
-            pid->SetMode(QuickPID::Control::automatic);
-            pid->SetProportionalMode(QuickPID::pMode::pOnMeas);
-            pid->SetAntiWindupMode(QuickPID::iAwMode::iAwClamp);
-            pid->SetTunings(Kp, Ki, Kd);
-            break;
+    case tune->sample: // active once per sample during test
+        rawTemp = sensor->read();
+        temperature = 0.2 * rawTemp + 0.8 * temperature;
+        tune->plotter(temperature, output, setpoint, 0.1f, 3); // output scale 0.5, plot every 3rd sample
+        break;
+    case tune->tunings:                      // active just once when sTune is done
+        tune->GetAutoTunings(&Kp, &Ki, &Kd); // sketch variables updated by sTune
+        pid->SetOutputLimits(0, TUNER_OUTPUT_SPAN);
+        pid->SetSampleTimeUs((TUNER_OUTPUT_SPAN - 1) * 1000);
+        debounce = 0; // ssr mode
+        output = outputStep;
+        pid->SetMode(QuickPID::Control::automatic);
+        pid->SetProportionalMode(QuickPID::pMode::pOnMeas);
+        pid->SetAntiWindupMode(QuickPID::iAwMode::iAwClamp);
+        pid->SetTunings(Kp, Ki, Kd);
+        break;
 
-        case tune->runPid: // active once per sample after tunings
-            if (startup && temperature > setpoint - 5) { // reduce overshoot
-                startup = false;
-                output -= 9;
-                pid->SetMode(QuickPID::Control::manual);
-                pid->SetMode(QuickPID::Control::automatic);
-            }
-            rawTemp = sensor->read();
-            temperature = 0.2 * rawTemp + 0.8 * temperature;
-            pid->Compute();
-            tune->plotter(temperature, optimumOutput, setpoint, 0.1f, 3);
-            break;
+    case tune->runPid:                               // active once per sample after tunings
+        if (startup && temperature > setpoint - 5) { // reduce overshoot
+            startup = false;
+            output -= 9;
+            pid->SetMode(QuickPID::Control::manual);
+            pid->SetMode(QuickPID::Control::automatic);
+        }
+        rawTemp = sensor->read();
+        temperature = 0.2 * rawTemp + 0.8 * temperature;
+        pid->Compute();
+        tune->plotter(temperature, optimumOutput, setpoint, 0.1f, 3);
+        break;
     }
 }
 

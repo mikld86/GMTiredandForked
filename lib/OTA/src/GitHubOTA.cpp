@@ -63,9 +63,7 @@ void GitHubOTA::checkForUpdates() {
     }
 }
 
-String GitHubOTA::getCurrentVersion() const {
-    return _latest_version_string;
-}
+String GitHubOTA::getCurrentVersion() const { return _latest_version_string; }
 
 bool GitHubOTA::isUpdateAvailable(bool controller) const {
     if (controller) {

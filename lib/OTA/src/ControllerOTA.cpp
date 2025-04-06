@@ -1,6 +1,6 @@
 #include "ControllerOTA.h"
-#include <SPIFFS.h>
 #include <HTTPClient.h>
+#include <SPIFFS.h>
 
 void ControllerOTA::init(NimBLEClient *client, const ctr_progress_callback_t &progress_callback) {
     this->client = client;
@@ -12,7 +12,6 @@ void ControllerOTA::init(NimBLEClient *client, const ctr_progress_callback_t &pr
         txChar->subscribe(true, std::bind(&ControllerOTA::onReceive, this, std::placeholders::_1, std::placeholders::_2,
                                           std::placeholders::_3, std::placeholders::_4));
     }
-
 }
 
 void ControllerOTA::update(WiFiClientSecure &wifi_client, const String &release_url) {
