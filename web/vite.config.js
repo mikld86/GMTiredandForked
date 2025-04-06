@@ -11,6 +11,10 @@ export default defineConfig({
         target: 'http://gaggimate.local/',
         changeOrigin: true,
       },
+      '/ws': {
+        target: 'ws://gaggimate.local',
+        ws: true,
+      }
     },
   },
 });

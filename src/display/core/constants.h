@@ -18,6 +18,7 @@
 #define DEFAULT_PID "2.4,40,10"
 #define DEFAULT_MDNS_NAME "gaggimate"
 #define DEFAULT_OTA_CHANNEL "latest"
+#define DEFAULT_TIMEZONE "Europe/Rome"
 
 #define MODE_STANDBY 0
 #define MODE_BREW 1

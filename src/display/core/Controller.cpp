@@ -4,6 +4,7 @@
 #include <ctime>
 #include <display/config.h>
 #include <display/core/constants.h>
+#include <display/core/zones.h>
 #include <display/plugins/BLEScalePlugin.h>
 #include <display/plugins/BoilerFillPlugin.h>
 #include <display/plugins/HomekitPlugin.h>
@@ -111,7 +112,7 @@ void Controller::setupWifi() {
             Serial.print("IP address: ");
             Serial.println(WiFi.localIP());
 
-            configTzTime(TIMEZONE, NTP_SERVER);
+            configTzTime(resolve_timezone(settings.getTimezone()), NTP_SERVER);
         } else {
             WiFi.disconnect(true, true);
             Serial.println("Timed out while connecting to WiFi");

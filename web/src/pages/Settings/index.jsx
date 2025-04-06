@@ -4,6 +4,7 @@ import { Spinner } from '../../components/Spinner.jsx';
 import { useState, useEffect, useCallback, useRef } from 'preact/hooks';
 import homekitImage from '../../assets/homekit.png';
 import Card from './Card.jsx';
+import { timezones } from '../../config/zones.js';
 
 export function Settings() {
   const [submitting, setSubmitting] = useState(false);
@@ -343,6 +344,20 @@ export function Settings() {
               value={formData.mdnsName}
               onChange={onChange('mdnsName')}
             />
+          </div>
+          <div>
+            <label htmlFor="timezone" className="block font-medium text-[#333333]">
+              Timezone
+            </label>
+            <select id="timezone" name="timezone" className="input-field" onChange={onChange('timezone')}>
+              {
+                timezones.map(timezone => (
+                  <option key={timezone} value={timezone} selected={formData.timezone === timezone}>
+                    {timezone}
+                  </option>
+                ))
+              }
+            </select>
           </div>
           <div>
             <label htmlFor="pid" className="block font-medium text-[#333333]">

@@ -54,6 +54,7 @@ class Settings {
     String getHomeAssistantPassword() const { return homeAssistantPassword; }
     int getHomeAssistantPort() const { return homeAssistantPort; }
     bool isMomentaryButtons() const { return momentaryButtons; }
+    String getTimezone() const { return timezone; }
     void setTargetBrewTemp(int target_brew_temp);
     void setTargetSteamTemp(int target_steam_temp);
     void setTargetWaterTemp(int target_water_temp);
@@ -89,6 +90,7 @@ class Settings {
     void setHomeAssistantIP(const String &homeAssistantIP);
     void setHomeAssistantPort(int homeAssistantPort);
     void setMomentaryButtons(bool momentary_buttons);
+    void setTimezone(String timezone);
 
   private:
     Preferences preferences;
@@ -129,6 +131,7 @@ class Settings {
     String homeAssistantIP = "";
     int homeAssistantPort = 1883;
     bool momentaryButtons = false;
+    String timezone = DEFAULT_TIMEZONE;
 
     String otaChannel = DEFAULT_OTA_CHANNEL;
 };

@@ -1,5 +1,7 @@
 #include "Settings.h"
 
+#include <utility>
+
 Settings::Settings() {
     preferences.begin(PREFERENCES_KEY, true);
     startupMode = preferences.getInt("sm", MODE_STANDBY);
@@ -38,6 +40,7 @@ Settings::Settings() {
     homeAssistantPort = preferences.getInt("ha_p", 1883);
     homeAssistantUser = preferences.getString("ha_u", "");
     homeAssistantPassword = preferences.getString("ha_pw", "");
+    timezone = preferences.getString("tz", DEFAULT_TIMEZONE);
     preferences.end();
 }
 
@@ -87,6 +90,7 @@ void Settings::save() {
     preferences.putInt("ha_p", homeAssistantPort);
     preferences.putString("ha_u", homeAssistantUser);
     preferences.putString("ha_pw", homeAssistantPassword);
+    preferences.putString("tz", timezone);
     preferences.end();
 }
 
@@ -226,7 +230,7 @@ void Settings::setSmartGrindActive(bool smart_grind_active) {
 }
 
 void Settings::setSmartGrindIp(String smart_grind_ip) {
-    this->smartGrindIp = smart_grind_ip;
+    this->smartGrindIp = std::move(smart_grind_ip);
     save();
 }
 
@@ -260,5 +264,10 @@ void Settings::setHomeAssistantPassword(const String &homeAssistantPassword) {
 
 void Settings::setMomentaryButtons(bool momentary_buttons) {
     momentaryButtons = momentary_buttons;
+    save();
+}
+
+void Settings::setTimezone(String timezone) {
+    this->timezone = std::move(timezone);
     save();
 }
