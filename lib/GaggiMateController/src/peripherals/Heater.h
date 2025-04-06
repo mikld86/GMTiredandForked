@@ -2,11 +2,10 @@
 #define HEATER_H
 #include <QuickPID.h>
 #include <sTune.h>
-
-#include "FreeRTOS.h"
+#include <freertos/FreeRTOS.h>
 #include "Max31855Thermocouple.h"
 #include "TemperatureSensor.h"
-#include <task.h>
+#include <freertos/task.h>
 
 constexpr float TUNER_INPUT_SPAN = 150.0f;
 constexpr float TUNER_OUTPUT_SPAN = 1000.0f;

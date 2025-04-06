@@ -1,10 +1,10 @@
 #ifndef MAX31855THERMOCOUPLE_H
 #define MAX31855THERMOCOUPLE_H
 
-#include "FreeRTOS.h"
+#include <freertos/FreeRTOS.h>
 #include "TemperatureSensor.h"
 #include <MAX31855.h>
-#include <task.h>
+#include <freertos/task.h>
 
 constexpr int MAX31855_UPDATE_INTERVAL = 250;
 constexpr int MAX31855_MAX_ERRORS = 20;

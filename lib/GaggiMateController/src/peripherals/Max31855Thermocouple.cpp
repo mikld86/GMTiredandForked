@@ -1,5 +1,5 @@
 #include "Max31855Thermocouple.h"
-#include "FreeRTOS.h"
+#include <freertos/FreeRTOS.h>
 #include <Arduino.h>
 #include <SPI.h>
 
