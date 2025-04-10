@@ -3,7 +3,7 @@ import { useQuery } from 'preact-fetching';
 import { Spinner } from '../../components/Spinner.jsx';
 import { useState, useEffect, useCallback, useRef } from 'preact/hooks';
 import homekitImage from '../../assets/homekit.png';
-import Card from './Card.jsx';
+import Card from '../../components/Card.jsx';
 import { timezones } from '../../config/zones.js';
 
 export function Settings() {
@@ -87,8 +87,7 @@ export function Settings() {
   }
 
   return (
-    <>
-      <form ref={formRef} method="post" action="/api/settings" onSubmit={onSubmit} className="grid grid-cols-1 gap-2 sm:grid-cols-12 md:gap-2">
+    <form key="settings" ref={formRef} method="post" action="/api/settings" onSubmit={onSubmit} className="grid grid-cols-1 gap-2 sm:grid-cols-12 md:gap-2">
         <div className="sm:col-span-12">
           <h2 className="text-2xl font-bold">Settings</h2>
         </div>
@@ -619,6 +618,5 @@ export function Settings() {
           </div>
         </div>
       </form>
-    </>
   );
 }

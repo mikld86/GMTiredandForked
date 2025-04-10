@@ -1,4 +1,5 @@
 import { createContext } from 'preact';
+import { signal } from '@preact/signals';
 
 function randomId() {
   return Math.random().toString(36).replace(/[^a-z]+/g, '').substr(2, 10);
@@ -33,6 +34,9 @@ export default class ApiService {
   _onMessage(event) {
     const message = JSON.parse(event.data);
     const listeners = Object.values(this.listeners[message.tp] || {});
+    if (message.tp === 'evt:status') {
+      this._onStatus(message);
+    }
     for (const listener of listeners) {
       listener(message);
     }
@@ -54,6 +58,38 @@ export default class ApiService {
   off(type, id) {
     delete this.listeners[type][id];
   }
+
+  _onStatus(message) {
+    const newStatus = {
+      currentTemperature: message.ct,
+      targetTemperature: message.tt,
+      mode: message.m,
+      timestamp: new Date(),
+    };
+    const newValue = {
+      ...machine.value,
+      status: {
+        ...machine.value.status,
+        ...newStatus,
+      },
+      history: [
+        ...machine.value.history,
+        newStatus,
+      ]
+    };
+    newValue.history = newValue.history.slice(-600);
+    machine.value = newValue;
+  }
 }
 
 export const ApiServiceContext = createContext(null);
+
+export const machine = signal({
+  status: {
+    currentTemperature: 0,
+    targetTemperature: 0,
+    mode: 0,
+    selectedProfile: ''
+  },
+  history: []
+});

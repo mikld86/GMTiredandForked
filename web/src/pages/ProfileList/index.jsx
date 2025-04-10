@@ -12,6 +12,7 @@ Chart.register(Legend);
 
 import mockData from '../../mocks/profiles.json';
 import { ExtendedContent } from './ExtendedContent.jsx';
+import { ProfileAddCard } from './ProfileAddCard.jsx';
 
 const PhaseLabels = {
   preinfusion: 'Pre-Infusion',
@@ -24,6 +25,7 @@ function ProfileCard({ data }) {
   const typeClass = data.type === 'pro' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800';
   return (
     <div
+      key="profile-list"
       className="rounded-lg border flex flex-row items-center border-slate-200 bg-white p-4 sm:col-span-12 cursor-pointer"
     >
       <div className="flex flex-row justify-center items-center p-4">
@@ -107,17 +109,6 @@ function SimpleStep(props) {
           <span>Exit on: {t.value}{t.type === 'volumetric' && 'g'}</span>
         ))}
       </div>
-    </div>
-  );
-}
-
-function ProfileAddCard(props) {
-  return (
-    <div
-      className="rounded-lg border flex flex-col gap-2 items-center justify-center border-slate-200 bg-white p-2 sm:col-span-12 cursor-pointer text-slate-900 hover:bg-indigo-100 hover:text-indigo-600 active:border-indigo-200"
-    >
-      <i className="fa fa-plus text-3xl" />
-      <span className="text-sm">Add new</span>
     </div>
   );
 }
