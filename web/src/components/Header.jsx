@@ -84,7 +84,7 @@ export function Header(props) {
           </>}
           <hr className="h-5 border-0" />
           <div className="space-y-1.5">
-            {props.extended && <HeaderItem label="PID Autotune" link="/pidtune" iconClass="fa fa-temperature-half" onClick={() => openCb(false)} /> }
+            <HeaderItem label="PID Autotune" link="/pidtune" iconClass="fa fa-temperature-half" onClick={() => openCb(false)} />
             <HeaderItem label="Bluetooth Scales" link="/scales" iconClass="fa-brands fa-bluetooth-b" onClick={() => openCb(false)} />
             <HeaderItem label="Settings" link="/settings" iconClass="fa fa-cog" onClick={() => openCb(false)} />
           </div>
