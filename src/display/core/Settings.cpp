@@ -40,6 +40,7 @@ Settings::Settings() {
     homeAssistantPort = preferences.getInt("ha_p", 1883);
     homeAssistantUser = preferences.getString("ha_u", "");
     homeAssistantPassword = preferences.getString("ha_pw", "");
+    standbyTimeout = preferences.getInt("st", 0);
     timezone = preferences.getString("tz", DEFAULT_TIMEZONE);
     preferences.end();
 
@@ -279,6 +280,7 @@ void Settings::doSave() {
     preferences.putString("ha_u", homeAssistantUser);
     preferences.putString("ha_pw", homeAssistantPassword);
     preferences.putString("tz", timezone);
+    preferences.putInt("st", standbyTimeout);
     preferences.end();
 }
 

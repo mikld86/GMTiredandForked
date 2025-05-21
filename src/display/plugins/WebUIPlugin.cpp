@@ -235,7 +235,7 @@ void WebUIPlugin::handleSettings(AsyncWebServerRequest *request) const {
     AsyncResponseStream *response = request->beginResponseStream("application/json");
     JsonDocument doc;
     Settings const &settings = controller->getSettings();
-    doc["startupMode"] = settings.getStartupMode();
+    doc["startupMode"] = settings.getStartupMode() == MODE_BREW ? "brew" : "standby";
     doc["targetBrewTemp"] = settings.getTargetBrewTemp();
     doc["targetSteamTemp"] = settings.getTargetSteamTemp();
     doc["targetWaterTemp"] = settings.getTargetWaterTemp();
