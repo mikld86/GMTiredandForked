@@ -2,7 +2,7 @@
 
 # Clean data
 rm -rf data/*
-mkdir -p data/w
+mkdir -p data/
 mkdir -p data/profiles
 touch data/profiles/.keep
 
@@ -11,4 +11,4 @@ cd web || exit
 npm ci
 npm run build
 
-cp -R dist/* ../data/w/
+cp -R dist/* ../data/
