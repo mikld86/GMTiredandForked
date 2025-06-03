@@ -9,8 +9,8 @@ export function Autotune() {
   const apiService = useContext(ApiServiceContext);
   const [active, setActive] = useState(false);
   const [result, setResult] = useState(null);
-  const [time, setTime] = useState(50);
-  const [samples, setSamples] = useState(5);
+  const [time, setTime] = useState(60);
+  const [samples, setSamples] = useState(4);
   const onStart = useCallback(() => {
     apiService.send({
       tp: 'req:autotune-start',
@@ -60,6 +60,9 @@ export function Autotune() {
             {
               !active && !result && (
                 <>
+                  <div className="sm:col-span-12">
+                    Please run the Autotune with the boiler below 50°C. The process should take about 30 seconds.
+                  </div>
                   <div className="sm:col-span-6">
                     <label htmlFor="testTime" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
                       Tuning Goal (0 = Conservative, 100 = Aggressive)

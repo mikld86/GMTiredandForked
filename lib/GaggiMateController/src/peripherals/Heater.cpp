@@ -60,7 +60,7 @@ void Heater::setSetpoint(float setpoint) {
 
 void Heater::setTunings(float Kp, float Ki, float Kd) {
     if (simplePid->getKp() != Kp || simplePid->getKi() != Ki || simplePid->getKd() != Kd) {
-        simplePid->setControllerPIDGains(Kp, Ki, Kd, simplePid->getKFF());
+        simplePid->setControllerPIDGains(Kp, Ki, Kd, 0.0f);
         simplePid->reset();
         ESP_LOGI(LOG_TAG, "Set tunings to Kp: %f, Ki: %f, Kd: %f", Kp, Ki, Kd);
     }
@@ -96,6 +96,13 @@ void Heater::loopAutotune() {
         while (micros() - microseconds < loopInterval) {
             softPwm(TUNER_OUTPUT_SPAN);
             vTaskDelay(1 / portTICK_PERIOD_MS);
+        }
+        if (temperature > 160.0f) {
+            output = 0.0f;
+            autotuning = false;
+            softPwm(TUNER_OUTPUT_SPAN);
+            pid_callback(0, 0, 0);
+            return;
         }
     }
     output = 0.0f;
