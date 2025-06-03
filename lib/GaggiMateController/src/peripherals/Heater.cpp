@@ -4,16 +4,12 @@
 
 
 Heater::Heater(TemperatureSensor *sensor, uint8_t heaterPin, const heater_error_callback_t &error_callback,
-               const pid_result_callback_t &pid_callback, PIDLibrary library)
-    : _library(library), sensor(sensor), heaterPin(heaterPin), taskHandle(nullptr), error_callback(error_callback),
+               const pid_result_callback_t &pid_callback)
+    : sensor(sensor), heaterPin(heaterPin), taskHandle(nullptr), error_callback(error_callback),
       pid_callback(pid_callback) {
-    if (_library == PIDLibrary::Legacy) {
-        pid = new QuickPID(&temperature, &output, &setpoint);
-        tuner = new PIDAutotuner();
-    } else {
-        simplePid = new SimplePID(&output, &temperature, &setpoint);
-        autotuner = new Autotune();
-    }
+
+    simplePid = new SimplePID(&output, &temperature, &setpoint);
+    autotuner = new Autotune();
 }
 
 void Heater::setup() {
@@ -23,56 +19,30 @@ void Heater::setup() {
 }
 
 void Heater::setupPid() {
-    if (_library == PIDLibrary::Legacy) {
-        pid->SetOutputLimits(0, TUNER_OUTPUT_SPAN);
-        pid->SetSampleTimeUs((TUNER_OUTPUT_SPAN - 1) * 1000);
-        pid->SetMode(QuickPID::Control::automatic);
-        pid->SetProportionalMode(QuickPID::pMode::pOnError);
-        pid->SetDerivativeMode(QuickPID::dMode::dOnMeas);
-        pid->SetAntiWindupMode(QuickPID::iAwMode::iAwClamp);
-        pid->SetTunings(Kp, Ki, Kd);
-    } else {
-        simplePid->setSamplingFrequency(TUNER_OUTPUT_SPAN / 1000.0f);
-        simplePid->setCtrlOutputLimits(0.0f, TUNER_OUTPUT_SPAN);
-        simplePid->activateSetPointFilter(true);
-        simplePid->activateFeedForward(true);
-        simplePid->reset();
-    }
+    simplePid->setSamplingFrequency(TUNER_OUTPUT_SPAN / 1000.0f);
+    simplePid->setCtrlOutputLimits(0.0f, TUNER_OUTPUT_SPAN);
+    simplePid->activateSetPointFilter(false);
+    simplePid->activateFeedForward(false);
+    simplePid->reset();
 }
 
-void Heater::setupAutotune(int tuningTemp, int samples) {
-    if (_library == PIDLibrary::Legacy) {
-        pid->Initialize();
-        pid->SetMode(QuickPID::Control::manual);
-        tuner->setOutputRange(0, TUNER_OUTPUT_SPAN);
-        tuner->setTargetInputValue(tuningTemp);
-        tuner->setTuningCycles(samples);
-        tuner->setLoopInterval((TUNER_OUTPUT_SPAN - 1) * 1000);
-        tuner->setZNMode(PIDAutotuner::ZNModeLessOvershoot);
-    } else {
-        autotuner->setWindowsize(samples);
-        autotuner->setEpsilon(0.1f);
-        autotuner->setRequiredConfirmations(3);
-        autotuner->setTuningGoal(tuningTemp);
-        autotuner->reset();
-    }
+void Heater::setupAutotune(int goal, int windowSize) {
+    autotuner->setWindowsize(windowSize);
+    autotuner->setEpsilon(0.1f);
+    autotuner->setRequiredConfirmations(3);
+    autotuner->setTuningGoal(goal);
+    autotuner->reset();
 }
 
 void Heater::loop() {
     if (temperature <= 0.0f || setpoint <= 0.0f) {
-        if (_library == PIDLibrary::Nimrod)
-            simplePid->setMode(SimplePID::Control::manual);
-        if (_library == PIDLibrary::Legacy)
-            pid->SetMode(QuickPID::Control::manual);
+        simplePid->setMode(SimplePID::Control::manual);
         digitalWrite(heaterPin, LOW);
         relayStatus = false;
         temperature = sensor->read();
         return;
     }
-    if (_library == PIDLibrary::Nimrod)
-        simplePid->setMode(SimplePID::Control::automatic);
-    if (_library == PIDLibrary::Legacy)
-        pid->SetMode(QuickPID::Control::automatic);
+    simplePid->setMode(SimplePID::Control::automatic);
 
     if (autotuning) {
         loopAutotune();
@@ -89,72 +59,27 @@ void Heater::setSetpoint(float setpoint) {
 }
 
 void Heater::setTunings(float Kp, float Ki, float Kd) {
-    if (_library == PIDLibrary::Legacy) {
-        if (pid->GetKp() != Kp || pid->GetKi() != Ki || pid->GetKd() != Kd) {
-            pid->SetTunings(Kp, Ki, Kd);
-            pid->SetMode(QuickPID::Control::manual);
-            pid->SetMode(QuickPID::Control::automatic);
-            ESP_LOGI(LOG_TAG, "Set tunings to Kp: %f, Ki: %f, Kd: %f", Kp, Ki, Kd);
-        }
-    } else {
-        if (simplePid->getKp() != Kp || simplePid->getKi() != Ki || simplePid->getKd() != Kd) {
-            simplePid->setControllerPIDGains(Kp, Ki, Kd, simplePid->getKFF());
-            simplePid->reset();
-            ESP_LOGI(LOG_TAG, "Set tunings to Kp: %f, Ki: %f, Kd: %f", Kp, Ki, Kd);
-        }
+    if (simplePid->getKp() != Kp || simplePid->getKi() != Ki || simplePid->getKd() != Kd) {
+        simplePid->setControllerPIDGains(Kp, Ki, Kd, simplePid->getKFF());
+        simplePid->reset();
+        ESP_LOGI(LOG_TAG, "Set tunings to Kp: %f, Ki: %f, Kd: %f", Kp, Ki, Kd);
     }
 }
 
-void Heater::autotune(int testTime, int samples) {
-    setupAutotune(testTime, samples);
+void Heater::autotune(int goal, int windowSize) {
+    setupAutotune(goal, windowSize);
     autotuning = true;
 }
 
 void Heater::loopPid() {
     softPwm(TUNER_OUTPUT_SPAN);
     temperature = sensor->read();
-    if (_library == PIDLibrary::Legacy) {
-        if (pid->Compute()) {
-            plot(output, 1.0f, 3);
-        }
-    } else {
-        if (simplePid->update()) {
-            plot(output, 1.0f, 1);
-        }
+    if (simplePid->update()) {
+        plot(output, 1.0f, 1);
     }
 }
 
 void Heater::loopAutotune() {
-    if (_library == PIDLibrary::Legacy) {
-        loopAutotuneLegacy();
-    } else {
-        loopAutotuneNimrod();
-    }
-}
-
-void Heater::loopAutotuneLegacy() {
-    tuner->startTuningLoop(micros());
-    long microseconds;
-    long loopInterval = (static_cast<long>(TUNER_OUTPUT_SPAN) - 1L) * 1000L;
-    while (!tuner->isFinished()) {
-        microseconds = micros();
-        temperature = sensor->read();
-        output = tuner->tunePID(temperature, microseconds);
-        softPwm(TUNER_OUTPUT_SPAN);
-        plot(output, 1.0f, 3);
-        while (micros() - microseconds < loopInterval) {
-            softPwm(TUNER_OUTPUT_SPAN);
-            vTaskDelay(1 / portTICK_PERIOD_MS);
-        }
-    }
-    output = 0;
-    softPwm(TUNER_OUTPUT_SPAN);
-    pid_callback(tuner->getKp(), tuner->getKi(), tuner->getKd());
-    setTunings(tuner->getKp(), tuner->getKi(), tuner->getKd());
-    autotuning = false;
-}
-
-void Heater::loopAutotuneNimrod() {
     simplePid->setMode(SimplePID::Control::manual);
     autotuner->reset();
     long microseconds;
@@ -176,17 +101,17 @@ void Heater::loopAutotuneNimrod() {
     output = 0.0f;
     autotuning = false;
     softPwm(TUNER_OUTPUT_SPAN);
-    
+
     pid_callback(autotuner->getKp() * 1000.0f, autotuner->getKi() * 1000.0f, autotuner->getKd() * 1000.0f);
 
     setTunings(autotuner->getKp() * 1000.0f, autotuner->getKi() * 1000.0f, autotuner->getKd() * 1000.0f);
-    simplePid->computeSetpointDelay(autotuner->getSystemDelay());
-    simplePid->setKFF(autotuner->getKff()*1000);
-    simplePid->setMode(SimplePID::Control::automatic);
-        
-    simplePid->setSetpointRateLimits(-INFINITY, autotuner->getSystemGain() * 0.8);
-    simplePid->setSetpointFilterFrequency(autotuner->getCrossoverFreq()/2);
-    
+    // simplePid->computeSetpointDelay(autotuner->getSystemDelay());
+    // simplePid->setKFF(autotuner->getKff()*1000);
+    // simplePid->setMode(SimplePID::Control::automatic);
+
+    // simplePid->setSetpointRateLimits(-INFINITY, autotuner->getSystemGain() * 0.8);
+    // simplePid->setSetpointFilterFrequency(autotuner->getCrossoverFreq()/2);
+
     ESP_LOGI(LOG_TAG, "Autotuning finished: Kp=%.4f, Ki=%.4f, Kd=%.4f, Kff=%.4f\n", autotuner->getKp()*1000.0f, autotuner->getKi()*1000.0f, autotuner->getKd()*1000.0f, autotuner->getKff()*1000.0f);
     ESP_LOGI(LOG_TAG, "System delay: %.2f s, System gain: %.4f Setpoint Freq: %.4f Hz\n", autotuner->getSystemDelay(), autotuner->getSystemGain(), autotuner->getCrossoverFreq()/2);
 }

@@ -9,8 +9,8 @@ export function Autotune() {
   const apiService = useContext(ApiServiceContext);
   const [active, setActive] = useState(false);
   const [result, setResult] = useState(null);
-  const [time, setTime] = useState(93);
-  const [samples, setSamples] = useState(10);
+  const [time, setTime] = useState(50);
+  const [samples, setSamples] = useState(5);
   const onStart = useCallback(() => {
     apiService.send({
       tp: 'req:autotune-start',
@@ -62,7 +62,7 @@ export function Autotune() {
                 <>
                   <div className="sm:col-span-6">
                     <label htmlFor="testTime" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                      Test Temperature (°C)
+                      Tuning Goal (0 = Conservative, 100 = Aggressive)
                     </label>
                     <input
                       id="testTime"
@@ -75,7 +75,7 @@ export function Autotune() {
                   </div>
                   <div className="sm:col-span-6">
                     <label htmlFor="samples" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                      Samples
+                      Window Size
                     </label>
                     <input
                       id="samples"

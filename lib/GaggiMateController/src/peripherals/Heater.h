@@ -4,10 +4,8 @@
 #include "Max31855Thermocouple.h"
 #include "SimplePID.h"
 #include "TemperatureSensor.h"
-#include <QuickPID.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
-#include <pidautotuner.h>
 
 enum class PIDLibrary { Legacy, Nimrod };
 
@@ -20,30 +18,25 @@ using pid_result_callback_t = std::function<void(float Kp, float Ki, float Kd)>;
 class Heater {
   public:
     Heater(TemperatureSensor *sensor, uint8_t heaterPin, const heater_error_callback_t &error_callback,
-           const pid_result_callback_t &pid_callback, PIDLibrary library = PIDLibrary::Nimrod);
+           const pid_result_callback_t &pid_callback);
     void setup();
     void loop();
 
     void setSetpoint(float setpoint);
     void setTunings(float Kp, float Ki, float Kd);
-    void autotune(int testTime, int samples);
+    void autotune(int goal, int windowSize);
 
   private:
     void setupPid();
-    void setupAutotune(int tuningTemp, int samples);
+    void setupAutotune(int goal, int windowSize);
     void loopPid();
     void loopAutotune();
-    void loopAutotuneLegacy();
-    void loopAutotuneNimrod();
     float softPwm(uint32_t windowSize);
     void plot(float optimumOutput, float outputScale, uint8_t everyNth);
     void setTuningGoal(float percent);
-    PIDLibrary _library;
     TemperatureSensor *sensor;
     uint8_t heaterPin;
     xTaskHandle taskHandle;
-    QuickPID *pid = nullptr;
-    PIDAutotuner *tuner = nullptr;
     SimplePID *simplePid = nullptr;
     Autotune *autotuner = nullptr;
 
