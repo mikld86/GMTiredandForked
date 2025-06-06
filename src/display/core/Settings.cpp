@@ -43,6 +43,9 @@ Settings::Settings() {
     homeAssistantPassword = preferences.getString("ha_pw", "");
     standbyTimeout = preferences.getInt("sbt", DEFAULT_STANDBY_TIMEOUT_MS);
     timezone = preferences.getString("tz", DEFAULT_TIMEZONE);
+    selectedProfile = preferences.getString("sp", "");
+    profilesMigrated = preferences.getBool("pm", false);
+    favoritedProfiles = explode(preferences.getString("fp", ""), ',');
     preferences.end();
 
     xTaskCreate(loopTask, "Settings::loop", configMINIMAL_STACK_SIZE * 6, this, 1, &taskHandle);
@@ -81,7 +84,7 @@ void Settings::setTemperatureOffset(const int temperature_offset) {
     save();
 }
 
-void Settings::setPressureScaling(const float pressure_scaling){
+void Settings::setPressureScaling(const float pressure_scaling) {
     pressureScaling = pressure_scaling;
     save();
 }
@@ -249,6 +252,32 @@ void Settings::setTimezone(String timezone) {
     save();
 }
 
+void Settings::setSelectedProfile(String selected_profile) {
+    this->selectedProfile = std::move(selected_profile);
+    save();
+}
+
+void Settings::setProfilesMigrated(bool profiles_migrated) {
+    profilesMigrated = profiles_migrated;
+    save();
+}
+
+void Settings::setFavoritedProfiles(std::vector<String> favorited_profiles) {
+    favoritedProfiles = std::move(favorited_profiles);
+    save();
+}
+
+void Settings::addFavoritedProfile(String profile) {
+    favoritedProfiles.emplace_back(profile);
+    save();
+}
+
+void Settings::removeFavoritedProfile(String profile) {
+    favoritedProfiles.erase(std::remove(favoritedProfiles.begin(), favoritedProfiles.end(), profile), favoritedProfiles.end());
+    favoritedProfiles.shrink_to_fit();
+    save();
+}
+
 void Settings::doSave() {
     if (!dirty) {
         return;
@@ -293,7 +322,11 @@ void Settings::doSave() {
     preferences.putString("ha_u", homeAssistantUser);
     preferences.putString("ha_pw", homeAssistantPassword);
     preferences.putString("tz", timezone);
+    preferences.putString("sp", selectedProfile);
     preferences.putInt("sbt", standbyTimeout);
+    preferences.putBool("pm", profilesMigrated);
+    preferences.putInt("mb", momentaryButtons);
+    preferences.putString("fp", implode(favoritedProfiles, ","));
     preferences.end();
 }
 
