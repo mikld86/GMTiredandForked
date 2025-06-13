@@ -195,17 +195,15 @@ function Phase({ phase, onChange, onRemove }) {
         />
         <a
           href="javascript:void(0)"
-          title="Delete this phase"
+          tooltip="Delete this phase"
           onClick={() => onRemove()}
           className="hidden md:flex group items-center justify-between gap-2 rounded-md border border-transparent px-2.5 py-2 text-sm font-semibold text-red-600 hover:bg-red-100 active:border-red-200"
         >
           <span className="fa fa-trash" />
         </a>
       </div>
-      <div className="col-span-6 flex flex-row gap-4"
-           title="Should the pump be active?"
-      >
-        <label className="relative inline-flex items-center cursor-pointer">
+      <div className="col-span-6 flex flex-row gap-4">
+        <label className="relative inline-flex items-center cursor-pointer" tooltip="Should the pump be active?">
           <input
             value="on"
             type="checkbox"
@@ -218,10 +216,8 @@ function Phase({ phase, onChange, onRemove }) {
         </label>
         <span>Pump</span>
       </div>
-      <div className="col-span-6 flex flex-row gap-4"
-           title="Should the valve between pump and coffee grounds be open?"
-      >
-        <label className="relative inline-flex items-center cursor-pointer">
+      <div className="col-span-6 flex flex-row gap-4">
+        <label className="relative inline-flex items-center cursor-pointer" tooltip="Should the valve between boiler and puck be open?">
           <input
             value="on"
             type="checkbox"
