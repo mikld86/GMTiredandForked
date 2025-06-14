@@ -530,8 +530,11 @@ void DefaultUI::updateStandbyScreen() const {
     if (!apActive && WiFi.status() == WL_CONNECTED) {
         tm timeinfo;
         if (getLocalTime(&timeinfo, 50)) {
-            char time[6];
-            strftime(time, 6, "%H:%M", &timeinfo);
+            // allocate enough space for both 12h/24h time formats
+            char time[9];
+            Settings &settings = controller->getSettings();
+            const char* format = settings.isClock24hFormat() ? "%H:%M" : "%I:%M %p";
+            strftime(time, sizeof(time), format, &timeinfo);
             lv_label_set_text(ui_StandbyScreen_time, time);
             lv_obj_clear_flag(ui_StandbyScreen_time, LV_OBJ_FLAG_HIDDEN);
         }
