@@ -236,6 +236,7 @@ function Phase({ phase, onChange, onRemove }) {
           <input
             className="input-field addition"
             type="number"
+            min="1"
             value={phase.duration}
             onChange={(e) => onFieldChange('duration', e.target.value)}
           />
