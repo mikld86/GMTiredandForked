@@ -213,6 +213,7 @@ void DefaultUI::setupState() {
     grindDuration = settings.getTargetGrindDuration();
     grindVolume = settings.getTargetGrindVolume();
     pressureAvailable = controller->getSystemInfo().capabilities.pressure ? 1 : 0;
+    pressureScaling = std::ceil(settings.getPressureScaling());
     selectedProfileId = settings.getSelectedProfile();
     profileManager->loadSelectedProfile(selectedProfile);
 }
@@ -598,7 +599,7 @@ void DefaultUI::updateStatusScreen() const {
     if (brewProcess->isAdvancedPump()) {
         float pressure = brewProcess->getPumpTargetPressure();
         ESP_LOGI("DefaultUI", "%.2f", pressure);
-        const double percentage = 1.0 - static_cast<double>(pressure) / static_cast<double>(16);
+        const double percentage = 1.0 - static_cast<double>(pressure) / static_cast<double>(pressureScaling);
         int16_t angle = percentage * 1360.0 - 1360.0 / 2.0 + 900.0;
         lv_img_set_angle(uic_StatusScreen_dials_pressureTarget, angle);
     }
@@ -630,6 +631,7 @@ void DefaultUI::adjustDials(lv_obj_t *dials) {
     lv_obj_set_x(tempText, pressureAvailable ? -50 : 0);
     lv_obj_set_y(tempText, pressureAvailable ? -205 : -180);
     lv_arc_set_bg_angles(tempGauge, 118, pressureAvailable ? 242 : 62);
+    lv_arc_set_range(pressureGauge,0,pressureScaling);
 }
 
 void DefaultUI::loopTask(void *arg) {
