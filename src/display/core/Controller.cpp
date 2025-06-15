@@ -329,7 +329,7 @@ void Controller::setTargetGrindDuration(int duration) {
 
 void Controller::setTargetGrindVolume(double volume) {
     Event event = pluginManager->trigger("controller:grindVolume:change", "value", static_cast<float>(volume));
-    settings.setTargetGrindVolume(event.getInt("value"));
+    settings.setTargetGrindVolume(event.getFloat("value"));
     updateLastAction();
 }
 

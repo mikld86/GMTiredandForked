@@ -69,7 +69,7 @@ float DimmedPump::calculatePowerForPressure(float targetPressure, float currentP
     if (pressureDelta <= 0.0f) {
         return 0;
     }
-    return std::min(maxPower, 30.0f * pressureDelta + 20.0f);
+    return std::min(maxPower, 30.0f * pressureDelta + 30.0f);
 }
 
 float DimmedPump::calculatePowerForFlow(float targetFlow, float currentPressure, float pressureLimit) const {
