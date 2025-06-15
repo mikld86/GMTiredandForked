@@ -28,7 +28,7 @@ class Controller {
     void setTargetDuration(int duration);
     void setTargetVolume(int volume);
     void setTargetGrindDuration(int duration);
-    void setTargetGrindVolume(int volume);
+    void setTargetGrindVolume(double volume);
 
     int getMode() const;
     int getTargetTemp();
