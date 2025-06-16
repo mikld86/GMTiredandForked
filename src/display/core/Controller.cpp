@@ -75,9 +75,12 @@ void Controller::connect() {
 
 void Controller::setupBluetooth() {
     clientController.initClient();
-    clientController.registerSensorCallback([this](const float temp, const float pressure) {
+    clientController.registerSensorCallback([this](const float temp, const float pressure, const float flow) {
         onTempRead(temp);
+        this->pressure = pressure;
+        this->currentFlow = flow;
         pluginManager->trigger("boiler:pressure:change", "value", pressure);
+        pluginManager->trigger("pump:flow:change", "value", flow);
     });
     clientController.registerBrewBtnCallback([this](const int brewButtonStatus) { handleBrewButton(brewButtonStatus); });
     clientController.registerSteamBtnCallback([this](const int steamButtonStatus) { handleSteamButton(steamButtonStatus); });
@@ -97,6 +100,11 @@ void Controller::setupBluetooth() {
         settings.setPid(String(pid));
         pluginManager->trigger("controller:autotune:result");
         autotuning = false;
+    });
+    clientController.registerVolumetricMeasurementCallback([this](const float value) {
+        if (!volumetricOverride) {
+            onVolumetricMeasurement(value);
+        }
     });
     pluginManager->trigger("controller:bluetooth:init");
 }
@@ -242,6 +250,8 @@ bool Controller::isUpdating() const { return updating; }
 bool Controller::isAutotuning() const { return autotuning; }
 
 bool Controller::isReady() const { return !isUpdating() && !isErrorState() && !isAutotuning(); }
+
+bool Controller::isVolumetricAvailable() const { return volumetricOverride || systemInfo.capabilities.dimming; }
 
 void Controller::autotune(int testTime, int samples) {
     if (isActive() || !isReady()) {
@@ -420,9 +430,11 @@ void Controller::updateControl() {
         if (brewProcess->isAdvancedPump() && systemInfo.capabilities.pressure) {
             clientController.sendAdvancedOutputControl(brewProcess->isRelayActive(), static_cast<float>(targetTemp), true,
                                                        brewProcess->getPumpTargetPressure(), 0.0f);
+            targetPressure = brewProcess->getPumpTargetPressure();
             return;
         }
     }
+    targetPressure = 0.0f;
     clientController.sendOutputControl(isActive() && currentProcess->isRelayActive(),
                                        isActive() ? currentProcess->getPumpValue() : 0, static_cast<float>(targetTemp));
 }
@@ -431,11 +443,13 @@ void Controller::activate() {
     if (isActive())
         return;
     clear();
+    clientController.tare();
+    delay(100);
     switch (mode) {
     case MODE_BREW:
         startProcess(new BrewProcess(profileManager->getSelectedProfile(),
-                                     settings.isVolumetricTarget() && volumetricAvailable ? ProcessTarget::VOLUMETRIC
-                                                                                          : ProcessTarget::TIME,
+                                     settings.isVolumetricTarget() && isVolumetricAvailable() ? ProcessTarget::VOLUMETRIC
+                                                                                              : ProcessTarget::TIME,
                                      settings.getBrewDelay()));
         break;
     case MODE_STEAM:
@@ -481,7 +495,7 @@ void Controller::activateGrind() {
     if (isGrindActive())
         return;
     clear();
-    if (settings.isVolumetricTarget() && volumetricAvailable) {
+    if (settings.isVolumetricTarget() && isVolumetricAvailable()) {
         startProcess(new GrindProcess(ProcessTarget::VOLUMETRIC, 0, settings.getTargetGrindVolume(), settings.getGrindDelay()));
     } else {
         startProcess(
