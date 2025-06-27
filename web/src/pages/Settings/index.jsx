@@ -294,6 +294,7 @@ export function Settings() {
                 id="brewDelay"
                 name="brewDelay"
                 type="number"
+                step="any"
                 className="input-field"
                 placeholder="0"
                 value={formData.brewDelay}
@@ -308,6 +309,7 @@ export function Settings() {
                 id="grindDelay"
                 name="grindDelay"
                 type="number"
+                step="any"
                 className="input-field"
                 placeholder="0"
                 value={formData.grindDelay}
