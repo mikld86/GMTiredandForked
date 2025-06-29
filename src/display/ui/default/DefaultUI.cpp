@@ -6,6 +6,8 @@
 #include <display/drivers/LilyGoDriver.h>
 #include <display/drivers/WaveshareDriver.h>
 #include <display/drivers/common/LV_Helper.h>
+#include <display/ui/default/lvgl/ui_theme_manager.h>
+#include <display/ui/default/lvgl/ui_themes.h>
 #include <display/ui/utils/effects.h>
 
 static EffectManager effect_mgr;
@@ -13,6 +15,56 @@ static EffectManager effect_mgr;
 int16_t calculate_angle(int set_temp, int range, int offset) {
     const double percentage = static_cast<double>(set_temp) / static_cast<double>(MAX_TEMP);
     return (percentage * ((double)range)) - range / 2 - offset;
+}
+
+void DefaultUI::updateTempHistory() {
+    if (currentTemp > 0) {
+        tempHistory[tempHistoryIndex] = currentTemp;
+        tempHistoryIndex += 1;
+    }
+
+    if (tempHistoryIndex > TEMP_HISTORY_LENGTH) {
+        tempHistoryIndex = 0;
+        isTempHistoryInitialized = true;
+    }
+
+    if (tempHistoryIndex % 4 == 0) {
+        heatingFlash = !heatingFlash;
+        rerender = true;
+    }
+}
+
+void DefaultUI::updateTempStableFlag() {
+    if (isTempHistoryInitialized) {
+        float totalError = 0.0f;
+        float maxError = 0.0f;
+        for (uint16_t i = 0; i < TEMP_HISTORY_LENGTH; i++) {
+            float error = abs(tempHistory[i] - targetTemp);
+            totalError += error;
+            maxError = error > maxError ? error : maxError;
+        }
+
+        const float avgError = totalError / TEMP_HISTORY_LENGTH;
+        const float errorMargin = max(2.0f, static_cast<float>(targetTemp) * 0.02f);
+
+        isTemperatureStable = avgError < errorMargin && maxError <= errorMargin;
+    }
+
+    // instantly reset stability if setpoint has changed
+    if (prevTargetTemp != targetTemp) {
+        isTemperatureStable = false;
+    }
+
+    prevTargetTemp = targetTemp;
+}
+
+void DefaultUI::adjustHeatingIndicator(lv_obj_t *dials) {
+    lv_obj_t *heatingIcon = ui_comp_get_child(dials, UI_COMP_DIALS_TEMPICON);
+    lv_obj_set_style_img_recolor(heatingIcon, lv_color_hex(isTemperatureStable ? 0x00D100 : 0xF62C2C),
+                                 LV_PART_MAIN | LV_STATE_DEFAULT);
+    if (!isTemperatureStable) {
+        lv_obj_set_style_opa(heatingIcon, heatingFlash ? LV_OPA_50 : LV_OPA_100, LV_PART_MAIN | LV_STATE_DEFAULT);
+    }
 }
 
 DefaultUI::DefaultUI(Controller *controller, PluginManager *pluginManager)
@@ -23,16 +75,25 @@ DefaultUI::DefaultUI(Controller *controller, PluginManager *pluginManager)
 void DefaultUI::init() {
     auto triggerRender = [this](Event const &) { rerender = true; };
     pluginManager->on("boiler:currentTemperature:change", [=](Event const &event) {
-        currentTemp = event.getFloat("value");
-        rerender = true;
+        float newTemp = event.getFloat("value");
+        if (static_cast<int>(newTemp) != currentTemp) {
+            currentTemp = newTemp;
+            rerender = true;
+        }
     });
     pluginManager->on("boiler:pressure:change", [=](Event const &event) {
-        pressure = event.getFloat("value");
-        rerender = true;
+        float newPressure = event.getFloat("value");
+        if (round(newPressure * 10.0f) != round(pressure * 10.0f)) {
+            pressure = newPressure;
+            rerender = true;
+        }
     });
     pluginManager->on("boiler:targetTemperature:change", [=](Event const &event) {
-        targetTemp = event.getInt("value");
-        rerender = true;
+        int newTemp = event.getInt("value");
+        if (newTemp != targetTemp) {
+            targetTemp = newTemp;
+            rerender = true;
+        }
     });
     pluginManager->on("controller:grindDuration:change", [=](Event const &event) {
         grindDuration = event.getInt("value");
@@ -42,11 +103,11 @@ void DefaultUI::init() {
         grindVolume = event.getFloat("value");
         rerender = true;
     });
-    pluginManager->on("controller:grind:end", triggerRender);
-    pluginManager->on("controller:grind:start", triggerRender);
-    pluginManager->on("controller:brew:start", triggerRender);
+    pluginManager->on("controller:process:end", triggerRender);
+    pluginManager->on("controller:process:start", triggerRender);
     pluginManager->on("controller:mode:change", [this](Event const &event) {
-        switch (int mode = event.getInt("value")) {
+        mode = event.getInt("value");
+        switch (mode) {
         case MODE_STANDBY:
             changeScreen(&ui_StandbyScreen, &ui_StandbyScreen_screen_init);
             break;
@@ -57,10 +118,10 @@ void DefaultUI::init() {
             changeScreen(&ui_GrindScreen, &ui_GrindScreen_screen_init);
             break;
         case MODE_STEAM:
-            changeScreen(&ui_SteamScreen, &ui_SteamScreen_screen_init);
+            changeScreen(&ui_SimpleProcessScreen, &ui_SimpleProcessScreen_screen_init);
             break;
         case MODE_WATER:
-            changeScreen(&ui_WaterScreen, &ui_WaterScreen_screen_init);
+            changeScreen(&ui_SimpleProcessScreen, &ui_SimpleProcessScreen_screen_init);
             break;
         default:
             break;
@@ -80,7 +141,7 @@ void DefaultUI::init() {
             settings.getStartupMode() == MODE_BREW ? changeScreen(&ui_BrewScreen, &ui_BrewScreen_screen_init)
                                                    : changeScreen(&ui_StandbyScreen, &ui_StandbyScreen_screen_init);
         }
-        pressureAvailable = controller->getSystemInfo().capabilities.pressure ? 1 : 0;
+        pressureAvailable = controller->getSystemInfo().capabilities.pressure;
     });
     pluginManager->on("controller:wifi:connect", [this](Event const &event) {
         rerender = true;
@@ -122,6 +183,12 @@ void DefaultUI::init() {
 void DefaultUI::loop() {
     const unsigned long now = millis();
     const unsigned long diff = now - lastRender;
+
+    if (now - lastTempLog > TEMP_HISTORY_INTERVAL) {
+        updateTempHistory();
+        lastTempLog = now;
+    }
+
     if ((controller->isActive() && diff > RERENDER_INTERVAL_ACTIVE) || diff > RERENDER_INTERVAL_IDLE) {
         rerender = true;
     }
@@ -138,6 +205,7 @@ void DefaultUI::loop() {
         if (controller->isErrorState()) {
             changeScreen(&ui_InitScreen, &ui_InitScreen_screen_init);
         }
+        updateTempStableFlag();
         handleScreenChange();
         currentScreen = lv_scr_act();
         if (lv_scr_act() == ui_StandbyScreen)
@@ -146,7 +214,7 @@ void DefaultUI::loop() {
             updateStatusScreen();
         effect_mgr.evaluate_all();
     }
-    
+
     lv_task_handler();
 }
 
@@ -197,7 +265,7 @@ void DefaultUI::setupPanel() {
 
     panelDriver->init();
     ui_init();
-    
+
     // Set initial brightness based on settings
     const Settings &settings = controller->getSettings();
     setBrightness(settings.getMainBrightness());
@@ -233,14 +301,25 @@ void DefaultUI::setupReactive() {
                           &pressureAvailable);
     effect_mgr.use_effect([=] { return currentScreen == ui_GrindScreen; }, [=]() { adjustDials(ui_GrindScreen_dials); },
                           &pressureAvailable);
-    effect_mgr.use_effect([=] { return currentScreen == ui_WaterScreen; }, [=]() { adjustDials(ui_WaterScreen_dials); },
-                          &pressureAvailable);
-    effect_mgr.use_effect([=] { return currentScreen == ui_SteamScreen; }, [=]() { adjustDials(ui_SteamScreen_dials); },
-                          &pressureAvailable);
-    effect_mgr.use_effect([=] { return currentScreen == ui_SteamScreen; }, [=]() { adjustDials(ui_SteamScreen_dials); },
-                          &pressureAvailable);
+    effect_mgr.use_effect([=] { return currentScreen == ui_SimpleProcessScreen; },
+                          [=]() { adjustDials(ui_SimpleProcessScreen_dials); }, &pressureAvailable);
     effect_mgr.use_effect([=] { return currentScreen == ui_ProfileScreen; }, [=]() { adjustDials(ui_ProfileScreen_dials); },
                           &pressureAvailable);
+    effect_mgr.use_effect([=] { return currentScreen == ui_BrewScreen; }, [=]() { adjustHeatingIndicator(ui_BrewScreen_dials); },
+                          &isTemperatureStable, &heatingFlash);
+    effect_mgr.use_effect([=] { return currentScreen == ui_SimpleProcessScreen; },
+                          [=]() { adjustHeatingIndicator(ui_SimpleProcessScreen_dials); }, &isTemperatureStable, &heatingFlash);
+    effect_mgr.use_effect([=] { return currentScreen == ui_MenuScreen; }, [=]() { adjustHeatingIndicator(ui_MenuScreen_dials); },
+                          &isTemperatureStable, &heatingFlash);
+    effect_mgr.use_effect([=] { return currentScreen == ui_ProfileScreen; },
+                          [=]() { adjustHeatingIndicator(ui_ProfileScreen_dials); }, &isTemperatureStable, &heatingFlash);
+    effect_mgr.use_effect([=] { return currentScreen == ui_GrindScreen; },
+                          [=]() { adjustHeatingIndicator(ui_GrindScreen_dials); }, &isTemperatureStable, &heatingFlash);
+    effect_mgr.use_effect([=] { return currentScreen == ui_StatusScreen; },
+                          [=]() { adjustHeatingIndicator(ui_StatusScreen_dials); }, &isTemperatureStable, &heatingFlash);
+    effect_mgr.use_effect([=] { return currentScreen == ui_SimpleProcessScreen; },
+                          [=]() { lv_label_set_text(ui_SimpleProcessScreen_mainLabel5, mode == MODE_STEAM ? "Steam" : "Water"); },
+                          &mode);
     effect_mgr.use_effect([=] { return currentScreen == ui_MenuScreen; },
                           [=]() {
                               lv_arc_set_value(uic_MenuScreen_dials_tempGauge, currentTemp);
@@ -265,16 +344,10 @@ void DefaultUI::setupReactive() {
                               lv_label_set_text_fmt(uic_GrindScreen_dials_tempText, "%d°C", currentTemp);
                           },
                           &currentTemp);
-    effect_mgr.use_effect([=] { return currentScreen == ui_WaterScreen; },
+    effect_mgr.use_effect([=] { return currentScreen == ui_SimpleProcessScreen; },
                           [=]() {
-                              lv_arc_set_value(uic_WaterScreen_dials_tempGauge, currentTemp);
-                              lv_label_set_text_fmt(uic_WaterScreen_dials_tempText, "%d°C", currentTemp);
-                          },
-                          &currentTemp);
-    effect_mgr.use_effect([=] { return currentScreen == ui_SteamScreen; },
-                          [=]() {
-                              lv_arc_set_value(uic_SteamScreen_dials_tempGauge, currentTemp);
-                              lv_label_set_text_fmt(uic_SteamScreen_dials_tempText, "%d°C", currentTemp);
+                              lv_arc_set_value(uic_SimpleProcessScreen_dials_tempGauge, currentTemp);
+                              lv_label_set_text_fmt(uic_SimpleProcessScreen_dials_tempText, "%d°C", currentTemp);
                           },
                           &currentTemp);
     effect_mgr.use_effect([=] { return currentScreen == ui_ProfileScreen; },
@@ -283,58 +356,29 @@ void DefaultUI::setupReactive() {
                               lv_label_set_text_fmt(uic_ProfileScreen_dials_tempText, "%d°C", currentTemp);
                           },
                           &currentTemp);
-    effect_mgr.use_effect([=] { return currentScreen == ui_MenuScreen; },
-                          [=]() {
-                              int16_t angle =
-                                  calculate_angle(targetTemp, pressureAvailable ? 1360 : 3040, pressureAvailable ? 900 : 0);
-                              lv_img_set_angle(uic_MenuScreen_dials_tempTarget, angle);
-                          },
+    effect_mgr.use_effect([=] { return currentScreen == ui_MenuScreen; }, [=]() { adjustTempTarget(ui_MenuScreen_dials); },
                           &targetTemp);
     effect_mgr.use_effect([=] { return currentScreen == ui_StatusScreen; },
                           [=]() {
                               lv_label_set_text_fmt(ui_StatusScreen_targetTemp, "%d°C", targetTemp);
-                              int16_t angle =
-                                  calculate_angle(targetTemp, pressureAvailable ? 1360 : 3040, pressureAvailable ? 900 : 0);
-                              lv_img_set_angle(uic_StatusScreen_dials_tempTarget, angle);
+                              adjustTempTarget(ui_StatusScreen_dials);
                           },
                           &targetTemp);
     effect_mgr.use_effect([=] { return currentScreen == ui_BrewScreen; },
                           [=]() {
                               lv_label_set_text_fmt(ui_BrewScreen_targetTemp, "%d°C", targetTemp);
-                              int16_t angle =
-                                  calculate_angle(targetTemp, pressureAvailable ? 1360 : 3040, pressureAvailable ? 900 : 0);
-                              lv_img_set_angle(uic_BrewScreen_dials_tempTarget, angle);
+                              adjustTempTarget(ui_BrewScreen_dials);
                           },
                           &targetTemp);
-    effect_mgr.use_effect([=] { return currentScreen == ui_GrindScreen; },
+    effect_mgr.use_effect([=] { return currentScreen == ui_GrindScreen; }, [=]() { adjustTempTarget(ui_GrindScreen_dials); },
+                          &targetTemp);
+    effect_mgr.use_effect([=] { return currentScreen == ui_SimpleProcessScreen; },
                           [=]() {
-                              int16_t angle =
-                                  calculate_angle(targetTemp, pressureAvailable ? 1360 : 3040, pressureAvailable ? 900 : 0);
-                              lv_img_set_angle(uic_GrindScreen_dials_tempTarget, angle);
+                              lv_label_set_text_fmt(ui_SimpleProcessScreen_targetTemp, "%d°C", targetTemp);
+                              adjustTempTarget(ui_SimpleProcessScreen_dials);
                           },
                           &targetTemp);
-    effect_mgr.use_effect([=] { return currentScreen == ui_WaterScreen; },
-                          [=]() {
-                              lv_label_set_text_fmt(ui_WaterScreen_targetTemp, "%d°C", targetTemp);
-                              int16_t angle =
-                                  calculate_angle(targetTemp, pressureAvailable ? 1360 : 3040, pressureAvailable ? 900 : 0);
-                              lv_img_set_angle(uic_WaterScreen_dials_tempTarget, angle);
-                          },
-                          &targetTemp);
-    effect_mgr.use_effect([=] { return currentScreen == ui_SteamScreen; },
-                          [=]() {
-                              lv_label_set_text_fmt(ui_SteamScreen_targetTemp, "%d°C", targetTemp);
-                              int16_t angle =
-                                  calculate_angle(targetTemp, pressureAvailable ? 1360 : 3040, pressureAvailable ? 900 : 0);
-                              lv_img_set_angle(uic_SteamScreen_dials_tempTarget, angle);
-                          },
-                          &targetTemp);
-    effect_mgr.use_effect([=] { return currentScreen == ui_ProfileScreen; },
-                          [=]() {
-                              int16_t angle =
-                                  calculate_angle(targetTemp, pressureAvailable ? 1360 : 3040, pressureAvailable ? 900 : 0);
-                              lv_img_set_angle(uic_ProfileScreen_dials_tempTarget, angle);
-                          },
+    effect_mgr.use_effect([=] { return currentScreen == ui_ProfileScreen; }, [=]() { adjustTempTarget(ui_ProfileScreen_dials); },
                           &targetTemp);
     effect_mgr.use_effect([=] { return currentScreen == ui_MenuScreen; },
                           [=]() {
@@ -360,16 +404,10 @@ void DefaultUI::setupReactive() {
                               lv_label_set_text_fmt(uic_GrindScreen_dials_pressureText, "%.1f bar", pressure);
                           },
                           &pressure);
-    effect_mgr.use_effect([=] { return currentScreen == ui_WaterScreen; },
+    effect_mgr.use_effect([=] { return currentScreen == ui_SimpleProcessScreen; },
                           [=]() {
-                              lv_arc_set_value(uic_WaterScreen_dials_pressureGauge, pressure);
-                              lv_label_set_text_fmt(uic_WaterScreen_dials_pressureText, "%.1f bar", pressure);
-                          },
-                          &pressure);
-    effect_mgr.use_effect([=] { return currentScreen == ui_SteamScreen; },
-                          [=]() {
-                              lv_arc_set_value(uic_SteamScreen_dials_pressureGauge, pressure);
-                              lv_label_set_text_fmt(uic_SteamScreen_dials_pressureText, "%.1f bar", pressure);
+                              lv_arc_set_value(uic_SimpleProcessScreen_dials_pressureGauge, pressure);
+                              lv_label_set_text_fmt(uic_SimpleProcessScreen_dials_pressureText, "%.1f bar", pressure);
                           },
                           &pressure);
     effect_mgr.use_effect([=] { return currentScreen == ui_ProfileScreen; },
@@ -473,18 +511,18 @@ void DefaultUI::setupReactive() {
                               }
                           },
                           &volumetricAvailable);
-    effect_mgr.use_effect([=] { return currentScreen == ui_WaterScreen; },
+    effect_mgr.use_effect([=] { return currentScreen == ui_SimpleProcessScreen; },
                           [=]() {
-                              lv_imgbtn_set_src(ui_WaterScreen_goButton, LV_IMGBTN_STATE_RELEASED, nullptr,
-                                                active ? &ui_img_1456692430 : &ui_img_445946954, nullptr);
+                              if (mode == MODE_STEAM) {
+                                  _ui_flag_modify(ui_SimpleProcessScreen_goButton, LV_OBJ_FLAG_HIDDEN, active);
+                                  lv_imgbtn_set_src(ui_SimpleProcessScreen_goButton, LV_IMGBTN_STATE_RELEASED, nullptr,
+                                                    &ui_img_691326438, nullptr);
+                              } else {
+                                  lv_imgbtn_set_src(ui_SimpleProcessScreen_goButton, LV_IMGBTN_STATE_RELEASED, nullptr,
+                                                    active ? &ui_img_1456692430 : &ui_img_445946954, nullptr);
+                              }
                           },
-                          &active);
-    effect_mgr.use_effect([=] { return currentScreen == ui_SteamScreen; },
-                          [=]() {
-                              lv_imgbtn_set_src(ui_SteamScreen_goButton, LV_IMGBTN_STATE_RELEASED, nullptr,
-                                                active ? &ui_img_1456692430 : &ui_img_445946954, nullptr);
-                          },
-                          &active);
+                          &active, &mode);
     effect_mgr.use_effect([=] { return currentScreen == ui_GrindScreen; },
                           [=]() {
                               lv_imgbtn_set_src(ui_GrindScreen_startButton, LV_IMGBTN_STATE_RELEASED, nullptr,
@@ -526,17 +564,16 @@ void DefaultUI::setupReactive() {
 }
 
 void DefaultUI::handleScreenChange() {
-    lv_obj_t *current = lv_scr_act(); 
+    lv_obj_t *current = lv_scr_act();
 
     if (current != *targetScreen) {
         if (*targetScreen == ui_StandbyScreen) {
             standbyEnterTime = millis();
-        }
-        else if (current == ui_StandbyScreen) {
+        } else if (current == ui_StandbyScreen) {
             const Settings &settings = controller->getSettings();
             setBrightness(settings.getMainBrightness());
         }
-        
+
         _ui_screen_change(targetScreen, LV_SCR_LOAD_ANIM_NONE, 0, 0, targetScreenInit);
         _ui_screen_delete(&current);
         rerender = true;
@@ -604,8 +641,8 @@ void DefaultUI::updateStatusScreen() const {
         lv_label_set_text_fmt(ui_StatusScreen_brewLabel, "%.1fg", target.value);
     } else {
         const unsigned long progress = now - brewProcess->currentPhaseStarted;
-        lv_bar_set_value(ui_StatusScreen_brewBar, progress / 1000, LV_ANIM_OFF);
-        lv_bar_set_range(ui_StatusScreen_brewBar, 0, brewProcess->getPhaseDuration() / 1000);
+        lv_bar_set_value(ui_StatusScreen_brewBar, progress, LV_ANIM_OFF);
+        lv_bar_set_range(ui_StatusScreen_brewBar, 0, std::max(static_cast<int>(brewProcess->getPhaseDuration()), 1));
         lv_label_set_text_fmt(ui_StatusScreen_brewLabel, "%ds", brewProcess->getPhaseDuration() / 1000);
     }
 
@@ -622,10 +659,11 @@ void DefaultUI::updateStatusScreen() const {
 
     if (brewProcess->isAdvancedPump()) {
         float pressure = brewProcess->getPumpTargetPressure();
-        ESP_LOGI("DefaultUI", "%.2f", pressure);
         const double percentage = 1.0 - static_cast<double>(pressure) / static_cast<double>(pressureScaling);
-        int16_t angle = percentage * 1360.0 - 1360.0 / 2.0 + 900.0;
-        lv_img_set_angle(uic_StatusScreen_dials_pressureTarget, angle);
+        adjustTarget(uic_StatusScreen_dials_pressureTarget, percentage, -62.0, 124.0);
+    } else {
+        const double percentage = 1.0 - 0.5;
+        adjustTarget(uic_StatusScreen_dials_pressureTarget, percentage, -62.0, 124.0);
     }
 
     // Brew finished adjustments
@@ -643,7 +681,6 @@ void DefaultUI::updateStatusScreen() const {
 }
 
 void DefaultUI::adjustDials(lv_obj_t *dials) {
-    lv_obj_t *tempTarget = ui_comp_get_child(dials, UI_COMP_DIALS_TEMPTARGET);
     lv_obj_t *tempGauge = ui_comp_get_child(dials, UI_COMP_DIALS_TEMPGAUGE);
     lv_obj_t *tempText = ui_comp_get_child(dials, UI_COMP_DIALS_TEMPTEXT);
     lv_obj_t *pressureTarget = ui_comp_get_child(dials, UI_COMP_DIALS_PRESSURETARGET);
@@ -656,6 +693,23 @@ void DefaultUI::adjustDials(lv_obj_t *dials) {
     lv_obj_set_y(tempText, pressureAvailable ? -205 : -180);
     lv_arc_set_bg_angles(tempGauge, 118, pressureAvailable ? 242 : 62);
     lv_arc_set_range(pressureGauge, 0, pressureScaling);
+}
+
+inline void DefaultUI::adjustTempTarget(lv_obj_t *dials) {
+    double gaugeAngle = pressureAvailable ? 124.0 : 304;
+    double gaugeStart = pressureAvailable ? 118.0 : -62;
+    double percentage = static_cast<double>(targetTemp) / 160.0;
+    lv_obj_t *tempTarget = ui_comp_get_child(dials, UI_COMP_DIALS_TEMPTARGET);
+    adjustTarget(tempTarget, percentage, gaugeStart, gaugeAngle);
+}
+
+void DefaultUI::adjustTarget(lv_obj_t *obj, double percentage, double start, double range) const {
+    double angle = start + range - range * percentage;
+
+    lv_img_set_angle(obj, angle * -10);
+    int x = static_cast<int>(std::cos(angle * M_PI / 180.0f) * 235.0);
+    int y = static_cast<int>(std::sin(angle * M_PI / 180.0f) * -235.0);
+    lv_obj_set_pos(obj, x, y);
 }
 
 void DefaultUI::loopTask(void *arg) {
