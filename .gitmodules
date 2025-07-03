@@ -1,0 +1,3 @@
+[submodule "lib/GaggimateControllers"]
+	path = lib/GaggimateControllers
+	url = https://github.com/nayrod485/GaggimateControllers.git
