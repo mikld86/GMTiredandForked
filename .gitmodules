@@ -1,0 +1,3 @@
+[submodule "lib/NayrodPID"]
+	path = lib/NayrodPID
+	url = https://github.com/nayrod485/GaggiControllerLib.git
