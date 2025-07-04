@@ -40,7 +40,10 @@ class Controller {
     bool isUpdating() const;
     bool isAutotuning() const;
     bool isReady() const;
-    bool isVolumetricAvailable() const { return volumetricAvailable; }
+    bool isVolumetricAvailable() const;
+    virtual float getTargetPressure() const { return targetPressure; }
+    virtual float getCurrentPressure() const { return pressure; }
+    virtual float getCurrentFlow() const { return currentFlow; }
 
     void autotune(int testTime, int samples);
     void startProcess(Process *process);
@@ -71,7 +74,7 @@ class Controller {
     void onScreenReady();
     void onTargetChange(ProcessTarget target);
     void onVolumetricMeasurement(double measurement) const;
-    void setVolumetricAvailable(bool available) { volumetricAvailable = available; }
+    void setVolumetricOverride(bool override) { volumetricOverride = override; }
     void onFlush();
 
     SystemInfo getSystemInfo() const { return systemInfo; }
@@ -109,6 +112,8 @@ class Controller {
     int mode = MODE_BREW;
     int currentTemp = 0;
     float pressure = 0.0f;
+    float targetPressure = 0.0f;
+    float currentFlow = 0.0f;
 
     SystemInfo systemInfo{};
 
@@ -125,8 +130,9 @@ class Controller {
     bool isApConnection = false;
     bool initialized = false;
     bool screenReady = false;
-    bool volumetricAvailable = false;
+    bool volumetricOverride = false;
     bool processCompleted = false;
+    bool steamReady = false;
     int error = 0;
 
     xTaskHandle taskHandle;

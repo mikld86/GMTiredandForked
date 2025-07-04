@@ -3,7 +3,8 @@
 #include <GaggiMateController.h>
 
 DimmedPump::DimmedPump(uint8_t ssr_pin, uint8_t sense_pin, PressureSensor *pressure_sensor)
-    : _ssr_pin(ssr_pin), _sense_pin(sense_pin), _psm(_sense_pin, _ssr_pin, 100, FALLING, 1, 4), _pressureSensor(pressure_sensor) {
+    : _ssr_pin(ssr_pin), _sense_pin(sense_pin), _psm(_sense_pin, _ssr_pin, 100, FALLING, 2, 4), _pressureSensor(pressure_sensor),
+      _pressureController(0.03f, &_targetPressure, &_currentPressure, &_controllerPower, &_valveStatus) {
     _psm.set(0);
 }
 
@@ -16,30 +17,42 @@ void DimmedPump::setup() {
 }
 
 void DimmedPump::loop() {
-    _currentPressure = _pressureSensor->getPressure();
+    _currentPressure = _pressureSensor->getRawPressure();
     updatePower();
 }
 
 void DimmedPump::setPower(float setpoint) {
     ESP_LOGV(LOG_TAG, "Setting power to %2f", setpoint);
     _mode = ControlMode::POWER;
+    _targetPressure = setpoint == 100 ? 20.0f : 0.0f;
+    _flowLimit = 0.0f;
     _power = std::clamp(setpoint, 0.0f, 100.0f);
     _psm.set(static_cast<int>(_power));
 }
 
+float DimmedPump::getCoffeeVolume() { return _pressureController.getcoffeeOutputEstimate(); }
+
+float DimmedPump::getFlow() { return _pressureController.getFlowPerSecond(); }
+
+void DimmedPump::tare() {
+    _pressureController.tare();
+    _pressureController.reset();
+}
+
 void DimmedPump::loopTask(void *arg) {
     auto *pump = static_cast<DimmedPump *>(arg);
+    TickType_t lastWake = xTaskGetTickCount();
     while (true) {
         pump->loop();
-        vTaskDelay(50 / portTICK_PERIOD_MS);
+        xTaskDelayUntil(&lastWake, pdMS_TO_TICKS(30));
     }
 }
 
 void DimmedPump::updatePower() {
+    _pressureController.update();
     switch (_mode) {
     case ControlMode::PRESSURE:
         _power = calculatePowerForPressure(_targetPressure, _currentPressure, _flowLimit);
-        ESP_LOGI("DimmedPump", "Calculating power for pressure: %.2f", _power);
         break;
 
     case ControlMode::FLOW:
@@ -47,7 +60,6 @@ void DimmedPump::updatePower() {
         break;
 
     case ControlMode::POWER:
-        _psm.set(static_cast<int>(_power));
         break;
     }
 
@@ -61,15 +73,7 @@ float DimmedPump::calculateFlowRate(float pressure) const {
 }
 
 float DimmedPump::calculatePowerForPressure(float targetPressure, float currentPressure, float flowLimit) {
-    if (targetPressure == 0.f) {
-        return 0.f;
-    }
-    float maxPower = flowLimit > 0 ? calculatePowerForFlow(flowLimit, currentPressure, 0.0f) : 100.0f;
-    float pressureDelta = targetPressure - currentPressure;
-    if (pressureDelta <= 0.0f) {
-        return 0;
-    }
-    return std::min(maxPower, 30.0f * pressureDelta + 30.0f);
+    return _controllerPower;
 }
 
 float DimmedPump::calculatePowerForFlow(float targetFlow, float currentPressure, float pressureLimit) const {
@@ -95,3 +99,5 @@ void DimmedPump::setPressureTarget(float targetPressure, float flowLimit) {
     _targetPressure = targetPressure;
     _flowLimit = flowLimit;
 }
+
+void DimmedPump::setValveState(bool open) { _valveStatus = open; }

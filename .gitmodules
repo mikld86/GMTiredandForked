@@ -1,3 +1,4 @@
-[submodule "lib/GaggimateControllers"]
-	path = lib/GaggimateControllers
-	url = https://github.com/nayrod485/GaggimateControllers.git
+[submodule "lib/NayrodPID"]
+	path = lib/NayrodPID
+	url = https://github.com/nayrod485/GaggiControllerLib.git
+

@@ -31,6 +31,13 @@ void BLEScalePlugin::setup(Controller *controller, PluginManager *manager) {
     TimemoreScalesPlugin::apply();
     VariaScalesPlugin::apply();
     this->scanner = new RemoteScalesScanner();
+    manager->on("controller:ready", [this](Event const &) {
+        if (this->controller->getMode() != MODE_STANDBY) {
+            ESP_LOGI("BLEScalePlugin", "Resuming scanning");
+            scan();
+            active = true;
+        }
+    });
     manager->on("controller:brew:start", [this](Event const &) { onProcessStart(); });
     manager->on("controller:grind:start", [this](Event const &) { onProcessStart(); });
     manager->on("controller:mode:change", [this](Event const &event) {
@@ -59,7 +66,7 @@ void BLEScalePlugin::loop() {
 }
 
 void BLEScalePlugin::update() {
-    controller->setVolumetricAvailable(scale != nullptr && scale->isConnected());
+    controller->setVolumetricOverride(scale != nullptr && scale->isConnected());
     if (!active)
         return;
     if (scale != nullptr) {

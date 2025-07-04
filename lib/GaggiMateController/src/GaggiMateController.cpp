@@ -57,6 +57,11 @@ void GaggiMateController::setup() {
         this->pump->setPower(pumpSetpoint);
         this->valve->set(valve);
         this->heater->setSetpoint(heaterSetpoint);
+        if (!_config.capabilites.dimming) {
+            return;
+        }
+        auto dimmedPump = static_cast<DimmedPump *>(pump);
+        dimmedPump->setValveState(valve);
     });
     _ble.registerAdvancedOutputControlCallback(
         [this](bool valve, float heaterSetpoint, bool pressureTarget, float pressure, float flow) {
@@ -71,6 +76,7 @@ void GaggiMateController::setup() {
             } else {
                 dimmedPump->setFlowTarget(flow, pressure);
             }
+            dimmedPump->setValveState(valve);
         });
     _ble.registerAltControlCallback([this](bool state) { this->alt->set(state); });
     _ble.registerPidControlCallback([this](float Kp, float Ki, float Kd) { this->heater->setTunings(Kp, Ki, Kd); });
@@ -79,7 +85,13 @@ void GaggiMateController::setup() {
         ESP_LOGV(LOG_TAG, "Ping received, system is alive");
     });
     _ble.registerAutotuneCallback([this](int goal, int windowSize) { this->heater->autotune(goal, windowSize); });
-
+    _ble.registerTareCallback([this]() {
+        if (!_config.capabilites.dimming) {
+            return;
+        }
+        auto dimmedPump = static_cast<DimmedPump *>(pump);
+        dimmedPump->tare();
+    });
     ESP_LOGI(LOG_TAG, "Initialization done");
 }
 
@@ -140,8 +152,10 @@ void GaggiMateController::thermalRunawayShutdown() {
 
 void GaggiMateController::sendSensorData() {
     if (_config.capabilites.pressure) {
-        _ble.sendSensorData(this->thermocouple->read(), this->pressureSensor->getPressure());
+        auto dimmedPump = static_cast<DimmedPump *>(pump);
+        _ble.sendSensorData(this->thermocouple->read(), this->pressureSensor->getPressure(), dimmedPump->getFlow());
+        _ble.sendVolumetricMeasurement(dimmedPump->getCoffeeVolume());
     } else {
-        _ble.sendSensorData(this->thermocouple->read(), 0.0f);
+        _ble.sendSensorData(this->thermocouple->read(), 0.0f, 0.0f);
     }
 }
