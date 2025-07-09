@@ -16,15 +16,17 @@ PressureController::PressureController(float dt, float *rawSetpoint, float *sens
 
     this->pressureKF = new SimpleKalmanFilter(0.1f, 10.0f, powf(4 * _dt, 2));
     this->_P_previous = *sensorOutput;
-    this->R_estimator = new HydraulicParameterEstimator();
+    this->R_estimator = new HydraulicParameterEstimator(dt);
+
 }
 
 void PressureController::filterSetpoint() {
+    
     if (!_filterInitialised)
         initSetpointFilter();
     float _wn = 2 * M_PI * _filtfreqHz;
     float d2r = (_wn * _wn) * (*_rawSetpoint - _r) - 2.0f * _filtxi * _wn * _dr;
-    _dr += constrain(d2r * _dt,-_maxSpeedP, _maxSpeedP);
+    _dr += constrain(d2r * _dt, -_maxSpeedP, _maxSpeedP);
     _r += _dr * _dt;
 }
 
@@ -51,8 +53,10 @@ void PressureController::filterSensor() {
 void PressureController::tare() { coffeeOutput = 0.0; }
 
 void PressureController::update() {
-    if (*_ValveStatus == 1 && old_ValveStatus == 0)
+    if (*_ValveStatus == 1 && old_ValveStatus == 0){
         reset();
+    }
+
     old_ValveStatus = *_ValveStatus;
 
     filterSetpoint();
@@ -62,40 +66,25 @@ void PressureController::update() {
 }
 
 float PressureController::computeAdustedCoffeeFlowRate(float pressure = 0.0f){
-    // Output: flow (mL/s)
-    // Hypothesis : 
-    //  Low flow rate ==> laminar flow, darcy's law can apply. 
-    //  High flow rate ==> partially turbulent flow calls for pressure exponent between 1 and 0.5
-
     if(pressure == 0.0f){
         pressure = _filteredPressureSensor;
     }
-
-    // flow rate model parameters: 
-    float Q1 = 1.0f; // Transition flow rate
-    float n_max = 1.5; // Max pressure inverse exponent
-
-    // Compute Darcy's flow rate
-    float Qi = pressure/ R_estimator->getResistance() * 1e6f;
-
-     float n = 1.0f;
-     //If the function is used with cumulated pressure history( ie: blooming pressure dicreasing )
-    if(pressure < 12.0f){// 
-        // Use Darcy's flow estimation to compute the pressure exponent(empirical) value
-        float n = 1+ (n_max-1)*Qi/(Qi+Q1); 
-    }
-    // Recompute the flow rate with compensation exponent
-    return  pow(pressure,1/n) / R_estimator->getResistance() * 1e6f;
+    float Q = sqrtf(pressure) * R_estimator->getResistance() * 1e6f;
+    return Q;
 }
 
 float PressureController::pumpFlowModel(float alpha = 100.0f){
-    // Compute the instantaneous pump flow based on model :
 
-    // Affine model based on Ulka nominal values chart
-    //return alpha / 100.0f * _Q0 * (1 - _filteredPressureSensor / _Pmax);
+    // Third order polynomial
+    float P = _filteredPressureSensor;
+    float P2 = P*P;
+    float P3 = P2*P;
+    float Q = PUMP_FLOW_POLY[0]*P3+PUMP_FLOW_POLY[1]*P2+PUMP_FLOW_POLY[2]*P+PUMP_FLOW_POLY[3];
+    // return Q*1e-6*alpha/100.0f;
 
     //Afine model base on one Gaggia Classic Pro Unit measurements 
-    return alpha/100.0f* _Q1*_filteredPressureSensor + _Q0;
+    return alpha/100.0f*(_Q1*_filteredPressureSensor + _Q0)*1e-6;
+
 }
 
 void PressureController::setPumpFlowCoeff(float oneBarFlow, float nineBarFlow ){
@@ -105,32 +94,18 @@ void PressureController::setPumpFlowCoeff(float oneBarFlow, float nineBarFlow ){
 }
 
 void PressureController::virtualScale() {
-
+    
     // Estimate pump output flow 
     pumpFlowRate = pumpFlowModel(*_ctrlOutput);
-
     // Update puck resistance estimation: 
-    float R = this->R_estimator->getResistance();
-
-    // Condition for starting coffee flow estimation: 
-    // Option 0: Pressure is establised and estimation is running
     bool isPpressurized = this->R_estimator->update(pumpFlowRate, _filteredPressureSensor);
-
-    // Option 1: R is greater than the lower bound established on possible R value
-    // Option 2: Trace of covariance matrix is small enough
-    // Option 3: Derivative of R is small enough 
-    bool isRconverged =  R > R_estimator->getResistanceMinBound() && R_estimator->hasConverged() ;
-    
-    // Option 4: Setpoint has been reached pressure is stable 
-    bool isStable = _filteredPressureSensor/_r < 0.93f;
-
-    // Trigger for the estimation flow output
-    if (isRconverged && isStable){
-        estimationHasConvergedOnce = true;
+    bool isRconverged =  R_estimator->hasConverged() ;
+        // Trigger for the estimation flow output
+    if (isRconverged){
+        estimationConvergenceCounter += 1;
     }
-
     // Flow estimation : 
-    if (isPpressurized  && estimationHasConvergedOnce ) { 
+    if (isPpressurized  && estimationConvergenceCounter > 10 ) { 
         flowPerSecond = computeAdustedCoffeeFlowRate();
         if(retroCoffeeOutputPressureHistory!=0){
             // Some coffee might have dripped before flow estimation occured, we need to account for that for the predictive scale
@@ -140,12 +115,14 @@ void PressureController::virtualScale() {
         coffeeOutput += flowPerSecond * _dt;
     } else if (*_rawSetpoint !=0 ){// Shot just started (no pressure yet, no R converge but setpoint not 0)
         retroCoffeeOutputPressureHistory += _filteredPressureSensor;        
-    }else if( estimationHasConvergedOnce){ // We're in a low pressure profil phase but we know R ->we can compute flow rate
+    }else if( estimationConvergenceCounter ){ // We're in a low pressure profil phase but we know R ->we can compute flow rate
         flowPerSecond = computeAdustedCoffeeFlowRate();
+    }else{
+        flowPerSecond = 0.0f;
     }
-    ESP_LOGI("","R:%.2e\tC:%.2e\tTrace:%.2e\tdRdt:%.2e\tFlow:%1.2f,Coffee:%1.2f",
-            this->R_estimator->getResistance(),this->R_estimator->getCompliance(),this->R_estimator->hasConverged(),this->R_estimator->getFilteredResistanceDerivative(),
-            flowPerSecond,coffeeOutput);
+    // ESP_LOGI("","R:%.2e\tC:%.2e\tTrace:%.2e\tdRdt:%.2e\tFlow:%1.2f,Coffee:%1.2f",
+    //         this->R_estimator->getResistance(),this->R_estimator->getCompliance(),this->R_estimator->hasConverged(),this->R_estimator->getFilteredResistanceDerivative(),
+    //         flowPerSecond,coffeeOutput);
 }
 
 void PressureController::computePumpDutyCycle() {
@@ -211,14 +188,15 @@ void PressureController::computePumpDutyCycle() {
 
     alpha = _Co /Qa * (- _lambda * error  - K * sat_s  ) - iterm;
     *_ctrlOutput = constrain(alpha *100.0f,0.0f,100.0f);
-
 }
 
 void PressureController::reset() { 
+    Serial.println("RESET CTRL");
     this->R_estimator->reset();
-    initSetpointFilter();
+    initSetpointFilter(_filteredPressureSensor);
     _errorInteg = 0.0f;
     retroCoffeeOutputPressureHistory = 0;
-    estimationHasConvergedOnce = false;
+    estimationConvergenceCounter = 0;
+    
 }
 

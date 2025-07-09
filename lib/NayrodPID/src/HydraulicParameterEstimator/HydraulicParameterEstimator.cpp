@@ -1,23 +1,18 @@
 #include "HydraulicParameterEstimator.h"
 #include <cmath>
-#include <deque>
+#include <Arduino.h>
 
-HydraulicParameterEstimator::HydraulicParameterEstimator()
-    : dt(0.03),R_est(1e7f), C_est(1.0e-7f), R_min(1e6f), R_max(1e8f),
-      C_min(1e-9f), C_max(1e-3f), lambda(0.8f),
-      meas_noise_var(1e-4f), epsilon(1e-12f), counter(0)
+HydraulicParameterEstimator::HydraulicParameterEstimator(float dt_)
+    : dt(dt_), C_fixed(1e-8), lambda(0.8f),
+      epsilon(1e-12f), meas_noise_var(1e-4f),
+      R_est(1e8f), K_est(1e-8f), R_min(1.0f), R_max(1e9f), counter(0)
 {
-    theta[0] = -1.0f / (R_est * C_est);  // theta1 = -1/RC
-    theta[1] = 1.0f / C_est;             // theta2 = 1/C
-
-    P_cov[0][0] = 1000.0f;
-    P_cov[0][1] = 0.0f;
-    P_cov[1][0] = 0.0f;
-    P_cov[1][1] = 1000.0f;
+    theta = K_est;
+    P_cov = 1e5f; 
 }
 
-float HydraulicParameterEstimator::getResistanceMinBound() {
-    return R_min;
+void HydraulicParameterEstimator::setLambda(float l) {
+    lambda = l;
 }
 
 void HydraulicParameterEstimator::setResistanceBounds(float Rmin, float Rmax) {
@@ -25,49 +20,35 @@ void HydraulicParameterEstimator::setResistanceBounds(float Rmin, float Rmax) {
     R_max = Rmax;
 }
 
-void HydraulicParameterEstimator::setComplianceBounds(float Cmin, float Cmax) {
-    C_min = Cmin;
-    C_max = Cmax;
-}
-
-void HydraulicParameterEstimator::setLambda(float l) {
-    lambda = l;
+float HydraulicParameterEstimator::getResistanceMinBound() {
+    return R_min;
 }
 
 void HydraulicParameterEstimator::reset() {
     counter = 0;
-    R_est = 1e7f;
-    C_est = 1.0e-7f;
-    theta[0] = -1.0f / (R_est * C_est);
-    theta[1] = 1.0f / C_est;
-    P_cov[0][0] = 1000.0f;
-    P_cov[0][1] = 0.0f;
-    P_cov[1][0] = 0.0f;
-    P_cov[1][1] = 1000.0f;
+    K_est = 1e-8f;
+    theta = K_est;
+    P_cov = 1e5f;
 }
 
 bool HydraulicParameterEstimator::hasConverged() {
-    float traceP = P_cov[0][0] + P_cov[1][1];
-    bool low_uncertainty = traceP < 5.0f;
-
-    // return low_uncertainty;
-    bool state = P_cov[0][0] < 1e-3;
-    return state;
+    return P_cov < 1e-21f;
 }
 
+// --------------------
+// Filtrage pression SG
+// --------------------
 bool HydraulicParameterEstimator::updateFilteredPressure(float P_raw) {
     static std::deque<float> buffer;
 
     constexpr int N = 5;
-    constexpr float smooth_coeffs[N] = { -3, 12, 17, 12, -3 };  // smoothing: divided by 35
-    constexpr float deriv_coeffs[N]  = { -2, -1, 0, 1, 2 };     // derivative: divided by 10
+    constexpr float smooth_coeffs[N] = { -3, 12, 17, 12, -3 };
+    constexpr float deriv_coeffs[N]  = { -2, -1, 0, 1, 2 };
 
-    // Ajout du nouvel échantillon en fin de buffer
     buffer.push_back(P_raw);
-    if (buffer.size() < N) return false;  // pas assez de points
+    if (buffer.size() < N) return false;
     if (buffer.size() > N) buffer.pop_front();
 
-    // Application du filtre lissage
     float smooth = 0.0f;
     float deriv = 0.0f;
     for (int i = 0; i < N; ++i) {
@@ -80,20 +61,20 @@ bool HydraulicParameterEstimator::updateFilteredPressure(float P_raw) {
     return true;
 }
 
-
+// ------------------------
+// Filtrage R équivalent SG
+// ------------------------
 bool HydraulicParameterEstimator::updateFilteredResistance(float R_input) {
     static std::deque<float> R_buffer;
 
     constexpr int N = 5;
-    constexpr float smooth_coeffs[N] = { -3, 12, 17, 12, -3 };  // smoothing (÷35)
-    constexpr float deriv_coeffs[N]  = { -2, -1, 0, 1, 2 };     // derivative (÷10)
+    constexpr float smooth_coeffs[N] = { -3, 12, 17, 12, -3 };
+    constexpr float deriv_coeffs[N]  = { -2, -1, 0, 1, 2 };
 
-    // Ajout du nouvel échantillon dans le buffer
     R_buffer.push_back(R_input);
     if (R_buffer.size() < N) return false;
     if (R_buffer.size() > N) R_buffer.pop_front();
 
-    // Application du filtre
     float R_smooth = 0.0f;
     float R_deriv = 0.0f;
     for (int i = 0; i < N; ++i) {
@@ -106,86 +87,61 @@ bool HydraulicParameterEstimator::updateFilteredResistance(float R_input) {
     return true;
 }
 
+// --------------------------
+// UPDATE : Kalman Filter pour k(t)
+// --------------------------
+bool HydraulicParameterEstimator::update(float Q_in, float P_raw) {
+    if (!isValid(Q_in) || !isValid(P_raw)) return false;
 
-bool HydraulicParameterEstimator::update(float Q, float P_raw) {
-    if (!isValid(Q) || !isValid(P_raw)) return false;
     counter++;
 
-    // Filtrage de P et calcul de sa dérivée filtrée
-    if (!updateFilteredPressure(P_raw))return false;
+    if (!updateFilteredPressure(P_raw)) return false;
+
     float P = P_filtered;
     float dPdt = dPdt_filtered;
 
-    if(P<0.3)return false;
+    if (P < 0.3f) return false;
 
-    // Backup
-    float theta_prev[2] = {theta[0], theta[1]};
-    float P_cov_prev[2][2] = {
-        {P_cov[0][0], P_cov[0][1]},
-        {P_cov[1][0], P_cov[1][1]}
-    };
+    // ---------
+    // Modèle : dotP = (1/C) Q_in - (k/C) sqrt(P)
+    // ---------
 
-    // phi = [P, Q]
-    float phi[2] = {P, Q};
+    float y_meas = dPdt;
+    float H = -sqrtf(P) / C_fixed;   
+    float u = (1.0f / C_fixed) * Q_in;
 
-    float phi_Pcov_phi =
-        phi[0]*(P_cov[0][0]*phi[0] + P_cov[0][1]*phi[1]) +
-        phi[1]*(P_cov[1][0]*phi[0] + P_cov[1][1]*phi[1]) + epsilon;
+    // Résidu
+    float y_residual = y_meas - u - H * theta;
 
-    float denom = lambda + phi_Pcov_phi;
+    // Gain de Kalman
+    float S = H * P_cov * H + meas_noise_var;
+    float K_gain = P_cov * H / S;
 
-    float K[2] = {
-        (P_cov[0][0]*phi[0] + P_cov[0][1]*phi[1]) / denom,
-        (P_cov[1][0]*phi[0] + P_cov[1][1]*phi[1]) / denom
-    };
+    // Mise à jour de l'état
+    theta = theta + K_gain * y_residual;
 
-    float y_est = theta[0]*phi[0] + theta[1]*phi[1];
-    float error = dPdt - y_est;
+    // Mise à jour de la covariance
+    P_cov = (1.0f - K_gain * H) * P_cov;
 
-    theta[0] += K[0] * error;
-    theta[1] += K[1] * error;
+    // Un peu de forget factor pour maintenir l'adaptativité
+    P_cov /= lambda;
 
-    // Mise à jour covariance (forme Joseph)
-    float temp0[2] = {1.0f - K[0]*phi[0], -K[0]*phi[1]};
-    float temp1[2] = {-K[1]*phi[0], 1.0f - K[1]*phi[1]};
-
-    float new_P_cov[2][2];
-    new_P_cov[0][0] = temp0[0]*P_cov[0][0] + temp0[1]*P_cov[1][0];
-    new_P_cov[0][1] = temp0[0]*P_cov[0][1] + temp0[1]*P_cov[1][1];
-    new_P_cov[1][0] = temp1[0]*P_cov[0][0] + temp1[1]*P_cov[1][0];
-    new_P_cov[1][1] = temp1[0]*P_cov[0][1] + temp1[1]*P_cov[1][1];
-
-    new_P_cov[0][0] += K[0]*K[0]*meas_noise_var;
-    new_P_cov[0][1] += K[0]*K[1]*meas_noise_var;
-    new_P_cov[1][0] += K[1]*K[0]*meas_noise_var;
-    new_P_cov[1][1] += K[1]*K[1]*meas_noise_var;
-
-    if (!isValid(new_P_cov[0][0]) || !isValid(new_P_cov[1][1])) {
-        theta[0] = theta_prev[0]; theta[1] = theta_prev[1];
-        P_cov[0][0] = P_cov_prev[0][0]; P_cov[0][1] = P_cov_prev[0][1];
-        P_cov[1][0] = P_cov_prev[1][0]; P_cov[1][1] = P_cov_prev[1][1];
+    if (!isValid(P_cov)) {
+        reset();
         return false;
     }
 
-    P_cov[0][0] = new_P_cov[0][0]; P_cov[0][1] = new_P_cov[0][1];
-    P_cov[1][0] = new_P_cov[1][0]; P_cov[1][1] = new_P_cov[1][1];
+    // if (P_cov < 1e-5f) P_cov = 1e-5f;
 
-    P_cov[0][0] = std::max(P_cov[0][0], 0.9e-3f); // Force a minimum of uncertainty, avoid RLS stiffness and keep updating
-    P_cov[1][1] = std::max(P_cov[1][1], 0.9e-3f); // Force a minimum of uncertainty, avoid RLS stiffness and keep updating
+    K_est = theta;
 
-    // Extraction des paramètres physiques
-    if (fabs(theta[1]) > 1e-9f && fabs(theta[0]) > 1e-12f) {
-        C_est = 1.0f / theta[1];
-        R_est = -theta[1] / theta[0];
+    if (K_est < 0.0f) K_est = 0.0f;
 
-        if (C_est < C_min) C_est = C_min;
-        if (C_est > C_max) C_est = C_max;
-        if (R_est < R_min) R_est = R_min;
-        if (R_est > R_max) R_est = R_max;
+    if (K_est > 0.0f && P > 0.0f) {
+        R_est = P / (K_est * sqrtf(P));
+        R_est = K_est;
+        updateFilteredResistance(R_est);
     }
 
-    updateFilteredResistance(R_est);
     return true;
 }
-
-

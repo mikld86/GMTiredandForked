@@ -33,7 +33,8 @@ class PressureController {
     void setPumpFlowCoeff(float oneBarFlow, float nineBarFlow );
     float getPumFlowRate(){return pumpFlowModel(*_ctrlOutput);};
     float getCoffeeFlowRate() { return flowPerSecond; };
-
+    float getPuckResistance(){return R_estimator->getResistance();}
+    float getEstimatorCovariance(){return R_estimator->getCovariance();};
 
   private:
     float _dt = 1; // Controler frequency sampling
@@ -57,6 +58,8 @@ class PressureController {
     const float _maxSpeedP = 9.0f;    // bar/s
     float _Q0 = 10.79f;   // Flow rate at P=0bar
     float _Q1 = -0.5854f; // 1st order polynomial
+    float PUMP_FLOW_POLY[4]= {-0.008291194, 0.123166854, -1.079052155, 11.20154433};    
+
 
 
     // === Controller Gains ===
@@ -77,7 +80,7 @@ class PressureController {
     float pumpFlowRate = 0.0f;
     float coffeeOutput = 0.0f;
     float retroCoffeeOutputPressureHistory = 0.0f;
-    bool estimationHasConvergedOnce = false;
+    int estimationConvergenceCounter = false;
     float lastGoodEstimatedR = 0.0f;
 
     SimpleKalmanFilter *pressureKF;
