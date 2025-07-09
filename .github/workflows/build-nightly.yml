@@ -5,7 +5,7 @@ on:
 
 permissions:
   contents: write
-name: Build
+name: Build Nightly
 jobs:
   build:
     runs-on: ubuntu-latest
