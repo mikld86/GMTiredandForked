@@ -87,6 +87,12 @@ float PressureController::pumpFlowModel(float alpha = 100.0f){
 
 }
 
+float PressureController::getPumpDutyCycleForFlowRate(float desiredPumpFlowRate){
+    //Afine model base on one Gaggia Classic Pro Unit measurements 
+    float availableFlow = _Q1*_filteredPressureSensor + _Q0;
+    return desiredPumpFlowRate/availableFlow*100.0f;
+}
+
 void PressureController::setPumpFlowCoeff(float oneBarFlow, float nineBarFlow ){
     // Set the affine pump flow model coefficients based on flow measurement at 1 bar and 9 bar
     _Q1 = (nineBarFlow-oneBarFlow)/8;

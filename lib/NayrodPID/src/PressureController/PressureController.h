@@ -14,19 +14,13 @@ class PressureController {
     void filterSetpoint();
     void initSetpointFilter(float val =0.0f);
     void setupSetpointFilter(float freq, float damping);
-
     float getFilteredSetpoint() const { return _r; };
     float getFilteredSetpointDeriv() const { return _dr; };
 
-    void update();
-    void filterSensor();
-    void tare();
 
-    void computePumpDutyCycle();
-    void virtualScale();
+    void update();
+    void tare();
     void reset();
-    float computeAdustedCoffeeFlowRate(float pressure);
-    float pumpFlowModel(float alpha);
 
     float getcoffeeOutputEstimate() { return coffeeOutput; };
     float getFilteredPressure() { return _filteredPressureSensor; };
@@ -35,8 +29,16 @@ class PressureController {
     float getCoffeeFlowRate() { return flowPerSecond; };
     float getPuckResistance(){return R_estimator->getResistance();}
     float getEstimatorCovariance(){return R_estimator->getCovariance();};
+    float getPumpDutyCycleForFlowRate(float desiredPumpFlowRate);
 
   private:
+    void computePumpDutyCycle();
+    void virtualScale();
+    void filterSensor();
+    float computeAdustedCoffeeFlowRate(float pressure);
+    float pumpFlowModel(float alpha);
+
+
     float _dt = 1; // Controler frequency sampling
 
     float *_rawSetpoint = nullptr;    // pointer to the Pressure profile current setpoint
