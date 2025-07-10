@@ -66,7 +66,6 @@ void Controller::connect() {
     lastPing = millis();
     pluginManager->trigger("controller:startup");
 
-    wifiManager.setup(&settings, pluginManager);
     setupBluetooth();
     pluginManager->on("ota:update:start", [this](Event const &) { this->updating = true; });
     pluginManager->on("ota:update:end", [this](Event const &) { this->updating = false; });
@@ -142,6 +141,7 @@ void Controller::loop() {
         setupInfos();
         pluginManager->trigger("controller:bluetooth:connect");
         if (!loaded) {
+            wifiManager.setup(&settings, pluginManager);
             loaded = true;
             if (settings.getStartupMode() == MODE_STANDBY)
                 activateStandby();

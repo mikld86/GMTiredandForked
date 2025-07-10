@@ -13,7 +13,7 @@ void WifiManager::setup(Settings *s, PluginManager *pm) {
     WiFi.mode(WIFI_OFF);
     eventId = WiFi.onEvent([this](WiFiEvent_t event, WiFiEventInfo_t info) { handleEvent(event, info); });
 
-    xTaskCreatePinnedToCore(loopTask, "WifiManager::loop", 4096, this, 1, &taskHandle, 1);
+    xTaskCreatePinnedToCore(loopTask, "WifiManager::loop", 4096, this, 1, &taskHandle, 0);
 }
 
 void WifiManager::handleEvent(WiFiEvent_t event, WiFiEventInfo_t info) {
