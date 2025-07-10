@@ -91,8 +91,8 @@ void Controller::setupBluetooth() {
             deactivate();
             setMode(MODE_STANDBY);
             pluginManager->trigger("controller:error");
+            ESP_LOGE("Controller", "Received error %d", error);
         }
-        ESP_LOGE("Controller", "Received error %d", error);
     });
     clientController.registerAutotuneResultCallback([this](const float Kp, const float Ki, const float Kd) {
         ESP_LOGI("Controller", "Received new autotune values: %.3f, %.3f, %.3f", Kp, Ki, Kd);
