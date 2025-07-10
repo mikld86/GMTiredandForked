@@ -69,7 +69,7 @@ float PressureController::computeAdustedCoffeeFlowRate(float pressure = 0.0f){
     if(pressure == 0.0f){
         pressure = _filteredPressureSensor;
     }
-    float Q = sqrtf(pressure) * R_estimator->getResistance() * 1e6f;
+    float Q = sqrtf(fmax(pressure,0.0f)) * puckResistance* 1e6f;
     return Q;
 }
 
@@ -105,6 +105,9 @@ void PressureController::virtualScale() {
     pumpFlowRate = pumpFlowModel(*_ctrlOutput);
     // Update puck resistance estimation: 
     bool isPpressurized = this->R_estimator->update(pumpFlowRate, _filteredPressureSensor);
+    float temp_resist = R_estimator->getResistance();
+    if (temp_resist !=0.0f)
+        puckResistance = temp_resist; 
     bool isRconverged =  R_estimator->hasConverged() ;
         // Trigger for the estimation flow output
     if (isRconverged){
@@ -126,9 +129,7 @@ void PressureController::virtualScale() {
     }else{
         flowPerSecond = 0.0f;
     }
-    // ESP_LOGI("","R:%.2e\tC:%.2e\tTrace:%.2e\tdRdt:%.2e\tFlow:%1.2f,Coffee:%1.2f",
-    //         this->R_estimator->getResistance(),this->R_estimator->getCompliance(),this->R_estimator->hasConverged(),this->R_estimator->getFilteredResistanceDerivative(),
-    //         flowPerSecond,coffeeOutput);
+
 }
 
 void PressureController::computePumpDutyCycle() {

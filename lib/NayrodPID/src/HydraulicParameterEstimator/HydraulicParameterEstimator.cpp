@@ -3,41 +3,29 @@
 #include <Arduino.h>
 
 HydraulicParameterEstimator::HydraulicParameterEstimator(float dt_)
-    : dt(dt_), C_fixed(1e-8), lambda(0.8f),
-      epsilon(1e-12f), meas_noise_var(1e-4f),
-      R_est(1e8f), K_est(1e-8f), R_min(1.0f), R_max(1e9f), counter(0)
+    : dt(dt_), C_fixed(1e-6f), lambda(0.8f), K_est_init(1e-4f), counter(0)
 {
-    theta = K_est;
-    P_cov = 1e5f; 
-}
-
-void HydraulicParameterEstimator::setLambda(float l) {
-    lambda = l;
-}
-
-void HydraulicParameterEstimator::setResistanceBounds(float Rmin, float Rmax) {
-    R_min = Rmin;
-    R_max = Rmax;
-}
-
-float HydraulicParameterEstimator::getResistanceMinBound() {
-    return R_min;
+    X_state[0] = 0.0f;  // P
+    X_state[1] = K_est_init; // k
 }
 
 void HydraulicParameterEstimator::reset() {
     counter = 0;
-    K_est = 1e-8f;
-    theta = K_est;
-    P_cov = 1e5f;
+    K_est = K_est_init;
+    X_state[0] = 1e-4f;   // P
+    X_state[1] = K_est;  // k
+
+    P_cov[0][0] = 0.01f;
+    P_cov[0][1] = 0.0f;
+    P_cov[1][1] = 1e6f;
+    P_cov[1][0] = 0.0f;
 }
 
 bool HydraulicParameterEstimator::hasConverged() {
-    return P_cov < 1e-21f;
+    return P_cov[1][1] < 1e-16f;
+    // return true; 
 }
 
-// --------------------
-// Filtrage pression SG
-// --------------------
 bool HydraulicParameterEstimator::updateFilteredPressure(float P_raw) {
     static std::deque<float> buffer;
 
@@ -49,8 +37,7 @@ bool HydraulicParameterEstimator::updateFilteredPressure(float P_raw) {
     if (buffer.size() < N) return false;
     if (buffer.size() > N) buffer.pop_front();
 
-    float smooth = 0.0f;
-    float deriv = 0.0f;
+    float smooth = 0.0f, deriv = 0.0f;
     for (int i = 0; i < N; ++i) {
         smooth += smooth_coeffs[i] * buffer[i];
         deriv  += deriv_coeffs[i]  * buffer[i];
@@ -61,87 +48,77 @@ bool HydraulicParameterEstimator::updateFilteredPressure(float P_raw) {
     return true;
 }
 
-// ------------------------
-// Filtrage R équivalent SG
-// ------------------------
-bool HydraulicParameterEstimator::updateFilteredResistance(float R_input) {
-    static std::deque<float> R_buffer;
-
-    constexpr int N = 5;
-    constexpr float smooth_coeffs[N] = { -3, 12, 17, 12, -3 };
-    constexpr float deriv_coeffs[N]  = { -2, -1, 0, 1, 2 };
-
-    R_buffer.push_back(R_input);
-    if (R_buffer.size() < N) return false;
-    if (R_buffer.size() > N) R_buffer.pop_front();
-
-    float R_smooth = 0.0f;
-    float R_deriv = 0.0f;
-    for (int i = 0; i < N; ++i) {
-        R_smooth += smooth_coeffs[i] * R_buffer[i];
-        R_deriv  += deriv_coeffs[i]  * R_buffer[i];
-    }
-
-    R_filtered = R_smooth / 35.0f;
-    dRdt_filtered = R_deriv / (10.0f * dt);
-    return true;
-}
-
-// --------------------------
-// UPDATE : Kalman Filter pour k(t)
-// --------------------------
 bool HydraulicParameterEstimator::update(float Q_in, float P_raw) {
-    if (!isValid(Q_in) || !isValid(P_raw)) return false;
-
     counter++;
+    // if (!updateFilteredPressure(P_raw)) return false;
 
-    if (!updateFilteredPressure(P_raw)) return false;
+    P_filtered = P_raw;
+    float P_meas = P_filtered;
+    if (P_meas < 0.3f) return false;
 
-    float P = P_filtered;
-    float dPdt = dPdt_filtered;
+    float P_k = X_state[0]; 
+    float k_k = X_state[1];
 
-    if (P < 0.3f) return false;
+    // Modèle dynamique
+    float sqrtP = (P_k > 0.001f) ? sqrtf(P_k) : 0.001f;
+    float f1 = (1.0f / C_fixed) * Q_in - (k_k / C_fixed) * sqrtP;
+    float P_pred = P_k + dt * f1;
+    float k_pred = k_k;
 
-    // ---------
-    // Modèle : dotP = (1/C) Q_in - (k/C) sqrt(P)
-    // ---------
+    // Jacobienne F
+    sqrtP = (P_k > 0.001) ? sqrtf(P_k) : 0.001f;
+    float dfdP = -0.5f * k_k / (C_fixed * sqrtP);
+    float dfdk = -sqrtP / C_fixed;
+    float F[2][2] = {
+        {1.0f + dt * dfdP,    dt * dfdk},
+        {0.0f,                     1.0f}
+    };
 
-    float y_meas = dPdt;
-    float H = -sqrtf(P) / C_fixed;   
-    float u = (1.0f / C_fixed) * Q_in;
-
-    // Résidu
-    float y_residual = y_meas - u - H * theta;
-
-    // Gain de Kalman
-    float S = H * P_cov * H + meas_noise_var;
-    float K_gain = P_cov * H / S;
-
-    // Mise à jour de l'état
-    theta = theta + K_gain * y_residual;
-
-    // Mise à jour de la covariance
-    P_cov = (1.0f - K_gain * H) * P_cov;
-
-    // Un peu de forget factor pour maintenir l'adaptativité
-    P_cov /= lambda;
-
-    if (!isValid(P_cov)) {
-        reset();
-        return false;
+    // Mise à jour covariance prédite
+    float P_pred_cov[2][2] = {0};
+    for (int i = 0; i < 2; ++i)
+    for (int j = 0; j < 2; ++j)
+    {
+        P_pred_cov[i][j] = 0.0f;
+        for (int k = 0; k < 2; ++k)
+            for (int l = 0; l < 2; ++l)
+                P_pred_cov[i][j] += F[i][k] * P_cov[k][l] * F[j][l];
+        P_pred_cov[i][j] += Qk[i][j];
     }
 
-    // if (P_cov < 1e-5f) P_cov = 1e-5f;
+    // Correction
+    float S = P_pred_cov[0][0] + meas_noise_var;
+    float K_gain[2] = {
+        P_pred_cov[0][0] / S,
+        P_pred_cov[1][0] / S
+    };
 
-    K_est = theta;
+    float y_residual = P_meas - P_pred;
+    X_state[0] = P_pred + K_gain[0] * y_residual;
+    X_state[1] = k_pred + K_gain[1] * y_residual;
+    
+    // Serial.printf("p^:%.2e\tk^%.2ef\tp_k:%.2e\tk_k%.2ef\tinov:%.2e\tS:%.2e\tP0:%.2e\tP1:%.2e\tK1%.2e\tK2%.2e\tPcovpred0:%.2e\tPcovpred1:%.2e\n",
+    //     P_pred,
+    //     k_pred,
+    //     X_state[0],
+    //     X_state[1],
+    //     y_residual,
+    //     S,
+    //     P_cov[0][0],
+    //     P_cov[1][1],
+    //     K_gain[0],
+    //     K_gain[1],
+    //     P_pred_cov[0][0],
+    //     P_pred_cov[1][1]
+    // );
 
-    if (K_est < 0.0f) K_est = 0.0f;
+    
+    for (int i = 0; i < 2; ++i)
+        for (int j = 0; j < 2; ++j)
+            P_cov[i][j] =  P_pred_cov[i][j] - K_gain[i] * P_pred_cov[0][j];
 
-    if (K_est > 0.0f && P > 0.0f) {
-        R_est = P / (K_est * sqrtf(P));
-        R_est = K_est;
-        updateFilteredResistance(R_est);
-    }
+    K_est = std::max(X_state[1], 0.0f);
+    // Serial.printf("%.2e\n",K_est);
 
     return true;
 }

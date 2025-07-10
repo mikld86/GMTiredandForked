@@ -84,6 +84,7 @@ class PressureController {
     float retroCoffeeOutputPressureHistory = 0.0f;
     int estimationConvergenceCounter = false;
     float lastGoodEstimatedR = 0.0f;
+    float puckResistance = 1e-8f; // Estimation of puck conductance
 
     SimpleKalmanFilter *pressureKF;
     HydraulicParameterEstimator* R_estimator;
