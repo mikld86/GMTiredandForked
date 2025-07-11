@@ -23,6 +23,8 @@ void Controller::setup() {
 
     pluginManager = new PluginManager();
     profileManager = new ProfileManager(SPIFFS, "/p", settings, pluginManager);
+    wifiManager = new WifiManager(pluginManager);
+    wifiManager->updateCredentials(settings.getWifiSsid().c_str(), settings.getWifiPassword().c_str());
     profileManager->setup();
     ui = new DefaultUI(this, pluginManager);
     if (settings.isHomekit())
@@ -141,7 +143,7 @@ void Controller::loop() {
         setupInfos();
         pluginManager->trigger("controller:bluetooth:connect");
         if (!loaded) {
-            wifiManager.setup(&settings, pluginManager);
+            wifiManager->begin();
             loaded = true;
             if (settings.getStartupMode() == MODE_STANDBY)
                 activateStandby();
