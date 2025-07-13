@@ -156,6 +156,7 @@ void WebUIPlugin::start() {
         dnsServer->start(53, "*", WIFI_AP_IP);
         ESP_LOGI("WebUIPlugin", "Started catchall DNS for captive portal");
     }
+    lastUpdateCheck = millis();
     serverRunning = true;
 }
 
