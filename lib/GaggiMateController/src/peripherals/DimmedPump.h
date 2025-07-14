@@ -1,7 +1,7 @@
 #ifndef DIMMEDPUMP_H
 #define DIMMEDPUMP_H
 #include "PSM.h"
-#include "PressureController.h"
+#include "PressureController/PressureController.h"
 #include "PressureSensor.h"
 #include "Pump.h"
 #include <Arduino.h>
