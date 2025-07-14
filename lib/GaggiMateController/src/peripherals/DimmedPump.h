@@ -18,7 +18,8 @@ class DimmedPump : public Pump {
     void setPower(float setpoint) override;
 
     float getCoffeeVolume();
-    float getFlow();
+    float getPumpFlow();
+    float getPuckFlow();
     void tare();
 
     void setFlowTarget(float targetFlow, float pressureLimit);
