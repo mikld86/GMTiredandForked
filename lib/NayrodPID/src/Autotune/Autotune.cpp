@@ -27,7 +27,6 @@ void Autotune::update(float temperature, float currentTime) {
     if (values.empty())
         initialTemp = temperature;
 
-
     values.push_back(temperature); // Store the temperature value
     times.push_back(currentTime);  // Store the associated time stamp
 

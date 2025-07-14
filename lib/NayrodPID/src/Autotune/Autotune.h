@@ -34,7 +34,8 @@ class Autotune {
 
     unsigned int N = 4;   // Size of the moving window to compute the derivative of temperature
     float epsilon = 0.4f; // Temperature variation threshold to detect the reaction
-    unsigned int requiredConfirmations = 3; // Number consecutive detection of rising temperature to consider the reaction detected
+    unsigned int requiredConfirmations =
+        3; // Number consecutive detection of rising temperature to consider the reaction detected
     float tuningPercentage = 50;
     std::deque<float> values, times, slopes, slopeTimes;
     float initialTemp; // Autotune starting point temperature

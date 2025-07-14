@@ -48,6 +48,7 @@ Settings::Settings() {
     profilesMigrated = preferences.getBool("pm", false);
     favoritedProfiles = explode(preferences.getString("fp", ""), ',');
     steamPumpPercentage = preferences.getFloat("spp", DEFAULT_STEAM_PUMP_PERCENTAGE);
+    historyIndex = preferences.getInt("hi", 0);
 
     // Display settings
     mainBrightness = preferences.getInt("main_b", 16);
@@ -323,6 +324,11 @@ void Settings::setThemeMode(int theme_mode) {
     save();
 }
 
+void Settings::setHistoryIndex(int history_index) {
+    historyIndex = history_index;
+    save();
+}
+
 void Settings::doSave() {
     if (!dirty) {
         return;
@@ -374,6 +380,7 @@ void Settings::doSave() {
     preferences.putInt("mb", momentaryButtons);
     preferences.putString("fp", implode(favoritedProfiles, ","));
     preferences.putFloat("spp", steamPumpPercentage);
+    preferences.putInt("hi", historyIndex);
 
     // Display settings
     preferences.putInt("main_b", mainBrightness);

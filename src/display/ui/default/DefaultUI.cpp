@@ -66,10 +66,8 @@ void DefaultUI::adjustHeatingIndicator(lv_obj_t *dials) {
                                  lv_color_hex(isTemperatureStable ? 0xF62C2C : _ui_theme_color_NiceWhite[ui_theme_idx]),
                                  LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    lv_obj_set_style_opa(heatingIcon, 
-                         isTemperatureStable || heatingFlash ? LV_OPA_100 : LV_OPA_50,
+    lv_obj_set_style_opa(heatingIcon, isTemperatureStable || heatingFlash ? LV_OPA_100 : LV_OPA_50,
                          LV_PART_MAIN | LV_STATE_DEFAULT);
-    
 }
 
 DefaultUI::DefaultUI(Controller *controller, PluginManager *pluginManager)
@@ -714,7 +712,7 @@ inline void DefaultUI::adjustTempTarget(lv_obj_t *dials) {
 void DefaultUI::applyTheme() {
     const Settings &settings = controller->getSettings();
     int newThemeMode = settings.getThemeMode();
-    
+
     if (newThemeMode != currentThemeMode) {
         currentThemeMode = newThemeMode;
         ui_theme_set(currentThemeMode);

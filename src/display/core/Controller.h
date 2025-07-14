@@ -13,6 +13,8 @@
 const IPAddress WIFI_AP_IP(4, 4, 4, 1); // the IP address the web server, Samsung requires the IP to be in public space
 const IPAddress WIFI_SUBNET_MASK(255, 255, 255, 0); // no need to change: https://avinetworks.com/glossary/subnet-mask/
 
+enum class VolumetricMeasurementSource { FLOW_ESTIMATION, BLUETOOTH };
+
 class Controller {
   public:
     Controller() = default;
@@ -43,7 +45,8 @@ class Controller {
     bool isVolumetricAvailable() const;
     virtual float getTargetPressure() const { return targetPressure; }
     virtual float getCurrentPressure() const { return pressure; }
-    virtual float getCurrentFlow() const { return currentFlow; }
+    virtual float getCurrentPuckFlow() const { return currentPuckFlow; }
+    virtual float getCurrentPumpFlow() const { return currentPumpFlow; }
 
     void autotune(int testTime, int samples);
     void startProcess(Process *process);
@@ -73,7 +76,7 @@ class Controller {
     void onOTAUpdate();
     void onScreenReady();
     void onTargetChange(ProcessTarget target);
-    void onVolumetricMeasurement(double measurement) const;
+    void onVolumetricMeasurement(double measurement, VolumetricMeasurementSource source);
     void setVolumetricOverride(bool override) { volumetricOverride = override; }
     void onFlush();
 
@@ -113,7 +116,8 @@ class Controller {
     int currentTemp = 0;
     float pressure = 0.0f;
     float targetPressure = 0.0f;
-    float currentFlow = 0.0f;
+    float currentPuckFlow = 0.0f;
+    float currentPumpFlow = 0.0f;
 
     SystemInfo systemInfo{};
 
@@ -136,6 +140,7 @@ class Controller {
     int error = 0;
 
     xTaskHandle taskHandle;
+
     static void loopTask(void *arg);
 };
 

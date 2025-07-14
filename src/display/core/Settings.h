@@ -68,6 +68,7 @@ class Settings {
     int getWifiApTimeout() const { return wifiApTimeout; }
     float getSteamPumpPercentage() const { return steamPumpPercentage; }
     int getThemeMode() const { return themeMode; }
+    int getHistoryIndex() const { return historyIndex; }
     void setTargetBrewTemp(int target_brew_temp);
     void setTargetSteamTemp(int target_steam_temp);
     void setTargetWaterTemp(int target_water_temp);
@@ -118,6 +119,7 @@ class Settings {
     void setWifiApTimeout(int timeout);
     void setSteamPumpPercentage(float steam_pump_percentage);
     void setThemeMode(int theme_mode);
+    void setHistoryIndex(int history_index);
 
   private:
     Preferences preferences;
@@ -161,6 +163,7 @@ class Settings {
     String otaChannel = DEFAULT_OTA_CHANNEL;
     std::vector<String> favoritedProfiles;
     float steamPumpPercentage = DEFAULT_STEAM_PUMP_PERCENTAGE;
+    int historyIndex = 0;
 
     // Deprecated, use profiles
     int targetBrewTemp = 93;

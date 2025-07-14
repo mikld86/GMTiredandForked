@@ -6,6 +6,8 @@
 #include <display/models/profile.h>
 
 #include "BLEScalePlugin.h"
+#include "ShotHistoryPlugin.h"
+#include <vector>
 
 WebUIPlugin::WebUIPlugin() : server(80), ws("/ws") {}
 
@@ -62,7 +64,7 @@ void WebUIPlugin::loop() {
         doc["ct"] = controller->getCurrentTemp();
         doc["tt"] = controller->getTargetTemp();
         doc["pr"] = controller->getCurrentPressure();
-        doc["fl"] = controller->getCurrentFlow();
+        doc["fl"] = controller->getCurrentPuckFlow();
         doc["pt"] = controller->getTargetPressure();
         doc["m"] = controller->getMode();
         doc["p"] = controller->getProfileManager()->getSelectedProfile().label;
@@ -137,6 +139,12 @@ void WebUIPlugin::setupServer() {
                                 handleOTAStart(client->id(), doc);
                             } else if (msgType == "req:autotune-start") {
                                 handleAutotuneStart(client->id(), doc);
+                            } else if (msgType.startsWith("req:history")) {
+                                JsonDocument resp;
+                                ShotHistory.handleRequest(doc, resp);
+                                String msg;
+                                serializeJson(resp, msg);
+                                ws.text(client->id(), msg);
                             }
                         }
                     }
