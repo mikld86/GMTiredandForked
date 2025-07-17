@@ -144,22 +144,12 @@ export function OTA() {
               Make sure to backup your profiles from the profile screen before updating the display.
             </span>
           </div>
-          <div>
-            <button type="submit" className="menu-button" disabled={submitting}>
-              Save Preferences
-            </button>
-          </div>
         </div>
       </div>
-      <div className="col-span-12 flex flex-row flex-wrap gap-y-1">
-        <input
-          type="submit"
-          name="update"
-          className="menu-button"
-          value="Update Controller"
-          disabled={!formData.controllerUpdateAvailable || submitting}
-          onClick={(e) => onUpdate('controller')}
-        />
+      <div className="col-span-12 flex flex-col sm:flex-row flex-wrap gap-y-1">
+        <button type="submit" className="menu-button" disabled={submitting}>
+          Save & Refresh
+        </button>
         <input
           type="submit"
           name="update"
@@ -167,6 +157,14 @@ export function OTA() {
           value="Update Display"
           disabled={!formData.displayUpdateAvailable || submitting}
           onClick={(e) => onUpdate('display')}
+        />
+        <input
+          type="submit"
+          name="update"
+          className="menu-button"
+          value="Update Controller"
+          disabled={!formData.controllerUpdateAvailable || submitting}
+          onClick={(e) => onUpdate('controller')}
         />
       </div>
     </form>

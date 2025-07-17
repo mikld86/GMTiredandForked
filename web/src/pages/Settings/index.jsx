@@ -755,11 +755,11 @@ export function Settings() {
       <div className="col-span-12 gap-2 flex flex-col">
         <div className="text-sm text-[#666666]">Some options like WiFi, NTP and managing Plugins require a restart.</div>
 
-        <div className="flex justify-start flex-row flex-wrap gap-1">
+        <div className="flex justify-start flex-col sm:flex-row flex-wrap gap-1">
           <a href="/" className="menu-button">
             Back
           </a>
-          <button type="submit" className="menu-button flex flex-row gap-2" disabled={submitting}>
+          <button type="submit" className="menu-button flex flex-row gap-2 justify-center" disabled={submitting}>
             Save
             {submitting && <Spinner size={4} />}
           </button>
