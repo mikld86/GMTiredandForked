@@ -63,7 +63,7 @@
 }
 
 .mode-selector.mode-selector-xl {
-  @apply text-base;
+  @apply sm:text-base;
 }
 
 .input-addition {

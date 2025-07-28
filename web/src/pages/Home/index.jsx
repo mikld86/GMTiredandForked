@@ -39,17 +39,17 @@ export function Home() {
 
   return (
     <div key="home" className="grid grid-cols-1 gap-2 sm:grid-cols-12 md:gap-2">
-      <div className="sm:col-span-12">
+      <div className="col-span-12">
         <h2 className="text-2xl font-bold">Dashboard</h2>
       </div>
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:bg-gray-800 dark:border-gray-600 sm:col-span-12">
+      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:bg-gray-800 dark:border-gray-600 col-span-12">
         <div className="p-6 h-full">
           <OverviewChart />
         </div>
       </div>
       <Card xs={12}>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-12">
-          <div className="sm:col-span-12">
+          <div className="col-span-12">
             <div className="flex flex-row gap-4 items-center justify-center">
               <div className="inline-flex rounded-md">
                 <span className={`mode-selector mode-selector-xl ${mode === 0 && 'selected'}`} onClick={() => changeMode(0)}>
@@ -67,7 +67,7 @@ export function Home() {
               </div>
             </div>
           </div>
-          <div className="col-span-6 md:col-span-12 grid grid-cols-1 gap-2 sm:grid-cols-12">
+          <div className="col-span-12 sm:col-span-6 md:col-span-12 grid grid-cols-1 gap-2 sm:grid-cols-12">
             <div className="p-6 sm:col-span-12 md:col-span-4">
               <dl>
                 <dt className="text-xl md:text-2xl font-bold">
@@ -95,7 +95,7 @@ export function Home() {
               </dl>
             </div>
           </div>
-          <div className="col-span-6 md:col-span-12 p-2 flex flex-col gap-2 items-center justify-center">
+          <div className="col-span-12 sm:col-span-6 md:col-span-12 p-2 flex flex-col gap-2 items-center justify-center">
             {(mode === 1 || mode === 3) && <ProcessControls brew={mode === 1} />}
           </div>
         </div>
