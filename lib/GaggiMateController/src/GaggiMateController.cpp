@@ -38,7 +38,7 @@ void GaggiMateController::setup() {
     this->steamBtn = new DigitalInput(_config.steamButtonPin, [this](const bool state) { _ble.sendSteamBtnState(state); });
 
     // 5-Pin peripheral port
-    Wire.begin(_config.scaleSdaPin, _config.scaleSclPin, 400000);
+    Wire.begin(_config.sunriseSdaPin, _config.sunriseSclPin, 400000);
     this->ledController = new LedController(&Wire);
     this->distanceSensor = new DistanceSensor(&Wire, [this](int distance) { _ble.sendTofMeasurement(distance); });
     if (this->ledController->isAvailable()) {
