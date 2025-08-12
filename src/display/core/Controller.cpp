@@ -466,7 +466,7 @@ void Controller::updateControl() {
     if (isActive() && systemInfo.capabilities.pressure) {
         if (currentProcess->getType() == MODE_STEAM) {
             targetPressure = 4;
-            targetFlow = currentProcess->getPumpValue() * 0.01f;
+            targetFlow = currentProcess->getPumpValue() * 0.1f;
             clientController.sendAdvancedOutputControl(false, static_cast<float>(targetTemp), false, targetPressure, targetFlow);
             return;
         }
