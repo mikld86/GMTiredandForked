@@ -55,9 +55,7 @@ bool WavesharePanel::begin(WS_RGBPanel_Color_Order order) {
     I2C_Init();
     delay(120);
     TCA9554PWR_Init(0x00);
-    Set_EXIO(EXIO_PIN2, Low);
-    delay(50);
-    Set_EXIO(EXIO_PIN2, High);
+    Set_EXIO(EXIO_PIN8, Low);
 
     if (!initTouch()) {
         Serial.println(F("Touch chip not found."));
@@ -900,6 +898,10 @@ void WavesharePanel::initBUS() {
 bool WavesharePanel::initTouch() {
     const uint8_t touch_irq_pin = WS_BOARD_TOUCH_IRQ;
     bool result = false;
+
+    TouchDrvDigitalWrite(0, Low);
+    delay(100);
+    TouchDrvDigitalWrite(0, High);
 
     log_i("=================initTouch====================");
     _touchDrv = new TouchDrvCSTXXX();
