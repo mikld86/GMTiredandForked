@@ -465,8 +465,9 @@ void Controller::updateControl() {
     clientController.sendAltControl(isActive() && currentProcess->isAltRelayActive());
     if (isActive() && systemInfo.capabilities.pressure) {
         if (currentProcess->getType() == MODE_STEAM) {
-            clientController.sendAdvancedOutputControl(false, static_cast<float>(targetTemp), false, 4,
-                                                       currentProcess->getPumpValue() * 0.01f);
+            targetPressure = 4;
+            targetFlow = currentProcess->getPumpValue() * 0.01f;
+            clientController.sendAdvancedOutputControl(false, static_cast<float>(targetTemp), false, targetPressure, targetFlow);
             return;
         }
         if (currentProcess->getType() == MODE_BREW) {
