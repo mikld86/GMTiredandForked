@@ -55,7 +55,9 @@ bool WavesharePanel::begin(WS_RGBPanel_Color_Order order) {
     I2C_Init();
     delay(120);
     TCA9554PWR_Init(0x00);
-    Set_EXIO(EXIO_PIN8, Low);
+    Set_EXIO(EXIO_PIN2, Low);
+    delay(50);
+    Set_EXIO(EXIO_PIN2, High);
 
     if (!initTouch()) {
         Serial.println(F("Touch chip not found."));
