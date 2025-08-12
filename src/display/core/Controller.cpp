@@ -463,15 +463,22 @@ void Controller::updateControl() {
         targetTemp = targetTemp + settings.getTemperatureOffset();
     }
     clientController.sendAltControl(isActive() && currentProcess->isAltRelayActive());
-    if (isActive() && currentProcess->getType() == MODE_BREW) {
-        auto *brewProcess = static_cast<BrewProcess *>(currentProcess);
-        if (brewProcess->isAdvancedPump() && systemInfo.capabilities.pressure) {
-            clientController.sendAdvancedOutputControl(brewProcess->isRelayActive(), static_cast<float>(targetTemp),
-                                                       brewProcess->getPumpTarget() == PumpTarget::PUMP_TARGET_PRESSURE,
-                                                       brewProcess->getPumpPressure(), brewProcess->getPumpFlow());
-            targetPressure = brewProcess->getPumpPressure();
-            targetFlow = brewProcess->getPumpFlow();
+    if (isActive() && systemInfo.capabilities.pressure) {
+        if (currentProcess->getType() == MODE_STEAM) {
+            clientController.sendAdvancedOutputControl(false, static_cast<float>(targetTemp), false, 4,
+                                                       currentProcess->getPumpValue() * 0.01f);
             return;
+        }
+        if (currentProcess->getType() == MODE_BREW) {
+            auto *brewProcess = static_cast<BrewProcess *>(currentProcess);
+            if (brewProcess->isAdvancedPump()) {
+                clientController.sendAdvancedOutputControl(brewProcess->isRelayActive(), static_cast<float>(targetTemp),
+                                                           brewProcess->getPumpTarget() == PumpTarget::PUMP_TARGET_PRESSURE,
+                                                           brewProcess->getPumpPressure(), brewProcess->getPumpFlow());
+                targetPressure = brewProcess->getPumpPressure();
+                targetFlow = brewProcess->getPumpFlow();
+                return;
+            }
         }
     }
     targetPressure = 0.0f;
