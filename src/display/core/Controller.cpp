@@ -636,6 +636,9 @@ void Controller::handleBrewButton(int brewButtonStatus) {
                 deactivateStandby();
                 clear();
                 activate();
+            } else if (settings.isMomentaryButtons()) {
+                deactivate();
+                clear();
             }
             break;
         case MODE_WATER:
