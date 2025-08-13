@@ -58,11 +58,17 @@ export function Home() {
       <div className='grid grid-cols-1 gap-4 lg:grid-cols-10 lg:items-stretch landscape:sm:grid-cols-10'>
         {dashboardLayout === 'process-first' ? (
           <>
-            <Card sm={10} lg={4} title='Process Controls'>
+            <Card sm={10} lg={4} className='landscape:sm:col-span-5' title='Process Controls'>
               <ProcessControls brew={mode === 1} mode={mode} changeMode={changeMode} />
             </Card>
 
-            <Card sm={10} lg={6} title='Temperature & Pressure Chart' fullHeight={true}>
+            <Card
+              sm={10}
+              lg={6}
+              className='landscape:sm:col-span-5'
+              title='Temperature & Pressure Chart'
+              fullHeight={true}
+            >
               <OverviewChart />
             </Card>
           </>
