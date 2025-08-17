@@ -238,6 +238,7 @@ inline void writeProfile(JsonObject &obj, const Profile &profile) {
         p["phase"] = phase.phase == PhaseType::PHASE_TYPE_PREINFUSION ? "preinfusion" : "brew";
         p["valve"] = phase.valve;
         p["duration"] = phase.duration;
+        p["temperature"] = phase.temperature;
         auto transition = p["transition"].to<JsonObject>();
         switch (phase.transition.type) {
         case TransitionType::LINEAR:

@@ -112,11 +112,11 @@ export function ExtendedPhase({ phase, index, onChange, onRemove, pressureAvaila
           </div>
         </div>
         <div className='form-control'>
-          <label htmlFor={`phase-${index}-target`} className='mb-2 block text-sm font-medium'>
+          <label htmlFor={`phase-${index}-temperature`} className='mb-2 block text-sm font-medium'>
             Temperature (0 = Default)
           </label>
           <div className='input-group'>
-            <label htmlFor={`phase-${index}-target`} className='input w-full'>
+            <label htmlFor={`phase-${index}-temperature`} className='input w-full'>
               <input
                 id={`phase-${index}-target`}
                 className='grow'
