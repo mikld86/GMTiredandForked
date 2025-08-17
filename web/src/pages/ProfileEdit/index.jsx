@@ -66,7 +66,6 @@ export function ProfileEdit() {
                 duration: 0,
                 adaptive: true,
               },
-              w,
             },
           ],
         });
