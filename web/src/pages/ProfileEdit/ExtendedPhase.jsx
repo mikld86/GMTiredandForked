@@ -35,7 +35,7 @@ export function ExtendedPhase({ phase, index, onChange, onRemove, pressureAvaila
     onChange({
       ...phase,
       targets: [
-        ...phase.targets,
+        ...(phase.targets || []),
         {
           type: 'volumetric',
           operator: 'gte',
