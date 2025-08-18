@@ -83,17 +83,17 @@ function prepareData(phases, target) {
       currentPhase?.transition?.type || 'linear',
     );
     currentFlow =
-      currentPhase.pump.target === 'flow'
+      currentPhase.pump?.target === 'flow'
         ? phaseStartFlow + (effectiveFlow - phaseStartFlow) * alpha
-        : currentPhase.pump.flow;
+        : currentPhase.pump?.flow || 0;
     currentPressure =
-      currentPhase.pump.target === 'pressure'
+      currentPhase.pump?.target === 'pressure'
         ? phaseStartPressure + (effectivePressure - phaseStartPressure) * alpha
-        : currentPhase.pump.pressure;
+        : currentPhase.pump?.pressure || 0;
     data.push({
       x: time,
       y: target === 'pressure' ? currentPressure : currentFlow,
-      target: currentPhase.pump.target === target,
+      target: currentPhase.pump?.target === target,
     });
     time += POINT_INTERVAL;
     phaseTime += POINT_INTERVAL;

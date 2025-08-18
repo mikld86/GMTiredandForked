@@ -127,8 +127,14 @@ export class TclConverter {
         duration: parseFloat(phaseData.seconds) || 0,
         pump: {
           target: phaseData.pump === 'flow' ? 'flow' : 'pressure',
-          pressure: parseFloat(phaseData.pressure) || 0,
-          flow: phaseData.pump === 'flow' ? parseFloat(phaseData.max_flow_or_pressure) || 0 : 0,
+          pressure:
+            phaseData.pump === 'pressure'
+              ? parseFloat(phaseData.pressure) || -1
+              : parseFloat(phaseData.max_flow_or_pressure) || 0,
+          flow:
+            phaseData.pump === 'flow'
+              ? parseFloat(phaseData.flow) || -1
+              : parseFloat(phaseData.max_flow_or_pressure) || 0,
         },
         transition: { type: 'instant' },
       };
@@ -140,9 +146,9 @@ export class TclConverter {
         };
       }
       if (phaseData.temperature) newPhase.temperature = parseFloat(phaseData.temperature);
-      const targets = [];
       if (phaseData.volume && parseFloat(phaseData.volume) > 0)
-        targets.push({ type: 'volumetric', value: parseFloat(phaseData.volume) });
+        targets.push({ type: 'pumped', value: parseFloat(phaseData.volume) });
+      const targets = [];
       const exitType = phaseData.exit_type;
       if (exitType && phaseData.exit_if === '1') {
         let targetType, operator, valueKey;
@@ -191,6 +197,13 @@ export class TclConverter {
       resultProfile = this._parseAdvancedProfile(tclText, profile);
     } else {
       resultProfile = this._generatePhasesFromSimpleProfile(tclText, profile);
+    }
+    const shotWeight = this._getTclVal(tclText, 'final_desired_shot_weight');
+    if (shotWeight > 0) {
+      for (const phase of resultProfile.phases) {
+        phase.targets = phase.targets || [];
+        phase.targets.push({ type: 'volumetric', operator: 'gte', value: shotWeight });
+      }
     }
 
     if (resultProfile.ok === false) return resultProfile;
