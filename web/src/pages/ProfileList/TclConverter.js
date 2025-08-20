@@ -146,9 +146,9 @@ export class TclConverter {
         };
       }
       if (phaseData.temperature) newPhase.temperature = parseFloat(phaseData.temperature);
+      const targets = [];
       if (phaseData.volume && parseFloat(phaseData.volume) > 0)
         targets.push({ type: 'pumped', value: parseFloat(phaseData.volume) });
-      const targets = [];
       const exitType = phaseData.exit_type;
       if (exitType && phaseData.exit_if === '1') {
         let targetType, operator, valueKey;
