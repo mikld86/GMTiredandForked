@@ -1,8 +1,5 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { Chart } from 'chart.js';
-import annotationPlugin from 'chartjs-plugin-annotation';
-
-Chart.register(annotationPlugin);
+import { ChartComponent } from './Chart';
 
 const POINT_INTERVAL = 0.1; // s
 
@@ -138,7 +135,26 @@ function makeChartData(data, selectedPhase) {
       interaction: {
         intersect: false,
       },
-      plugins: {},
+      plugins: {
+        legend: {
+          position: 'top',
+          display: true,
+          labels: {
+            boxWidth: 12,
+            padding: 8,
+            font: {
+              size: window.innerWidth < 640 ? 10 : 12,
+            },
+          },
+        },
+        title: {
+          display: false,
+          text: 'Temperature History',
+          font: {
+            size: window.innerWidth < 640 ? 14 : 16,
+          },
+        },
+      },
       animations: false,
       radius: 0,
       scales: {
@@ -170,6 +186,11 @@ function makeChartData(data, selectedPhase) {
           },
           min: 0,
           max: 12,
+          ticks: {
+            font: {
+              size: window.innerWidth < 640 ? 10 : 12,
+            },
+          },
         },
         y1: {
           type: 'linear',
@@ -181,6 +202,11 @@ function makeChartData(data, selectedPhase) {
           },
           min: 0,
           max: 10,
+          ticks: {
+            font: {
+              size: window.innerWidth < 640 ? 10 : 12,
+            },
+          },
         },
       },
     },
@@ -205,7 +231,6 @@ function makeChartData(data, selectedPhase) {
       ],
     };
   }
-  console.log(chartData);
   return chartData;
 }
 
@@ -214,33 +239,13 @@ export function ExtendedProfileChart({
   className = 'max-h-36 w-full',
   selectedPhase = null,
 }) {
-  const ref = useRef();
-  const [chart, setChart] = useState(null);
   const config = makeChartData(data, selectedPhase);
 
-  useEffect(() => {
-    const ct = new Chart(ref.current, config);
-    setChart(ct);
-
-    return () => {
-      if (ct) {
-        ct.destroy();
-      }
-    };
-  }, [ref]);
-
-  useEffect(() => {
-    if (!chart) {
-      return;
-    }
-    const config = makeChartData(data, selectedPhase);
-    chart.data = config.data;
-    chart.options = config.options;
-    chart.update();
-  }, [data, chart, selectedPhase]);
   return (
-    <div className={`flex-grow`}>
-      <canvas className={className} ref={ref} />
-    </div>
+    <ChartComponent
+      className='max-w-full flex-shrink flex-grow'
+      chartClassName={className}
+      data={config}
+    />
   );
 }
