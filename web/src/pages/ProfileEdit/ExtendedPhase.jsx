@@ -1,4 +1,4 @@
-import { ExtendedPhaseTarget } from './ExtendedPhaseTarget.jsx';
+import { ExtendedPhaseTarget, TargetTypes } from './ExtendedPhaseTarget.jsx';
 import { isNumber } from 'chart.js/helpers';
 import { useCallback } from 'preact/hooks';
 
@@ -31,17 +31,10 @@ export function ExtendedPhase({ phase, index, onChange, onRemove, pressureAvaila
     onChange(newPhase);
   };
 
-  const onTargetAdd = () => {
+  const onTargetAdd = target => {
     onChange({
       ...phase,
-      targets: [
-        ...(phase.targets || []),
-        {
-          type: 'volumetric',
-          operator: 'gte',
-          value: 0,
-        },
-      ],
+      targets: [...(phase.targets || []), target],
     });
   };
 
@@ -51,6 +44,9 @@ export function ExtendedPhase({ phase, index, onChange, onRemove, pressureAvaila
   const pressure = !isNumber(phase.pump) ? phase.pump.pressure : 0;
   const flow = !isNumber(phase.pump) ? phase.pump.flow : 0;
   const mode = isNumber(phase.pump) ? (phase.pump === 0 ? 'off' : 'power') : phase.pump.target;
+  const availableTargetTypes = TargetTypes.filter(
+    t => !targets.find(t2 => t2.type === t.type && t2.operator === t.operator),
+  );
 
   return (
     <div
@@ -392,14 +388,38 @@ export function ExtendedPhase({ phase, index, onChange, onRemove, pressureAvaila
 
       <div className='flex flex-row gap-4'>
         <h3 className='text-lg font-medium'>Stop when</h3>
-        <button
-          type='button'
-          className={`join-item btn btn-sm btn-outline`}
-          aria-label='Add target'
-          onClick={() => onTargetAdd()}
-        >
-          <i className='fa fa-plus' aria-hidden='true' />
-        </button>
+        <div className='dropdown'>
+          <div
+            tabIndex='0'
+            role='button'
+            className='join-item btn btn-sm btn-outline'
+            aria-label='Add target'
+          >
+            <i className='fa fa-plus' aria-hidden='true' />
+          </div>
+          <ul className='menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm'>
+            {availableTargetTypes.map(t => (
+              <li key={t.type}>
+                <a
+                  onClick={() =>
+                    onTargetAdd({
+                      type: t.type,
+                      operator: t.operator,
+                      value: 0,
+                    })
+                  }
+                >
+                  {t.label}
+                </a>
+              </li>
+            ))}
+            {availableTargetTypes.length === 0 && (
+              <li className='italic'>
+                <a>No more types available</a>
+              </li>
+            )}
+          </ul>
+        </div>
       </div>
       {targets.map((target, idx) => (
         <>

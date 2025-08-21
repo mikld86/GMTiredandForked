@@ -167,7 +167,9 @@ const ProcessControls = props => {
       <div className='mt-1 mb-2 flex flex-col items-center justify-between space-y-2 sm:flex-row sm:space-y-0'>
         <div className='flex flex-row items-center gap-2 text-center text-base sm:text-left sm:text-lg'>
           <i className='fa fa-thermometer-half text-base-content/60' />
-          <span className='text-base-content'>{status.value.currentTemperature || 0}</span>
+          <span className='text-base-content'>
+            {status.value.currentTemperature.toFixed(1) || 0}
+          </span>
           <span className='text-success font-semibold'>
             {' '}
             / {status.value.targetTemperature || 0}°C
@@ -241,7 +243,7 @@ const ProcessControls = props => {
       )}
 
       <div className='mt-4 flex flex-col items-center gap-4 space-y-4'>
-        {brew && !active && !finished && (
+        {brew && !active && !finished && status.value.volumetricAvailable && (
           <div className='bg-base-300 flex w-full max-w-xs rounded-full p-1'>
             <button
               className={`flex-1 cursor-pointer rounded-full px-3 py-1 text-sm transition-all duration-200 lg:py-2 ${brewTarget === 0 ? 'bg-primary text-primary-content font-medium' : 'text-base-content/60 hover:text-base-content'}`}

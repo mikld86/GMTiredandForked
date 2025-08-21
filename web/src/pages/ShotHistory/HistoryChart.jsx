@@ -67,8 +67,12 @@ function getChartData(data) {
         legend: {
           position: 'top',
           display: true,
-          font: {
-            size: window.innerWidth < 640 ? 14 : 16,
+          labels: {
+            boxWidth: 12,
+            padding: 8,
+            font: {
+              size: window.innerWidth < 640 ? 10 : 12,
+            },
           },
         },
         title: {
@@ -109,6 +113,9 @@ function getChartData(data) {
         x: {
           ticks: {
             source: 'auto',
+            font: {
+              size: window.innerWidth < 640 ? 10 : 12,
+            },
           },
         },
       },

@@ -111,7 +111,7 @@ function prepareData(phases, target) {
   return data;
 }
 
-function makeChartData(data, selectedPhase) {
+function makeChartData(data, selectedPhase, isDarkMode = false) {
   let duration = 0;
   for (const phase of data.phases) {
     duration += parseFloat(phase.duration);
@@ -237,6 +237,7 @@ function makeChartData(data, selectedPhase) {
         xValue: start + data.phases[i].duration / 2,
         yValue: 11,
         content: [i + 1],
+        color: isDarkMode ? 'rgb(205,208,212)' : 'rgb(57,78,106)',
         font: {
           size: 14,
           weight: 500,
@@ -247,7 +248,7 @@ function makeChartData(data, selectedPhase) {
         type: 'line',
         xMin: start + 0.1,
         xMax: start + 0.1,
-        borderColor: 'rgba(0, 0, 0, 0.2)',
+        borderColor: 'rgb(128,128,128)',
       });
     }
   }
@@ -259,7 +260,9 @@ export function ExtendedProfileChart({
   className = 'max-h-36 w-full',
   selectedPhase = null,
 }) {
-  const config = makeChartData(data, selectedPhase);
+  const isDarkMode = () =>
+    window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const config = makeChartData(data, selectedPhase, isDarkMode());
 
   return (
     <ChartComponent

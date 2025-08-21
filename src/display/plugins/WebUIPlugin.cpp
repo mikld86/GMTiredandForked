@@ -74,7 +74,7 @@ void WebUIPlugin::loop() {
         doc["p"] = controller->getProfileManager()->getSelectedProfile().label;
         doc["cp"] = controller->getSystemInfo().capabilities.pressure;
         doc["cd"] = controller->getSystemInfo().capabilities.dimming;
-        doc["bta"] = controller->isVolumetricAvailable();
+        doc["bta"] = controller->isVolumetricAvailable() ? 1 : 0;
         doc["bt"] = controller->isVolumetricAvailable() && controller->getSettings().isVolumetricTarget() ? 1 : 0;
         doc["led"] = controller->getSystemInfo().capabilities.ledControl;
 
