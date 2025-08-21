@@ -7,12 +7,12 @@ bool MQTTPlugin::connect(Controller *controller) {
     const Settings settings = controller->getSettings();
     const String ip = settings.getHomeAssistantIP();
     const int haPort = settings.getHomeAssistantPort();
-    const String haTopic = settings.getHomeAssistantTopic();
     const String clientId = "GaggiMate";
     const String haUser = settings.getHomeAssistantUser();
     const String haPassword = settings.getHomeAssistantPassword();
 
     client.begin(ip.c_str(), haPort, net);
+    client.setKeepAlive(10);
     printf("Connecting to MQTT");
     for (int i = 0; i < MQTT_CONNECTION_RETRIES; i++) {
         if (client.connect(clientId.c_str(), haUser.c_str(), haPassword.c_str())) {
@@ -29,6 +29,8 @@ bool MQTTPlugin::connect(Controller *controller) {
 void MQTTPlugin::publishDiscovery(Controller *controller) {
     if (!client.connected())
         return;
+    const Settings settings = controller->getSettings();
+    const String haTopic = settings.getHomeAssistantTopic();
     String mac = WiFi.macAddress();
     mac.replace(":", "_");
     const char *cmac = mac.c_str();
