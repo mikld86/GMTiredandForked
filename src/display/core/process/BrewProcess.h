@@ -23,7 +23,7 @@ class BrewProcess : public Process {
     float currentFlow = 0.0f;
     float currentPressure = 0.0f;
     float waterPumped = 0.0f;
-    VolumetricRateCalculator volumetricRateCalculator{static_cast<double>(PREDICTIVE_TIME)};
+    VolumetricRateCalculator volumetricRateCalculator{PREDICTIVE_TIME};
 
     explicit BrewProcess(Profile profile, ProcessTarget target, double brewDelay = 0.0)
         : profile(profile), target(target), brewDelay(brewDelay) {
@@ -58,7 +58,7 @@ class BrewProcess : public Process {
         if (volume > 0.0) {
             double currentRate = volumetricRateCalculator.getRate();
             const double predictedAddedVolume = currentRate * brewDelay;
-            volume += predictedAddedVolume;
+            volume = currentVolume + predictedAddedVolume;
         }
         float timeInPhase = static_cast<float>(millis() - currentPhaseStarted) / 1000.0f;
         return currentPhase.isFinished(target == ProcessTarget::VOLUMETRIC, volume, timeInPhase, currentFlow, currentPressure,

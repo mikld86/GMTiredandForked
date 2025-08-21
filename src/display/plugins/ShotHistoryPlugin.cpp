@@ -20,7 +20,8 @@ void ShotHistoryPlugin::setup(Controller *c, PluginManager *pm) {
         if (lastVolumeSample != 0) {
             const unsigned long timeDiff = now - lastVolumeSample;
             const float volumeDiff = weight - currentBluetoothWeight;
-            currentBluetoothFlow = volumeDiff / static_cast<float>(timeDiff) * 1000.0f;
+            const float volumeFlow = volumeDiff / static_cast<float>(timeDiff) * 1000.0f;
+            currentBluetoothFlow = currentBluetoothFlow * 0.9f + volumeFlow * 0.1f;
         }
         lastVolumeSample = now;
         currentBluetoothWeight = weight;
@@ -63,6 +64,13 @@ void ShotHistoryPlugin::record() {
     if (!recording && isFileOpen) {
         file.close();
         isFileOpen = false;
+        unsigned long duration = millis() - shotStart;
+        if (duration <= 7500) { // Exclude failed shots and flushes
+            SPIFFS.remove("/h/" + currentId + ".dat");
+        } else {
+            controller->getSettings().setHistoryIndex(controller->getSettings().getHistoryIndex() + 1);
+            cleanupHistory();
+        }
     }
 }
 
@@ -93,13 +101,6 @@ unsigned long ShotHistoryPlugin::getTime() {
 
 void ShotHistoryPlugin::endRecording() {
     recording = false;
-    unsigned long duration = millis() - shotStart;
-    if (duration <= 5000) {
-        SPIFFS.remove("/h/" + currentId + ".dat");
-    } else {
-        controller->getSettings().setHistoryIndex(controller->getSettings().getHistoryIndex() + 1);
-        cleanupHistory();
-    }
 }
 
 void ShotHistoryPlugin::cleanupHistory() {
