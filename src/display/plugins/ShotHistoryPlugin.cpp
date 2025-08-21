@@ -126,8 +126,8 @@ void ShotHistoryPlugin::handleRequest(JsonDocument &request, JsonDocument &respo
             File file = root.openNextFile();
             while (file) {
                 if (String(file.name()).endsWith(".dat")) {
-                    JsonObject o = arr.createNestedObject();
-                    String name = String(file.name());
+                    auto o = arr.add<JsonObject>();
+                    auto name = String(file.name());
                     int start = name.lastIndexOf('/') + 1;
                     int end = name.lastIndexOf('.');
                     o["id"] = name.substring(start, end);
@@ -137,7 +137,7 @@ void ShotHistoryPlugin::handleRequest(JsonDocument &request, JsonDocument &respo
             }
         }
     } else if (type == "req:history:get") {
-        String id = request["id"].as<String>();
+        auto id = request["id"].as<String>();
         File file = SPIFFS.open("/h/" + id + ".dat", "r");
         if (file) {
             String data = file.readString();
@@ -147,7 +147,7 @@ void ShotHistoryPlugin::handleRequest(JsonDocument &request, JsonDocument &respo
             response["error"] = "not found";
         }
     } else if (type == "req:history:delete") {
-        String id = request["id"].as<String>();
+        auto id = request["id"].as<String>();
         SPIFFS.remove("/h/" + id + ".dat");
         response["msg"] = "Ok";
     }

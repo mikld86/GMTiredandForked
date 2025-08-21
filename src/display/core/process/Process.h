@@ -1,7 +1,6 @@
 #ifndef PROCESS_H
 #define PROCESS_H
 
-
 constexpr double PREDICTIVE_TIME = 4000.0; // time window for the prediction
 // constexpr double PREDICTIVE_TIME_MS = 1000.0;
 

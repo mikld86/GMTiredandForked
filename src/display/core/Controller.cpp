@@ -261,12 +261,12 @@ void Controller::loop() {
         if (lastProcess != nullptr && lastProcess->isComplete() && !processCompleted && settings.isDelayAdjust()) {
             processCompleted = true;
             if (lastProcess->getType() == MODE_BREW) {
-                if (auto const *brewProcess = static_cast<BrewProcess *>(lastProcess);
+                if (auto *brewProcess = static_cast<BrewProcess *>(lastProcess);
                     brewProcess->target == ProcessTarget::VOLUMETRIC) {
                     settings.setBrewDelay(brewProcess->getNewDelayTime());
                 }
             } else if (lastProcess->getType() == MODE_GRIND) {
-                if (auto const *grindProcess = static_cast<GrindProcess *>(lastProcess);
+                if (auto *grindProcess = static_cast<GrindProcess *>(lastProcess);
                     grindProcess->target == ProcessTarget::VOLUMETRIC) {
                     settings.setGrindDelay(grindProcess->getNewDelayTime());
                 }
