@@ -27,7 +27,7 @@ class Controller {
     void loopControl();
 
     void setMode(int newMode);
-    void setTargetTemp(int temperature);
+    void setTargetTemp(float temperature);
     void setPressureScale();
     void setPumpModelCoeffs();
     void setTargetDuration(int duration);

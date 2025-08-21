@@ -340,7 +340,7 @@ float Controller::getTargetTemp() const {
     }
 }
 
-void Controller::setTargetTemp(int temperature) {
+void Controller::setTargetTemp(float temperature) {
     pluginManager->trigger("boiler:targetTemperature:change", "value", temperature);
     switch (mode) {
     case MODE_BREW:
@@ -348,10 +348,10 @@ void Controller::setTargetTemp(int temperature) {
         // Update current profile
         break;
     case MODE_STEAM:
-        settings.setTargetSteamTemp(temperature);
+        settings.setTargetSteamTemp(static_cast<int>(temperature));
         break;
     case MODE_WATER:
-        settings.setTargetWaterTemp(temperature);
+        settings.setTargetWaterTemp(static_cast<int>(temperature));
         break;
     default:;
     }
@@ -399,14 +399,14 @@ void Controller::setTargetGrindVolume(double volume) {
 }
 
 void Controller::raiseTemp() {
-    int temp = getTargetTemp();
-    temp = max(MIN_TEMP, min(temp + 1, MAX_TEMP));
+    float temp = getTargetTemp();
+    temp = constrain(temp + 1.0f, MIN_TEMP, MAX_TEMP);
     setTargetTemp(temp);
 }
 
 void Controller::lowerTemp() {
-    int temp = getTargetTemp();
-    temp = max(MIN_TEMP, min(temp - 1, MAX_TEMP));
+    float temp = getTargetTemp();
+    temp = constrain(temp - 1.0f, MIN_TEMP, MAX_TEMP);
     setTargetTemp(temp);
 }
 
@@ -602,7 +602,7 @@ void Controller::setMode(int newMode) {
 }
 
 void Controller::onTempRead(float temperature) {
-    float temp = temperature - settings.getTemperatureOffset();
+    float temp = temperature - static_cast<float>(settings.getTemperatureOffset());
     Event event = pluginManager->trigger("boiler:currentTemperature:change", "value", temp);
     currentTemp = event.getFloat("value");
 }

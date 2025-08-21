@@ -74,6 +74,7 @@ void WebUIPlugin::loop() {
         doc["p"] = controller->getProfileManager()->getSelectedProfile().label;
         doc["cp"] = controller->getSystemInfo().capabilities.pressure;
         doc["cd"] = controller->getSystemInfo().capabilities.dimming;
+        doc["bta"] = controller->isVolumetricAvailable();
         doc["bt"] = controller->isVolumetricAvailable() && controller->getSettings().isVolumetricTarget() ? 1 : 0;
         doc["led"] = controller->getSystemInfo().capabilities.ledControl;
 
@@ -82,7 +83,7 @@ void WebUIPlugin::loop() {
             process = controller->getLastProcess();
         }
         if (process != nullptr) {
-            auto pObj = doc["process"].as<JsonObject>();
+            auto pObj = doc["process"].to<JsonObject>();
             pObj["a"] = controller->isActive() ? 1 : 0;
             if (process->getType() == MODE_BREW) {
                 auto *brew = static_cast<BrewProcess *>(process);

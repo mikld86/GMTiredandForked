@@ -5573,31 +5573,31 @@
               {
                 "nid": -1924829204,
                 "strtype": "IMGBUTTON/Image_pressed",
-                "strval": "-",
+                "strval": "",
                 "InheritedType": 5
               },
               {
                 "nid": 1215187854,
                 "strtype": "IMGBUTTON/Image_disabled",
-                "strval": "-",
+                "strval": "",
                 "InheritedType": 5
               },
               {
                 "nid": -1657431588,
                 "strtype": "IMGBUTTON/Image_checked_released",
-                "strval": "-",
+                "strval": "",
                 "InheritedType": 5
               },
               {
                 "nid": 1385818574,
                 "strtype": "IMGBUTTON/Image_checked_pressed",
-                "strval": "-",
+                "strval": "",
                 "InheritedType": 5
               },
               {
                 "nid": 197124523,
                 "strtype": "IMGBUTTON/Image_checked_disabled",
-                "strval": "-",
+                "strval": "",
                 "InheritedType": 5
               },
               {
@@ -5608,26 +5608,6 @@
                     "strtype": "_style/StyleState",
                     "strval": "DEFAULT",
                     "childs": [
-                      {
-                        "nid": 10810,
-                        "strtype": "_style/Outline_Color",
-                        "intarray": [
-                          250,
-                          250,
-                          250,
-                          0
-                        ],
-                        "InheritedType": 7
-                      },
-                      {
-                        "nid": 10820,
-                        "strtype": "_style/Outline_params",
-                        "intarray": [
-                          20,
-                          0
-                        ],
-                        "InheritedType": 7
-                      },
                       {
                         "nid": 161424932,
                         "strtype": "_style/Image_reColor",
@@ -7671,31 +7651,31 @@
                   {
                     "nid": 1040,
                     "strtype": "IMGBUTTON/Image_pressed",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 1050,
                     "strtype": "IMGBUTTON/Image_disabled",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 1060,
                     "strtype": "IMGBUTTON/Image_checked_released",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 1070,
                     "strtype": "IMGBUTTON/Image_checked_pressed",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 1080,
                     "strtype": "IMGBUTTON/Image_checked_disabled",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
@@ -7902,31 +7882,31 @@
                   {
                     "nid": 1040,
                     "strtype": "IMGBUTTON/Image_pressed",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 1050,
                     "strtype": "IMGBUTTON/Image_disabled",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 1060,
                     "strtype": "IMGBUTTON/Image_checked_released",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 1070,
                     "strtype": "IMGBUTTON/Image_checked_pressed",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 1080,
                     "strtype": "IMGBUTTON/Image_checked_disabled",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
@@ -8132,31 +8112,31 @@
                   {
                     "nid": 1040,
                     "strtype": "IMGBUTTON/Image_pressed",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 1050,
                     "strtype": "IMGBUTTON/Image_disabled",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 1060,
                     "strtype": "IMGBUTTON/Image_checked_released",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 1070,
                     "strtype": "IMGBUTTON/Image_checked_pressed",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 1080,
                     "strtype": "IMGBUTTON/Image_checked_disabled",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
@@ -8707,6 +8687,71 @@
                   },
                   {
                     "nid": 1000248,
+                    "strtype": "CALL FUNCTION/Dont_export_function",
+                    "strval": "False",
+                    "InheritedType": 2
+                  }
+                ],
+                "InheritedType": 10
+              }
+            ],
+            "InheritedType": 4
+          },
+          {
+            "disabled": false,
+            "nid": 1000540,
+            "strtype": "_event/EventHandler",
+            "strval": "SCREEN_LOADED",
+            "childs": [
+              {
+                "nid": 1000541,
+                "strtype": "_event/name",
+                "strval": "onProfileScreenLoad",
+                "InheritedType": 10
+              },
+              {
+                "nid": 1000542,
+                "strtype": "_event/condition_C",
+                "strval": "",
+                "InheritedType": 10
+              },
+              {
+                "nid": 1000543,
+                "strtype": "_event/condition_P",
+                "strval": "",
+                "InheritedType": 10
+              },
+              {
+                "nid": 1000544,
+                "strtype": "_event/action",
+                "strval": "CALL FUNCTION",
+                "childs": [
+                  {
+                    "nid": 1000545,
+                    "strtype": "CALL FUNCTION/Name",
+                    "strval": "CALL FUNCTION",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": 1000546,
+                    "strtype": "CALL FUNCTION/Call",
+                    "strval": "<{Function_name}>( event_struct )",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": 1000547,
+                    "strtype": "CALL FUNCTION/CallC",
+                    "strval": "<{Function_name}>( e );",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": 1000548,
+                    "strtype": "CALL FUNCTION/Function_name",
+                    "strval": "onProfileScreenLoad",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": 1000549,
                     "strtype": "CALL FUNCTION/Dont_export_function",
                     "strval": "False",
                     "InheritedType": 2
@@ -13827,26 +13872,6 @@
                     "strval": "DEFAULT",
                     "childs": [
                       {
-                        "nid": 10810,
-                        "strtype": "_style/Outline_Color",
-                        "intarray": [
-                          19,
-                          19,
-                          19,
-                          0
-                        ],
-                        "InheritedType": 7
-                      },
-                      {
-                        "nid": 10820,
-                        "strtype": "_style/Outline_params",
-                        "intarray": [
-                          20,
-                          0
-                        ],
-                        "InheritedType": 7
-                      },
-                      {
                         "nid": -1995428209,
                         "strtype": "_style/Image_reColor",
                         "strval": "NiceWhite",
@@ -14073,26 +14098,6 @@
                               250,
                               250,
                               255
-                            ],
-                            "InheritedType": 7
-                          },
-                          {
-                            "nid": 10810,
-                            "strtype": "_style/Outline_Color",
-                            "intarray": [
-                              250,
-                              250,
-                              250,
-                              0
-                            ],
-                            "InheritedType": 7
-                          },
-                          {
-                            "nid": 10820,
-                            "strtype": "_style/Outline_params",
-                            "intarray": [
-                              15,
-                              0
                             ],
                             "InheritedType": 7
                           },
@@ -14332,26 +14337,6 @@
                             "InheritedType": 7
                           },
                           {
-                            "nid": 10810,
-                            "strtype": "_style/Outline_Color",
-                            "intarray": [
-                              31,
-                              251,
-                              163,
-                              0
-                            ],
-                            "InheritedType": 7
-                          },
-                          {
-                            "nid": 10820,
-                            "strtype": "_style/Outline_params",
-                            "intarray": [
-                              15,
-                              0
-                            ],
-                            "InheritedType": 7
-                          },
-                          {
                             "nid": 10910,
                             "strtype": "_style/Shadow_Color",
                             "strval": "Dark",
@@ -14587,26 +14572,6 @@
                             "InheritedType": 7
                           },
                           {
-                            "nid": 10810,
-                            "strtype": "_style/Outline_Color",
-                            "intarray": [
-                              0,
-                              0,
-                              0,
-                              0
-                            ],
-                            "InheritedType": 7
-                          },
-                          {
-                            "nid": 10820,
-                            "strtype": "_style/Outline_params",
-                            "intarray": [
-                              15,
-                              0
-                            ],
-                            "InheritedType": 7
-                          },
-                          {
                             "nid": 10910,
                             "strtype": "_style/Shadow_Color",
                             "strval": "Dark",
@@ -14837,26 +14802,6 @@
                               250,
                               250,
                               255
-                            ],
-                            "InheritedType": 7
-                          },
-                          {
-                            "nid": 10810,
-                            "strtype": "_style/Outline_Color",
-                            "intarray": [
-                              0,
-                              0,
-                              0,
-                              0
-                            ],
-                            "InheritedType": 7
-                          },
-                          {
-                            "nid": 10820,
-                            "strtype": "_style/Outline_params",
-                            "intarray": [
-                              15,
-                              0
                             ],
                             "InheritedType": 7
                           },
@@ -15223,6 +15168,71 @@
             "strtype": "SCREEN/Style_scrollbar",
             "strval": "lv.PART.SCROLLBAR, Rectangle, Pad",
             "InheritedType": 11
+          },
+          {
+            "disabled": false,
+            "nid": 1000500,
+            "strtype": "_event/EventHandler",
+            "strval": "SCREEN_LOADED",
+            "childs": [
+              {
+                "nid": 1000501,
+                "strtype": "_event/name",
+                "strval": "onMenuScreenLoad",
+                "InheritedType": 10
+              },
+              {
+                "nid": 1000502,
+                "strtype": "_event/condition_C",
+                "strval": "",
+                "InheritedType": 10
+              },
+              {
+                "nid": 1000503,
+                "strtype": "_event/condition_P",
+                "strval": "",
+                "InheritedType": 10
+              },
+              {
+                "nid": 1000504,
+                "strtype": "_event/action",
+                "strval": "CALL FUNCTION",
+                "childs": [
+                  {
+                    "nid": 1000505,
+                    "strtype": "CALL FUNCTION/Name",
+                    "strval": "CALL FUNCTION",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": 1000506,
+                    "strtype": "CALL FUNCTION/Call",
+                    "strval": "<{Function_name}>( event_struct )",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": 1000507,
+                    "strtype": "CALL FUNCTION/CallC",
+                    "strval": "<{Function_name}>( e );",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": 1000508,
+                    "strtype": "CALL FUNCTION/Function_name",
+                    "strval": "onMenuScreenLoad",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": 1000509,
+                    "strtype": "CALL FUNCTION/Dont_export_function",
+                    "strval": "False",
+                    "InheritedType": 2
+                  }
+                ],
+                "InheritedType": 10
+              }
+            ],
+            "InheritedType": 4
           }
         ],
         "saved_objtypeKey": "SCREEN"
@@ -20292,31 +20302,31 @@
               {
                 "nid": 939638989,
                 "strtype": "IMGBUTTON/Image_pressed",
-                "strval": "-",
+                "strval": "",
                 "InheritedType": 5
               },
               {
                 "nid": -1072451500,
                 "strtype": "IMGBUTTON/Image_disabled",
-                "strval": "-",
+                "strval": "",
                 "InheritedType": 5
               },
               {
                 "nid": -1217254746,
                 "strtype": "IMGBUTTON/Image_checked_released",
-                "strval": "-",
+                "strval": "",
                 "InheritedType": 5
               },
               {
                 "nid": 1794841552,
                 "strtype": "IMGBUTTON/Image_checked_pressed",
-                "strval": "-",
+                "strval": "",
                 "InheritedType": 5
               },
               {
                 "nid": -533421980,
                 "strtype": "IMGBUTTON/Image_checked_disabled",
-                "strval": "-",
+                "strval": "",
                 "InheritedType": 5
               },
               {
@@ -20327,26 +20337,6 @@
                     "strtype": "_style/StyleState",
                     "strval": "DEFAULT",
                     "childs": [
-                      {
-                        "nid": 10810,
-                        "strtype": "_style/Outline_Color",
-                        "intarray": [
-                          19,
-                          19,
-                          19,
-                          0
-                        ],
-                        "InheritedType": 7
-                      },
-                      {
-                        "nid": 10820,
-                        "strtype": "_style/Outline_params",
-                        "intarray": [
-                          20,
-                          0
-                        ],
-                        "InheritedType": 7
-                      },
                       {
                         "nid": 1443696336,
                         "strtype": "_style/Image_reColor",
@@ -20699,31 +20689,31 @@
                   {
                     "nid": -2094117598,
                     "strtype": "IMGBUTTON/Image_pressed",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 1755909524,
                     "strtype": "IMGBUTTON/Image_disabled",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": -261413535,
                     "strtype": "IMGBUTTON/Image_checked_released",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": -300058726,
                     "strtype": "IMGBUTTON/Image_checked_pressed",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": -1034059470,
                     "strtype": "IMGBUTTON/Image_checked_disabled",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
@@ -20734,28 +20724,6 @@
                         "strtype": "_style/StyleState",
                         "strval": "DEFAULT",
                         "childs": [
-                          {
-                            "nid": 10810,
-                            "strtype": "_style/Outline_Color",
-                            "strval": "Dark",
-                            "integer": 1000207,
-                            "intarray": [
-                              19,
-                              19,
-                              19,
-                              255
-                            ],
-                            "InheritedType": 7
-                          },
-                          {
-                            "nid": 10820,
-                            "strtype": "_style/Outline_params",
-                            "intarray": [
-                              25,
-                              0
-                            ],
-                            "InheritedType": 7
-                          },
                           {
                             "nid": 953210462,
                             "strtype": "_style/Image_reColor",
@@ -21985,31 +21953,31 @@
                               {
                                 "nid": 1040,
                                 "strtype": "IMGBUTTON/Image_pressed",
-                                "strval": "-",
+                                "strval": "",
                                 "InheritedType": 5
                               },
                               {
                                 "nid": 1050,
                                 "strtype": "IMGBUTTON/Image_disabled",
-                                "strval": "-",
+                                "strval": "",
                                 "InheritedType": 5
                               },
                               {
                                 "nid": 1060,
                                 "strtype": "IMGBUTTON/Image_checked_released",
-                                "strval": "-",
+                                "strval": "",
                                 "InheritedType": 5
                               },
                               {
                                 "nid": 1070,
                                 "strtype": "IMGBUTTON/Image_checked_pressed",
-                                "strval": "-",
+                                "strval": "",
                                 "InheritedType": 5
                               },
                               {
                                 "nid": 1080,
                                 "strtype": "IMGBUTTON/Image_checked_disabled",
-                                "strval": "-",
+                                "strval": "",
                                 "InheritedType": 5
                               },
                               {
@@ -24776,6 +24744,71 @@
                   },
                   {
                     "nid": 1000029,
+                    "strtype": "CALL FUNCTION/Dont_export_function",
+                    "strval": "False",
+                    "InheritedType": 2
+                  }
+                ],
+                "InheritedType": 10
+              }
+            ],
+            "InheritedType": 4
+          },
+          {
+            "disabled": false,
+            "nid": 1000520,
+            "strtype": "_event/EventHandler",
+            "strval": "SCREEN_LOADED",
+            "childs": [
+              {
+                "nid": 1000521,
+                "strtype": "_event/name",
+                "strval": "onBrewScreenLoad",
+                "InheritedType": 10
+              },
+              {
+                "nid": 1000522,
+                "strtype": "_event/condition_C",
+                "strval": "",
+                "InheritedType": 10
+              },
+              {
+                "nid": 1000523,
+                "strtype": "_event/condition_P",
+                "strval": "",
+                "InheritedType": 10
+              },
+              {
+                "nid": 1000524,
+                "strtype": "_event/action",
+                "strval": "CALL FUNCTION",
+                "childs": [
+                  {
+                    "nid": 1000525,
+                    "strtype": "CALL FUNCTION/Name",
+                    "strval": "CALL FUNCTION",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": 1000526,
+                    "strtype": "CALL FUNCTION/Call",
+                    "strval": "<{Function_name}>( event_struct )",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": 1000527,
+                    "strtype": "CALL FUNCTION/CallC",
+                    "strval": "<{Function_name}>( e );",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": 1000528,
+                    "strtype": "CALL FUNCTION/Function_name",
+                    "strval": "onBrewScreenLoad",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": 1000529,
                     "strtype": "CALL FUNCTION/Dont_export_function",
                     "strval": "False",
                     "InheritedType": 2
@@ -29854,31 +29887,31 @@
               {
                 "nid": -671763828,
                 "strtype": "IMGBUTTON/Image_pressed",
-                "strval": "-",
+                "strval": "",
                 "InheritedType": 5
               },
               {
                 "nid": -174754756,
                 "strtype": "IMGBUTTON/Image_disabled",
-                "strval": "-",
+                "strval": "",
                 "InheritedType": 5
               },
               {
                 "nid": -22642740,
                 "strtype": "IMGBUTTON/Image_checked_released",
-                "strval": "-",
+                "strval": "",
                 "InheritedType": 5
               },
               {
                 "nid": 805244448,
                 "strtype": "IMGBUTTON/Image_checked_pressed",
-                "strval": "-",
+                "strval": "",
                 "InheritedType": 5
               },
               {
                 "nid": 1092324352,
                 "strtype": "IMGBUTTON/Image_checked_disabled",
-                "strval": "-",
+                "strval": "",
                 "InheritedType": 5
               },
               {
@@ -29889,26 +29922,6 @@
                     "strtype": "_style/StyleState",
                     "strval": "DEFAULT",
                     "childs": [
-                      {
-                        "nid": 10810,
-                        "strtype": "_style/Outline_Color",
-                        "intarray": [
-                          0,
-                          0,
-                          0,
-                          0
-                        ],
-                        "InheritedType": 7
-                      },
-                      {
-                        "nid": 10820,
-                        "strtype": "_style/Outline_params",
-                        "intarray": [
-                          20,
-                          0
-                        ],
-                        "InheritedType": 7
-                      },
                       {
                         "nid": 884920089,
                         "strtype": "_style/Image_reColor",
@@ -30259,31 +30272,31 @@
                   {
                     "nid": -1721122245,
                     "strtype": "IMGBUTTON/Image_pressed",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 1688828786,
                     "strtype": "IMGBUTTON/Image_disabled",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": -533808198,
                     "strtype": "IMGBUTTON/Image_checked_released",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 979689380,
                     "strtype": "IMGBUTTON/Image_checked_pressed",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": -882691280,
                     "strtype": "IMGBUTTON/Image_checked_disabled",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
@@ -30294,26 +30307,6 @@
                         "strtype": "_style/StyleState",
                         "strval": "DEFAULT",
                         "childs": [
-                          {
-                            "nid": 10810,
-                            "strtype": "_style/Outline_Color",
-                            "intarray": [
-                              250,
-                              250,
-                              250,
-                              0
-                            ],
-                            "InheritedType": 7
-                          },
-                          {
-                            "nid": 10820,
-                            "strtype": "_style/Outline_params",
-                            "intarray": [
-                              25,
-                              0
-                            ],
-                            "InheritedType": 7
-                          },
                           {
                             "nid": 1532771933,
                             "strtype": "_style/Image_reColor",
@@ -30509,31 +30502,31 @@
                   {
                     "nid": -1937158418,
                     "strtype": "IMGBUTTON/Image_pressed",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 1871329689,
                     "strtype": "IMGBUTTON/Image_disabled",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 2114781821,
                     "strtype": "IMGBUTTON/Image_checked_released",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 1115290381,
                     "strtype": "IMGBUTTON/Image_checked_pressed",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 366391782,
                     "strtype": "IMGBUTTON/Image_checked_disabled",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
@@ -30544,26 +30537,6 @@
                         "strtype": "_style/StyleState",
                         "strval": "DEFAULT",
                         "childs": [
-                          {
-                            "nid": 10810,
-                            "strtype": "_style/Outline_Color",
-                            "intarray": [
-                              0,
-                              0,
-                              0,
-                              0
-                            ],
-                            "InheritedType": 7
-                          },
-                          {
-                            "nid": 10820,
-                            "strtype": "_style/Outline_params",
-                            "intarray": [
-                              40,
-                              0
-                            ],
-                            "InheritedType": 7
-                          },
                           {
                             "nid": -1208486685,
                             "strtype": "_style/Image_reColor",
@@ -30759,31 +30732,31 @@
                   {
                     "nid": -1792940124,
                     "strtype": "IMGBUTTON/Image_pressed",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": -1351352226,
                     "strtype": "IMGBUTTON/Image_disabled",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": -992195842,
                     "strtype": "IMGBUTTON/Image_checked_released",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": -1888696269,
                     "strtype": "IMGBUTTON/Image_checked_pressed",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 426166070,
                     "strtype": "IMGBUTTON/Image_checked_disabled",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
@@ -30794,26 +30767,6 @@
                         "strtype": "_style/StyleState",
                         "strval": "DEFAULT",
                         "childs": [
-                          {
-                            "nid": 10810,
-                            "strtype": "_style/Outline_Color",
-                            "intarray": [
-                              250,
-                              250,
-                              250,
-                              0
-                            ],
-                            "InheritedType": 7
-                          },
-                          {
-                            "nid": 10820,
-                            "strtype": "_style/Outline_params",
-                            "intarray": [
-                              40,
-                              0
-                            ],
-                            "InheritedType": 7
-                          },
                           {
                             "nid": -309686350,
                             "strtype": "_style/Image_reColor",
@@ -31550,6 +31503,71 @@
                   },
                   {
                     "nid": 1000035,
+                    "strtype": "CALL FUNCTION/Dont_export_function",
+                    "strval": "False",
+                    "InheritedType": 2
+                  }
+                ],
+                "InheritedType": 10
+              }
+            ],
+            "InheritedType": 4
+          },
+          {
+            "disabled": false,
+            "nid": 1000530,
+            "strtype": "_event/EventHandler",
+            "strval": "SCREEN_LOADED",
+            "childs": [
+              {
+                "nid": 1000531,
+                "strtype": "_event/name",
+                "strval": "onSimpleProcessScreenLoad",
+                "InheritedType": 10
+              },
+              {
+                "nid": 1000532,
+                "strtype": "_event/condition_C",
+                "strval": "",
+                "InheritedType": 10
+              },
+              {
+                "nid": 1000533,
+                "strtype": "_event/condition_P",
+                "strval": "",
+                "InheritedType": 10
+              },
+              {
+                "nid": 1000534,
+                "strtype": "_event/action",
+                "strval": "CALL FUNCTION",
+                "childs": [
+                  {
+                    "nid": 1000535,
+                    "strtype": "CALL FUNCTION/Name",
+                    "strval": "CALL FUNCTION",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": 1000536,
+                    "strtype": "CALL FUNCTION/Call",
+                    "strval": "<{Function_name}>( event_struct )",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": 1000537,
+                    "strtype": "CALL FUNCTION/CallC",
+                    "strval": "<{Function_name}>( e );",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": 1000538,
+                    "strtype": "CALL FUNCTION/Function_name",
+                    "strval": "onSimpleProcessScreenLoad",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": 1000539,
                     "strtype": "CALL FUNCTION/Dont_export_function",
                     "strval": "False",
                     "InheritedType": 2
@@ -37987,31 +38005,31 @@
               {
                 "nid": 939638989,
                 "strtype": "IMGBUTTON/Image_pressed",
-                "strval": "-",
+                "strval": "",
                 "InheritedType": 5
               },
               {
                 "nid": -1072451500,
                 "strtype": "IMGBUTTON/Image_disabled",
-                "strval": "-",
+                "strval": "",
                 "InheritedType": 5
               },
               {
                 "nid": -1217254746,
                 "strtype": "IMGBUTTON/Image_checked_released",
-                "strval": "-",
+                "strval": "",
                 "InheritedType": 5
               },
               {
                 "nid": 1794841552,
                 "strtype": "IMGBUTTON/Image_checked_pressed",
-                "strval": "-",
+                "strval": "",
                 "InheritedType": 5
               },
               {
                 "nid": -533421980,
                 "strtype": "IMGBUTTON/Image_checked_disabled",
-                "strval": "-",
+                "strval": "",
                 "InheritedType": 5
               },
               {
@@ -38022,26 +38040,6 @@
                     "strtype": "_style/StyleState",
                     "strval": "DEFAULT",
                     "childs": [
-                      {
-                        "nid": 10810,
-                        "strtype": "_style/Outline_Color",
-                        "intarray": [
-                          19,
-                          19,
-                          19,
-                          0
-                        ],
-                        "InheritedType": 7
-                      },
-                      {
-                        "nid": 10820,
-                        "strtype": "_style/Outline_params",
-                        "intarray": [
-                          20,
-                          0
-                        ],
-                        "InheritedType": 7
-                      },
                       {
                         "nid": 1443696336,
                         "strtype": "_style/Image_reColor",
@@ -38559,31 +38557,31 @@
                   {
                     "nid": 1727654351,
                     "strtype": "IMGBUTTON/Image_pressed",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 949935607,
                     "strtype": "IMGBUTTON/Image_disabled",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": -963469536,
                     "strtype": "IMGBUTTON/Image_checked_released",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": -1551715477,
                     "strtype": "IMGBUTTON/Image_checked_pressed",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 193264585,
                     "strtype": "IMGBUTTON/Image_checked_disabled",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
@@ -38594,28 +38592,6 @@
                         "strtype": "_style/StyleState",
                         "strval": "DEFAULT",
                         "childs": [
-                          {
-                            "nid": 10810,
-                            "strtype": "_style/Outline_Color",
-                            "strval": "Dark",
-                            "integer": 1000207,
-                            "intarray": [
-                              19,
-                              19,
-                              19,
-                              255
-                            ],
-                            "InheritedType": 7
-                          },
-                          {
-                            "nid": 10820,
-                            "strtype": "_style/Outline_params",
-                            "intarray": [
-                              25,
-                              0
-                            ],
-                            "InheritedType": 7
-                          },
                           {
                             "nid": 1964254986,
                             "strtype": "_style/Image_reColor",
@@ -40630,6 +40606,71 @@
                   },
                   {
                     "nid": 1000023,
+                    "strtype": "CALL FUNCTION/Dont_export_function",
+                    "strval": "False",
+                    "InheritedType": 2
+                  }
+                ],
+                "InheritedType": 10
+              }
+            ],
+            "InheritedType": 4
+          },
+          {
+            "disabled": false,
+            "nid": 1000510,
+            "strtype": "_event/EventHandler",
+            "strval": "SCREEN_LOADED",
+            "childs": [
+              {
+                "nid": 1000511,
+                "strtype": "_event/name",
+                "strval": "onStatusScreenLoad",
+                "InheritedType": 10
+              },
+              {
+                "nid": 1000512,
+                "strtype": "_event/condition_C",
+                "strval": "",
+                "InheritedType": 10
+              },
+              {
+                "nid": 1000513,
+                "strtype": "_event/condition_P",
+                "strval": "",
+                "InheritedType": 10
+              },
+              {
+                "nid": 1000514,
+                "strtype": "_event/action",
+                "strval": "CALL FUNCTION",
+                "childs": [
+                  {
+                    "nid": 1000515,
+                    "strtype": "CALL FUNCTION/Name",
+                    "strval": "CALL FUNCTION",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": 1000516,
+                    "strtype": "CALL FUNCTION/Call",
+                    "strval": "<{Function_name}>( event_struct )",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": 1000517,
+                    "strtype": "CALL FUNCTION/CallC",
+                    "strval": "<{Function_name}>( e );",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": 1000518,
+                    "strtype": "CALL FUNCTION/Function_name",
+                    "strval": "onStatusScreenLoad",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": 1000519,
                     "strtype": "CALL FUNCTION/Dont_export_function",
                     "strval": "False",
                     "InheritedType": 2
@@ -45708,31 +45749,31 @@
               {
                 "nid": 939638989,
                 "strtype": "IMGBUTTON/Image_pressed",
-                "strval": "-",
+                "strval": "",
                 "InheritedType": 5
               },
               {
                 "nid": -1072451500,
                 "strtype": "IMGBUTTON/Image_disabled",
-                "strval": "-",
+                "strval": "",
                 "InheritedType": 5
               },
               {
                 "nid": -1217254746,
                 "strtype": "IMGBUTTON/Image_checked_released",
-                "strval": "-",
+                "strval": "",
                 "InheritedType": 5
               },
               {
                 "nid": 1794841552,
                 "strtype": "IMGBUTTON/Image_checked_pressed",
-                "strval": "-",
+                "strval": "",
                 "InheritedType": 5
               },
               {
                 "nid": -533421980,
                 "strtype": "IMGBUTTON/Image_checked_disabled",
-                "strval": "-",
+                "strval": "",
                 "InheritedType": 5
               },
               {
@@ -45743,26 +45784,6 @@
                     "strtype": "_style/StyleState",
                     "strval": "DEFAULT",
                     "childs": [
-                      {
-                        "nid": 10810,
-                        "strtype": "_style/Outline_Color",
-                        "intarray": [
-                          0,
-                          0,
-                          0,
-                          0
-                        ],
-                        "InheritedType": 7
-                      },
-                      {
-                        "nid": 10820,
-                        "strtype": "_style/Outline_params",
-                        "intarray": [
-                          20,
-                          0
-                        ],
-                        "InheritedType": 7
-                      },
                       {
                         "nid": 1443696336,
                         "strtype": "_style/Image_reColor",
@@ -46113,31 +46134,31 @@
                   {
                     "nid": -2094117598,
                     "strtype": "IMGBUTTON/Image_pressed",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": 1755909524,
                     "strtype": "IMGBUTTON/Image_disabled",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": -261413535,
                     "strtype": "IMGBUTTON/Image_checked_released",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": -300058726,
                     "strtype": "IMGBUTTON/Image_checked_pressed",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
                     "nid": -1034059470,
                     "strtype": "IMGBUTTON/Image_checked_disabled",
-                    "strval": "-",
+                    "strval": "",
                     "InheritedType": 5
                   },
                   {
@@ -46148,28 +46169,6 @@
                         "strtype": "_style/StyleState",
                         "strval": "DEFAULT",
                         "childs": [
-                          {
-                            "nid": 10810,
-                            "strtype": "_style/Outline_Color",
-                            "strval": "Dark",
-                            "integer": 1000207,
-                            "intarray": [
-                              19,
-                              19,
-                              19,
-                              255
-                            ],
-                            "InheritedType": 7
-                          },
-                          {
-                            "nid": 10820,
-                            "strtype": "_style/Outline_params",
-                            "intarray": [
-                              15,
-                              0
-                            ],
-                            "InheritedType": 7
-                          },
                           {
                             "nid": 953210462,
                             "strtype": "_style/Image_reColor",
@@ -46528,31 +46527,31 @@
                       {
                         "nid": -61409765,
                         "strtype": "IMGBUTTON/Image_pressed",
-                        "strval": "-",
+                        "strval": "",
                         "InheritedType": 5
                       },
                       {
                         "nid": -1272771944,
                         "strtype": "IMGBUTTON/Image_disabled",
-                        "strval": "-",
+                        "strval": "",
                         "InheritedType": 5
                       },
                       {
                         "nid": 1798385124,
                         "strtype": "IMGBUTTON/Image_checked_released",
-                        "strval": "-",
+                        "strval": "",
                         "InheritedType": 5
                       },
                       {
                         "nid": -1865530141,
                         "strtype": "IMGBUTTON/Image_checked_pressed",
-                        "strval": "-",
+                        "strval": "",
                         "InheritedType": 5
                       },
                       {
                         "nid": -1918771136,
                         "strtype": "IMGBUTTON/Image_checked_disabled",
-                        "strval": "-",
+                        "strval": "",
                         "InheritedType": 5
                       },
                       {
@@ -46563,26 +46562,6 @@
                             "strtype": "_style/StyleState",
                             "strval": "DEFAULT",
                             "childs": [
-                              {
-                                "nid": 10810,
-                                "strtype": "_style/Outline_Color",
-                                "intarray": [
-                                  0,
-                                  0,
-                                  0,
-                                  0
-                                ],
-                                "InheritedType": 7
-                              },
-                              {
-                                "nid": 10820,
-                                "strtype": "_style/Outline_params",
-                                "intarray": [
-                                  25,
-                                  0
-                                ],
-                                "InheritedType": 7
-                              },
                               {
                                 "nid": 522920081,
                                 "strtype": "_style/Image_reColor",
@@ -46778,31 +46757,31 @@
                       {
                         "nid": 1818514568,
                         "strtype": "IMGBUTTON/Image_pressed",
-                        "strval": "-",
+                        "strval": "",
                         "InheritedType": 5
                       },
                       {
                         "nid": -2019235858,
                         "strtype": "IMGBUTTON/Image_disabled",
-                        "strval": "-",
+                        "strval": "",
                         "InheritedType": 5
                       },
                       {
                         "nid": -1729574391,
                         "strtype": "IMGBUTTON/Image_checked_released",
-                        "strval": "-",
+                        "strval": "",
                         "InheritedType": 5
                       },
                       {
                         "nid": 824458078,
                         "strtype": "IMGBUTTON/Image_checked_pressed",
-                        "strval": "-",
+                        "strval": "",
                         "InheritedType": 5
                       },
                       {
                         "nid": -530315678,
                         "strtype": "IMGBUTTON/Image_checked_disabled",
-                        "strval": "-",
+                        "strval": "",
                         "InheritedType": 5
                       },
                       {
@@ -46813,26 +46792,6 @@
                             "strtype": "_style/StyleState",
                             "strval": "DEFAULT",
                             "childs": [
-                              {
-                                "nid": 10810,
-                                "strtype": "_style/Outline_Color",
-                                "intarray": [
-                                  250,
-                                  250,
-                                  250,
-                                  0
-                                ],
-                                "InheritedType": 7
-                              },
-                              {
-                                "nid": 10820,
-                                "strtype": "_style/Outline_params",
-                                "intarray": [
-                                  25,
-                                  0
-                                ],
-                                "InheritedType": 7
-                              },
                               {
                                 "nid": 1634297549,
                                 "strtype": "_style/Image_reColor",
@@ -48184,6 +48143,71 @@
               }
             ],
             "InheritedType": 4
+          },
+          {
+            "disabled": false,
+            "nid": 1000550,
+            "strtype": "_event/EventHandler",
+            "strval": "SCREEN_LOADED",
+            "childs": [
+              {
+                "nid": 1000551,
+                "strtype": "_event/name",
+                "strval": "onGrindScreenLoad",
+                "InheritedType": 10
+              },
+              {
+                "nid": 1000552,
+                "strtype": "_event/condition_C",
+                "strval": "",
+                "InheritedType": 10
+              },
+              {
+                "nid": 1000553,
+                "strtype": "_event/condition_P",
+                "strval": "",
+                "InheritedType": 10
+              },
+              {
+                "nid": 1000554,
+                "strtype": "_event/action",
+                "strval": "CALL FUNCTION",
+                "childs": [
+                  {
+                    "nid": 1000555,
+                    "strtype": "CALL FUNCTION/Name",
+                    "strval": "CALL FUNCTION",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": 1000556,
+                    "strtype": "CALL FUNCTION/Call",
+                    "strval": "<{Function_name}>( event_struct )",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": 1000557,
+                    "strtype": "CALL FUNCTION/CallC",
+                    "strval": "<{Function_name}>( e );",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": 1000558,
+                    "strtype": "CALL FUNCTION/Function_name",
+                    "strval": "onGrindScreenLoad",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": 1000559,
+                    "strtype": "CALL FUNCTION/Dont_export_function",
+                    "strval": "False",
+                    "InheritedType": 2
+                  }
+                ],
+                "InheritedType": 10
+              }
+            ],
+            "InheritedType": 4
           }
         ],
         "saved_objtypeKey": "SCREEN"
@@ -48230,7 +48254,7 @@
     "uiExportFolderPath": "/Users/jniebuhr/work/3d/projects/paros-control/src/display/ui/default/lvgl",
     "projectExportFolderPath": "/Users/jniebuhr/work/3d/projects/paros-control",
     "custom_variable_prefix": "uic",
-    "backup_cnt": 415,
+    "backup_cnt": 416,
     "autosave_cnt": 0,
     "lvgl_version": "8.3.11",
     "callfuncsexport": "CPP_FILE",
@@ -48246,7 +48270,7 @@
     "drive_fatfs_path": "",
     "naming": "_Screen_Name",
     "naming_force_lowercase": false,
-    "nidcnt": 1000500,
+    "nidcnt": 1000560,
     "BitDepth": 16,
     "Name": "GaggiMate"
   }

@@ -188,24 +188,32 @@ export function ExtendedPhase({ phase, index, onChange, onRemove, pressureAvaila
                   className={`join-item btn btn-sm ${mode === 'pressure' ? 'btn-primary' : 'btn-outline'}`}
                   onClick={() =>
                     mode !== 'pressure' &&
-                    onFieldChange('pump', { target: 'pressure', pressure: 0, flow: 0 })
+                    onFieldChange('pump', {
+                      target: 'pressure',
+                      pressure: phase.pump.pressure || 0,
+                      flow: phase.pump?.flow || 0,
+                    })
                   }
                   aria-pressed={mode === 'pressure'}
-                  aria-label='Pump pressure mode (PRO feature)'
+                  aria-label='Pump pressure mode'
                 >
-                  Pressure <sup>PRO</sup>
+                  Pressure
                 </button>
                 <button
                   type='button'
                   className={`join-item btn btn-sm ${mode === 'flow' ? 'btn-primary' : 'btn-outline'}`}
                   onClick={() =>
                     mode !== 'flow' &&
-                    onFieldChange('pump', { target: 'flow', pressure: 0, flow: 0 })
+                    onFieldChange('pump', {
+                      target: 'flow',
+                      pressure: phase.pump.pressure || 0,
+                      flow: phase.pump?.flow || 0,
+                    })
                   }
                   aria-pressed={mode === 'flow'}
-                  aria-label='Pump flow mode (PRO feature)'
+                  aria-label='Pump flow mode'
                 >
-                  Flow <sup>PRO</sup>
+                  Flow
                 </button>
               </>
             )}
@@ -241,7 +249,8 @@ export function ExtendedPhase({ phase, index, onChange, onRemove, pressureAvaila
         <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
           <div className='form-control'>
             <label htmlFor={`phase-${index}-pressure`} className='mb-2 block text-sm font-medium'>
-              Pressure {mode === 'pressure' ? 'Target' : 'Limit'}
+              {mode === 'pressure' ? 'Target' : 'Maximum'} Pressure{' '}
+              {mode === 'flow' && '(0 = Ignore)'}
             </label>
             <div className='input-group'>
               <label htmlFor={`phase-${index}-pressure`} className='input w-full'>
@@ -250,12 +259,12 @@ export function ExtendedPhase({ phase, index, onChange, onRemove, pressureAvaila
                   className='grow'
                   type='number'
                   step='0.01'
+                  min={mode === 'pressure' ? '0.1' : '0'}
                   value={pressure}
                   onChange={e =>
                     onFieldChange('pump', { ...phase.pump, pressure: parseFloat(e.target.value) })
                   }
                   aria-label='Pressure in bar'
-                  min='0'
                 />
                 <span aria-label='bar'>bar</span>
               </label>
@@ -263,7 +272,7 @@ export function ExtendedPhase({ phase, index, onChange, onRemove, pressureAvaila
           </div>
           <div className='form-control'>
             <label htmlFor={`phase-${index}-flow`} className='mb-2 block text-sm font-medium'>
-              Flow {mode === 'flow' ? 'Target' : 'Limit'}
+              {mode === 'flow' ? 'Target' : 'Maximum'} Flow {mode === 'pressure' && '(0 = Ignore)'}
             </label>
             <div className='input-group'>
               <label htmlFor={`phase-${index}-flow`} className='input w-full'>
@@ -277,7 +286,7 @@ export function ExtendedPhase({ phase, index, onChange, onRemove, pressureAvaila
                     onFieldChange('pump', { ...phase.pump, flow: parseFloat(e.target.value) })
                   }
                   aria-label='Flow rate in grams per second'
-                  min='0'
+                  min={mode === 'flow' ? '0.1' : '0'}
                 />
                 <span aria-label='grams per second'>g/s</span>
               </label>
@@ -289,7 +298,7 @@ export function ExtendedPhase({ phase, index, onChange, onRemove, pressureAvaila
       <div className='grid grid-cols-1 gap-4'>
         <div className='form-control'>
           <fieldset>
-            <legend className='mb-2 block text-sm font-medium'>Transition</legend>
+            <legend className='mb-2 block text-sm font-medium'>Ramp Style</legend>
             <div className='join' role='group' aria-label='Pump mode selection'>
               <button
                 type='button'
@@ -355,7 +364,7 @@ export function ExtendedPhase({ phase, index, onChange, onRemove, pressureAvaila
               htmlFor={`phase-${index}-transition-duration`}
               className='mb-2 block text-sm font-medium'
             >
-              Transition Duration
+              Ramp Duration
             </label>
             <div className='input-group'>
               <label htmlFor={`phase-${index}-transition-duration`} className='input w-full'>
@@ -382,7 +391,7 @@ export function ExtendedPhase({ phase, index, onChange, onRemove, pressureAvaila
       )}
 
       <div className='flex flex-row gap-4'>
-        <h3 className='text-lg font-medium'>Targets</h3>
+        <h3 className='text-lg font-medium'>Stop when</h3>
         <button
           type='button'
           className={`join-item btn btn-sm btn-outline`}

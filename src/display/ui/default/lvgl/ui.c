@@ -51,6 +51,7 @@ lv_obj_t *uic_ProfileScreen_dials_tempText;
 
 // SCREEN: ui_MenuScreen
 void ui_MenuScreen_screen_init(void);
+void ui_event_MenuScreen(lv_event_t *e);
 lv_obj_t *ui_MenuScreen;
 lv_obj_t *ui_MenuScreen_dials;
 void ui_event_MenuScreen_standbyButton(lv_event_t *e);
@@ -279,6 +280,9 @@ void ui_event_ProfileScreen(lv_event_t *e) {
         lv_indev_wait_release(lv_indev_get_act());
         onPreviousProfile(e);
     }
+    if (event_code == LV_EVENT_SCREEN_LOADED) {
+        onProfileScreenLoad(e);
+    }
 }
 
 void ui_event_ProfileScreen_ImgButton1(lv_event_t *e) {
@@ -310,6 +314,14 @@ void ui_event_ProfileScreen_chooseButton(lv_event_t *e) {
 
     if (event_code == LV_EVENT_CLICKED) {
         onProfileLoad(e);
+    }
+}
+
+void ui_event_MenuScreen(lv_event_t *e) {
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if (event_code == LV_EVENT_SCREEN_LOADED) {
+        onMenuScreenLoad(e);
     }
 }
 
@@ -359,6 +371,9 @@ void ui_event_BrewScreen(lv_event_t *e) {
     if (event_code == LV_EVENT_GESTURE && lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_TOP) {
         lv_indev_wait_release(lv_indev_get_act());
         onMenuClick(e);
+    }
+    if (event_code == LV_EVENT_SCREEN_LOADED) {
+        onBrewScreenLoad(e);
     }
 }
 
@@ -444,6 +459,9 @@ void ui_event_SimpleProcessScreen(lv_event_t *e) {
         lv_indev_wait_release(lv_indev_get_act());
         onMenuClick(e);
     }
+    if (event_code == LV_EVENT_SCREEN_LOADED) {
+        onSimpleProcessScreenLoad(e);
+    }
 }
 
 void ui_event_SimpleProcessScreen_ImgButton6(lv_event_t *e) {
@@ -493,6 +511,9 @@ void ui_event_StatusScreen(lv_event_t *e) {
         lv_indev_wait_release(lv_indev_get_act());
         onMenuClick(e);
     }
+    if (event_code == LV_EVENT_SCREEN_LOADED) {
+        onStatusScreenLoad(e);
+    }
 }
 
 void ui_event_StatusScreen_ImgButton8(lv_event_t *e) {
@@ -518,6 +539,9 @@ void ui_event_GrindScreen(lv_event_t *e) {
     if (event_code == LV_EVENT_GESTURE && lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_TOP) {
         lv_indev_wait_release(lv_indev_get_act());
         onMenuClick(e);
+    }
+    if (event_code == LV_EVENT_SCREEN_LOADED) {
+        onGrindScreenLoad(e);
     }
 }
 

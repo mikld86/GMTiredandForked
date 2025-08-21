@@ -173,7 +173,7 @@ function makeChartData(data, selectedPhase) {
             font: {
               size: window.innerWidth < 640 ? 10 : 12,
             },
-            maxTicksLimit: window.innerWidth < 640 ? 5 : 5,
+            maxTicksLimit: 10,
           },
         },
         y: {
@@ -223,13 +223,33 @@ function makeChartData(data, selectedPhase) {
         {
           id: 'box1',
           type: 'box',
-          xMin: start,
-          xMax: end,
-          backgroundColor: 'rgba(129, 207, 209, 0.2)',
+          xMin: start + 0.1,
+          xMax: end + 0.1,
+          backgroundColor: 'rgba(0,105,255,0.2)',
           borderColor: 'rgba(100, 100, 100, 0)',
         },
       ],
     };
+    start = 0;
+    for (let i = 0; i < data.phases.length; i++) {
+      chartData.options.plugins.annotation.annotations.push({
+        type: 'label',
+        xValue: start + data.phases[i].duration / 2,
+        yValue: 11,
+        content: [i + 1],
+        font: {
+          size: 14,
+          weight: 500,
+        },
+      });
+      start += parseFloat(data.phases[i].duration);
+      chartData.options.plugins.annotation.annotations.push({
+        type: 'line',
+        xMin: start + 0.1,
+        xMax: start + 0.1,
+        borderColor: 'rgba(0, 0, 0, 0.2)',
+      });
+    }
   }
   return chartData;
 }

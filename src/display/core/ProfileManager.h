@@ -28,8 +28,8 @@ class ProfileManager {
     Settings &_settings;
     fs::FS &_fs;
     String _dir;
-    bool ensureDirectory();
-    String profilePath(const String &uuid);
+    bool ensureDirectory() const;
+    String profilePath(const String &uuid) const;
     void migrate();
 };
 

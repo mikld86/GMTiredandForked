@@ -82,8 +82,8 @@ DefaultUI::DefaultUI(Controller *controller, PluginManager *pluginManager)
 void DefaultUI::init() {
     auto triggerRender = [this](Event const &) { rerender = true; };
     pluginManager->on("boiler:currentTemperature:change", [=](Event const &event) {
-        float newTemp = event.getFloat("value");
-        if (static_cast<int>(newTemp) != currentTemp) {
+        int newTemp = static_cast<int>(event.getFloat("value"));
+        if (newTemp != currentTemp) {
             currentTemp = newTemp;
             rerender = true;
         }
@@ -151,6 +151,7 @@ void DefaultUI::init() {
         pressureAvailable = controller->getSystemInfo().capabilities.pressure;
     });
     pluginManager->on("controller:wifi:connect", [this](Event const &event) {
+        configTzTime(resolve_timezone(controller->getSettings().getTimezone()), NTP_SERVER);
         setenv("TZ", resolve_timezone(controller->getSettings().getTimezone()), 1);
         tzset();
         sntp_set_sync_mode(SNTP_SYNC_MODE_SMOOTH);
@@ -299,8 +300,8 @@ void DefaultUI::setupState() {
     grindActive = controller->isGrindActive();
     active = controller->isActive();
     mode = controller->getMode();
-    currentTemp = controller->getCurrentTemp();
-    targetTemp = controller->getTargetTemp();
+    currentTemp = static_cast<int>(controller->getCurrentTemp());
+    targetTemp = static_cast<int>(controller->getTargetTemp());
     targetDuration = controller->getTargetDuration();
     targetVolume = settings.getTargetVolume();
     grindDuration = settings.getTargetGrindDuration();
@@ -611,14 +612,17 @@ void DefaultUI::updateStandbyScreen() {
     if (!apActive && WiFi.status() == WL_CONNECTED) {
         time_t now;
         struct tm timeinfo;
+
         localtime_r(&now, &timeinfo);
         // allocate enough space for both 12h/24h time formats
-        char time[9];
-        Settings &settings = controller->getSettings();
-        const char *format = settings.isClock24hFormat() ? "%H:%M" : "%I:%M %p";
-        strftime(time, sizeof(time), format, &timeinfo);
-        lv_label_set_text(ui_StandbyScreen_time, time);
-        lv_obj_clear_flag(ui_StandbyScreen_time, LV_OBJ_FLAG_HIDDEN);
+        if (getLocalTime(&timeinfo, 500)) {
+            char time[9];
+            Settings &settings = controller->getSettings();
+            const char *format = settings.isClock24hFormat() ? "%H:%M" : "%I:%M %p";
+            strftime(time, sizeof(time), format, &timeinfo);
+            lv_label_set_text(ui_StandbyScreen_time, time);
+            lv_obj_clear_flag(ui_StandbyScreen_time, LV_OBJ_FLAG_HIDDEN);
+        }
     } else {
         lv_obj_add_flag(ui_StandbyScreen_time, LV_OBJ_FLAG_HIDDEN);
     }

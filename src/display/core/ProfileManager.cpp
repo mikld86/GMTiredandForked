@@ -16,14 +16,14 @@ void ProfileManager::setup() {
     loadSelectedProfile(selectedProfile);
 }
 
-bool ProfileManager::ensureDirectory() {
+bool ProfileManager::ensureDirectory() const {
     if (!_fs.exists(_dir)) {
         return _fs.mkdir(_dir);
     }
     return true;
 }
 
-String ProfileManager::profilePath(const String &uuid) { return _dir + "/" + uuid + ".json"; }
+String ProfileManager::profilePath(const String &uuid) const { return _dir + "/" + uuid + ".json"; }
 
 void ProfileManager::migrate() {
     Profile profile{};

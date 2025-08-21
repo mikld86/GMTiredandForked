@@ -25,10 +25,6 @@ void ui_ProfileScreen_screen_init(void) {
     lv_obj_set_x(ui_ProfileScreen_ImgButton1, 0);
     lv_obj_set_y(ui_ProfileScreen_ImgButton1, 210);
     lv_obj_set_align(ui_ProfileScreen_ImgButton1, LV_ALIGN_CENTER);
-    lv_obj_set_style_outline_color(ui_ProfileScreen_ImgButton1, lv_color_hex(0xFAFAFA), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_outline_opa(ui_ProfileScreen_ImgButton1, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_outline_width(ui_ProfileScreen_ImgButton1, 20, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_outline_pad(ui_ProfileScreen_ImgButton1, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_img_recolor(ui_ProfileScreen_ImgButton1, lv_color_hex(0xFAFAFA), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_img_recolor_opa(ui_ProfileScreen_ImgButton1, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 

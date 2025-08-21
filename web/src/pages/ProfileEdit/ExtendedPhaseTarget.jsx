@@ -1,15 +1,15 @@
 const TargetTypes = [
   {
-    label: 'Volume',
-    type: 'volumetric',
-    operator: 'gte',
-    unit: 'g',
-  },
-  {
-    label: 'Pumped water',
+    label: 'Water drawn',
     type: 'pumped',
     operator: 'gte',
     unit: 'ml',
+  },
+  {
+    label: 'Weight reached',
+    type: 'volumetric',
+    operator: 'gte',
+    unit: 'g',
   },
   {
     label: 'Pressure above',

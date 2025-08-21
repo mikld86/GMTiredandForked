@@ -72,6 +72,7 @@ extern lv_obj_t *uic_ProfileScreen_dials_tempText;
 
 // SCREEN: ui_MenuScreen
 void ui_MenuScreen_screen_init(void);
+void ui_event_MenuScreen(lv_event_t *e);
 extern lv_obj_t *ui_MenuScreen;
 extern lv_obj_t *ui_MenuScreen_dials;
 void ui_event_MenuScreen_standbyButton(lv_event_t *e);
