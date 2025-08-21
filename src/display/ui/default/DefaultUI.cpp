@@ -14,6 +14,8 @@
 #include <display/ui/default/lvgl/ui_themes.h>
 #include <display/ui/utils/effects.h>
 
+#include "esp_sntp.h"
+
 static EffectManager effect_mgr;
 
 int16_t calculate_angle(int set_temp, int range, int offset) {
@@ -149,7 +151,11 @@ void DefaultUI::init() {
         pressureAvailable = controller->getSystemInfo().capabilities.pressure;
     });
     pluginManager->on("controller:wifi:connect", [this](Event const &event) {
-        configTzTime(resolve_timezone(controller->getSettings().getTimezone()), NTP_SERVER);
+        setenv("TZ", resolve_timezone(controller->getSettings().getTimezone()), 1);
+        tzset();
+        sntp_set_sync_mode(SNTP_SYNC_MODE_SMOOTH);
+        sntp_setservername(0, NTP_SERVER);
+        sntp_init();
         rerender = true;
         apActive = event.getInt("AP");
     });
@@ -603,16 +609,16 @@ void DefaultUI::updateStandbyScreen() {
     }
 
     if (!apActive && WiFi.status() == WL_CONNECTED) {
-        tm timeinfo;
-        if (getLocalTime(&timeinfo, 50)) {
-            // allocate enough space for both 12h/24h time formats
-            char time[9];
-            Settings &settings = controller->getSettings();
-            const char *format = settings.isClock24hFormat() ? "%H:%M" : "%I:%M %p";
-            strftime(time, sizeof(time), format, &timeinfo);
-            lv_label_set_text(ui_StandbyScreen_time, time);
-            lv_obj_clear_flag(ui_StandbyScreen_time, LV_OBJ_FLAG_HIDDEN);
-        }
+        time_t now;
+        struct tm timeinfo;
+        localtime_r(&now, &timeinfo);
+        // allocate enough space for both 12h/24h time formats
+        char time[9];
+        Settings &settings = controller->getSettings();
+        const char *format = settings.isClock24hFormat() ? "%H:%M" : "%I:%M %p";
+        strftime(time, sizeof(time), format, &timeinfo);
+        lv_label_set_text(ui_StandbyScreen_time, time);
+        lv_obj_clear_flag(ui_StandbyScreen_time, LV_OBJ_FLAG_HIDDEN);
     } else {
         lv_obj_add_flag(ui_StandbyScreen_time, LV_OBJ_FLAG_HIDDEN);
     }

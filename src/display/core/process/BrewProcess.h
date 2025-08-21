@@ -77,7 +77,7 @@ class BrewProcess : public Process {
     }
 
     double getNewDelayTime() {
-        double newDelay = brewDelay + volumetricRateCalculator.getOvershootAdjustMillis(double(getBrewVolume()), currentVolume);
+        double newDelay = brewDelay + volumetricRateCalculator.getOvershootAdjustMillis(getBrewVolume(), currentVolume);
         newDelay = std::clamp(newDelay, 0.0, PREDICTIVE_TIME);
         return newDelay;
     }
