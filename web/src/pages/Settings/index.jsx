@@ -8,6 +8,7 @@ import { machine } from '../../services/ApiService.js';
 import { getStoredTheme, handleThemeChange } from '../../utils/themeManager.js';
 import { setDashboardLayout, DASHBOARD_LAYOUTS } from '../../utils/dashboardManager.js';
 import { PluginCard } from './PluginCard.jsx';
+import { downloadJson } from '../../utils/download.js';
 
 const ledControl = computed(() => machine.value.capabilities.ledControl);
 
@@ -132,23 +133,7 @@ export function Settings() {
   );
 
   const onExport = useCallback(() => {
-    const jsonStr = JSON.stringify(formData, undefined, 2);
-    const blob = new Blob([jsonStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = url;
-    a.download = 'settings.json';
-    a.target = '_blank';
-    a.rel = 'noopener';
-    
-    document.body.appendChild(a);
-    setTimeout(() => {
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }, 10);
+    downloadJson(formData, 'settings.json');
   }, [formData]);
 
   const onUpload = function (evt) {

@@ -1,27 +1,12 @@
 import Card from '../../components/Card.jsx';
 import { useCallback } from 'preact/hooks';
 import { HistoryChart } from './HistoryChart.jsx';
+import { downloadJson } from '../../utils/download.js';
 
 export default function HistoryCard({ shot, onDelete }) {
   const date = new Date(shot.timestamp * 1000);
   const onExport = useCallback(() => {
-    const jsonStr = JSON.stringify(shot, undefined, 2);
-    const blob = new Blob([jsonStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = url;
-    a.download = 'shot-' + shot.id + '.json';
-    a.target = '_blank';
-    a.rel = 'noopener';
-    
-    document.body.appendChild(a);
-    setTimeout(() => {
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }, 10);
+    downloadJson(shot, 'shot-' + shot.id + '.json');
   });
   return (
     <Card sm={12}>

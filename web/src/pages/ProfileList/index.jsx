@@ -18,6 +18,7 @@ import { computed } from '@preact/signals';
 import { Spinner } from '../../components/Spinner.jsx';
 import Card from '../../components/Card.jsx';
 import { parseProfile } from './utils.js';
+import { downloadJson } from '../../utils/download.js';
 
 Chart.register(
   LineController,
@@ -66,22 +67,7 @@ function ProfileCard({
     delete download.selected;
     delete download.favorite;
 
-    const jsonStr = JSON.stringify(download, undefined, 2);
-    const blob = new Blob([jsonStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = url;
-    a.download = 'profile-' + data.id + '.json';
-    a.target = '_blank';
-    a.rel = 'noopener';
-
-    document.body.appendChild(a);
-    setTimeout(() => {
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }, 10);
+    downloadJson(download, 'profile-' + data.id + '.json');
   }, [data]);
 
   return (
@@ -308,23 +294,7 @@ export function ProfileList() {
       return ep;
     });
 
-    const jsonStr = JSON.stringify(exportedProfiles, undefined, 2);
-    const blob = new Blob([jsonStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = url;
-    a.download = 'profiles.json';
-    a.target = '_blank';
-    a.rel = 'noopener';
-
-    document.body.appendChild(a);
-    setTimeout(() => {
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }, 10);
+    downloadJson(exportedProfiles, 'profiles.json');
   }, [profiles]);
 
   const onUpload = function (evt) {
