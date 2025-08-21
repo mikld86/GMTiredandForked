@@ -91,17 +91,11 @@ void ShotHistoryPlugin::startRecording() {
 
 unsigned long ShotHistoryPlugin::getTime() {
     time_t now;
-    struct tm timeinfo;
-    if (!getLocalTime(&timeinfo, 100)) {
-        return 0;
-    }
     time(&now);
     return now;
 }
 
-void ShotHistoryPlugin::endRecording() {
-    recording = false;
-}
+void ShotHistoryPlugin::endRecording() { recording = false; }
 
 void ShotHistoryPlugin::cleanupHistory() {
     File directory = SPIFFS.open("/h");
