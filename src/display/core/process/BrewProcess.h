@@ -210,7 +210,10 @@ class BrewProcess : public Process {
     }
 
     float transitionAlpha() const {
-        const float dur_s = currentPhase.transition.duration;
+        float dur_s = currentPhase.transition.duration;
+        if (dur_s <= 0.0f) {
+            dur_s = currentPhase.duration; // If the transition has no duration, use the phase duration
+        }
         if (currentPhase.transition.type == TransitionType::INSTANT || dur_s <= 0.0f) {
             return 1.0f;
         }
