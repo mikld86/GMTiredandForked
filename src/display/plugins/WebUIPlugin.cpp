@@ -82,7 +82,7 @@ void WebUIPlugin::loop() {
             process = controller->getLastProcess();
         }
         if (process != nullptr) {
-            JsonObject pObj = doc.createNestedObject("process");
+            auto pObj = doc["process"].as<JsonObject>();
             pObj["a"] = controller->isActive() ? 1 : 0;
             if (process->getType() == MODE_BREW) {
                 auto *brew = static_cast<BrewProcess *>(process);

@@ -9,7 +9,7 @@
 
 class ProfileManager {
   public:
-    ProfileManager(fs::FS &fs, char *dir, Settings &settings, PluginManager *plugin_manager);
+    ProfileManager(fs::FS &fs, String dir, Settings &settings, PluginManager *plugin_manager);
 
     void setup();
     std::vector<String> listProfiles();
