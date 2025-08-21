@@ -115,7 +115,7 @@ class Settings {
     void setHomeAssistantPassword(const String &homeAssistantPassword);
     void setHomeAssistantIP(const String &homeAssistantIP);
     void setHomeAssistantPort(int homeAssistantPort);
-    void setHomeAssistantTopic(int homeAssistantTopic);
+    void setHomeAssistantTopic(const String &homeAssistantTopic);
     void setMomentaryButtons(bool momentary_buttons);
     void setTimezone(String timezone);
     void setClockFormat(bool format_24h);

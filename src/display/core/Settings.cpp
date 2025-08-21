@@ -260,7 +260,7 @@ void Settings::setHomeAssistantPort(const int homeAssistantPort) {
     this->homeAssistantPort = homeAssistantPort;
     save();
 }
-void Settings::setHomeAssistantTopic(const int homeAssistantTopic) {
+void Settings::setHomeAssistantTopic(const String &homeAssistantTopic) {
     this->homeAssistantTopic = homeAssistantTopic;
     save();
 }
