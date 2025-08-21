@@ -36,10 +36,11 @@ class Controller {
     void setTargetGrindVolume(double volume);
 
     int getMode() const;
-    int getTargetTemp() const;
+
+    float getTargetTemp() const;
     int getTargetDuration() const;
     int getTargetGrindDuration() const;
-    virtual int getCurrentTemp() const { return currentTemp; }
+    virtual float getCurrentTemp() const { return currentTemp; }
     bool isActive() const;
     bool isGrindActive() const;
     bool isUpdating() const;
@@ -128,7 +129,7 @@ class Controller {
     ProfileManager *profileManager{};
 
     int mode = MODE_BREW;
-    int currentTemp = 0;
+    float currentTemp = 0;
     float pressure = 0.0f;
     float targetPressure = 0.0f;
     float currentPuckFlow = 0.0f;

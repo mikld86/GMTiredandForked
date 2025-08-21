@@ -94,7 +94,7 @@ void DefaultUI::init() {
         }
     });
     pluginManager->on("boiler:targetTemperature:change", [=](Event const &event) {
-        int newTemp = event.getInt("value");
+        int newTemp = static_cast<int>(event.getFloat("value"));
         if (newTemp != targetTemp) {
             targetTemp = newTemp;
             rerender = true;
