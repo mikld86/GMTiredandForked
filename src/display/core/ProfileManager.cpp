@@ -14,6 +14,7 @@ void ProfileManager::setup() {
         _settings.setProfilesMigrated(true);
     }
     loadSelectedProfile(selectedProfile);
+    _settings.setFavoritedProfiles(getFavoritedProfiles(true));
 }
 
 bool ProfileManager::ensureDirectory() const {
@@ -131,12 +132,14 @@ bool ProfileManager::loadProfile(const String &uuid, Profile &outProfile) {
 bool ProfileManager::saveProfile(Profile &profile) {
     if (!ensureDirectory())
         return false;
-
-    ESP_LOGI("ProfileManager", "Saving profile %s", profile.id.c_str());
+    bool isNew = false;
 
     if (profile.id == nullptr || profile.id.isEmpty()) {
         profile.id = generateShortID();
+        isNew = true;
     }
+
+    ESP_LOGI("ProfileManager", "Saving profile %s", profile.id.c_str());
 
     File file = _fs.open(profilePath(profile.id), "w");
     if (!file)
@@ -154,6 +157,9 @@ bool ProfileManager::saveProfile(Profile &profile) {
     }
     selectProfile(_settings.getSelectedProfile());
     _plugin_manager->trigger("profiles:profile:save", "id", profile.id);
+    if (isNew) {
+        _settings.addFavoritedProfile(profile.id);
+    }
     return ok;
 }
 
@@ -176,12 +182,14 @@ Profile ProfileManager::getSelectedProfile() const { return selectedProfile; }
 
 void ProfileManager::loadSelectedProfile(Profile &outProfile) { loadProfile(_settings.getSelectedProfile(), outProfile); }
 
-std::vector<String> ProfileManager::getFavoritedProfiles() {
+std::vector<String> ProfileManager::getFavoritedProfiles(bool validate) {
     std::vector<String> favoritedProfiles;
-    for (String profile : _settings.getFavoritedProfiles()) {
-        if (profileExists(profile)) {
+    for (const String &profile : _settings.getFavoritedProfiles()) {
+        if (!validate || profileExists(profile))
             favoritedProfiles.push_back(profile);
-        }
+    }
+    if (favoritedProfiles.empty()) {
+        favoritedProfiles.push_back(_settings.getSelectedProfile());
     }
     return favoritedProfiles;
 }

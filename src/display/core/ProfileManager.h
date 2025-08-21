@@ -20,7 +20,7 @@ class ProfileManager {
     void selectProfile(const String &uuid);
     Profile getSelectedProfile() const;
     void loadSelectedProfile(Profile &outProfile);
-    std::vector<String> getFavoritedProfiles();
+    std::vector<String> getFavoritedProfiles(bool validate = false);
 
   private:
     Profile selectedProfile{};
