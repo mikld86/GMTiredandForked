@@ -40,6 +40,8 @@ float DimmedPump::getPumpFlow() { return _currentFlow; }
 
 float DimmedPump::getPuckFlow() { return _pressureController.getCoffeeFlowRate(); }
 
+float DimmedPump::getPuckResistance() { return _pressureController.getPuckResistance(); }
+
 void DimmedPump::tare() {
     _pressureController.tare();
     _pressureController.reset();

@@ -50,9 +50,6 @@ void PressureController::filterSensor() { _filteredPressureSensor = this->pressu
 void PressureController::tare() { coffeeOutput = 0.0; }
 
 void PressureController::update(ControlMode mode) {
-    if (*_ValveStatus != old_ValveStatus) {
-        reset();
-    }
     old_ValveStatus = *_ValveStatus;
     filterSetpoint(*_rawPressureSetpoint);
     filterSensor();
@@ -153,7 +150,6 @@ float PressureController::getPumpDutyCycleForPressure() {
     // BOILER NOT PRESSURISED : Do not start control before the boiler is filled up.
     // Threshold value needs to be as low as possible while escaping disturbance surge or pressure from the pump
     if (_filteredPressureSensor < 0.5 && *_rawPressureSetpoint != 0) {
-        reset();
         *_ctrlOutput = 100.0f;
         return 100.0f;
     }
