@@ -13,7 +13,7 @@ import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm';
 import { ExtendedProfileChart } from '../../components/ExtendedProfileChart.jsx';
 import { ProfileAddCard } from './ProfileAddCard.jsx';
 import { ApiServiceContext, machine } from '../../services/ApiService.js';
-import { useCallback, useEffect, useState, useContext } from 'preact/hooks';
+import { useCallback, useEffect, useState, useContext, useRef } from 'preact/hooks';
 import { computed } from '@preact/signals';
 import { Spinner } from '../../components/Spinner.jsx';
 import Card from '../../components/Card.jsx';
@@ -47,6 +47,10 @@ function ProfileCard({
   onDuplicate,
   favoriteDisabled,
   unfavoriteDisabled,
+  onMoveUp,
+  onMoveDown,
+  isFirst,
+  isLast,
 }) {
   const bookmarkClass = data.favorite ? 'text-warning' : 'text-base-content/60';
   const typeText = data.type === 'pro' ? 'Pro' : 'Simple';
@@ -67,7 +71,7 @@ function ProfileCard({
     delete download.selected;
     delete download.favorite;
 
-    downloadJson(download, 'profile-' + data.id + '.json');
+  downloadJson(download, `profile-${data.id}.json`);
   }, [data]);
 
   return (
@@ -87,6 +91,28 @@ function ProfileCard({
               aria-label={`Select ${data.label} profile`}
             />
           </label>
+          <div className='ml-2 flex flex-col gap-1'>
+            <button
+              onClick={() => onMoveUp(data.id)}
+              disabled={isFirst}
+              className='btn btn-xs btn-ghost'
+              aria-label={`Move ${data.label} up`}
+              aria-disabled={isFirst}
+              title='Move up'
+            >
+              <i className='fa fa-arrow-up' aria-hidden='true' />
+            </button>
+            <button
+              onClick={() => onMoveDown(data.id)}
+              disabled={isLast}
+              className='btn btn-xs btn-ghost'
+              aria-label={`Move ${data.label} down`}
+              aria-disabled={isLast}
+              title='Move down'
+            >
+              <i className='fa fa-arrow-down' aria-hidden='true' />
+            </button>
+          </div>
         </div>
         <div className='flex flex-grow flex-col overflow-auto'>
           <div className='flex flex-row flex-wrap gap-2'>
@@ -221,6 +247,69 @@ export function ProfileList() {
     setLoading(false);
   };
 
+  // Placeholder for future persistence of order (intentionally empty)
+  // Debounced persistence of profile order (300ms)
+  const orderDebounceRef = useRef(null);
+  const pendingOrderRef = useRef(null);
+  const persistProfileOrder = useCallback(
+    orderedProfiles => {
+      pendingOrderRef.current = orderedProfiles.map(p => p.id);
+      if (orderDebounceRef.current) {
+        clearTimeout(orderDebounceRef.current);
+      }
+      orderDebounceRef.current = setTimeout(async () => {
+        const orderedIds = pendingOrderRef.current;
+        if (!orderedIds) return;
+        try {
+          await apiService.request({ tp: 'req:profiles:reorder', order: orderedIds });
+        } catch (e) {
+          // optional: log or surface error
+        }
+      }, 300);
+    },
+    [apiService],
+  );
+
+  // Cleanup: flush pending order on unmount
+  useEffect(() => {
+    return () => {
+      if (orderDebounceRef.current) {
+        clearTimeout(orderDebounceRef.current);
+        if (pendingOrderRef.current) {
+          // fire and forget; no await during unmount
+          apiService.request({ tp: 'req:profiles:reorder', order: pendingOrderRef.current }).catch(() => {});
+        }
+      }
+    };
+  }, [apiService]);
+
+  const moveProfileUp = useCallback(id => {
+    setProfiles(prev => {
+      const idx = prev.findIndex(p => p.id === id);
+      if (idx > 0) {
+        const next = [...prev];
+        [next[idx - 1], next[idx]] = [next[idx], next[idx - 1]];
+        persistProfileOrder(next);
+        return next;
+      }
+      return prev;
+    });
+  }, [persistProfileOrder]);
+
+  const moveProfileDown = useCallback(id => {
+    setProfiles(prev => {
+      const idx = prev.findIndex(p => p.id === id);
+      if (idx !== -1 && idx < prev.length - 1) {
+        const next = [...prev];
+        [next[idx], next[idx + 1]] = [next[idx + 1], next[idx]];
+        persistProfileOrder(next);
+        return next;
+      }
+      return prev;
+    });
+  }, [persistProfileOrder]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const loadData = async () => {
       if (connected.value) {
@@ -230,6 +319,7 @@ export function ProfileList() {
     loadData();
   }, [connected.value]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const onDelete = useCallback(
     async id => {
       setLoading(true);
@@ -239,6 +329,7 @@ export function ProfileList() {
     [apiService, setLoading],
   );
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const onSelect = useCallback(
     async id => {
       setLoading(true);
@@ -248,6 +339,7 @@ export function ProfileList() {
     [apiService, setLoading],
   );
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const onFavorite = useCallback(
     async id => {
       setLoading(true);
@@ -257,6 +349,7 @@ export function ProfileList() {
     [apiService, setLoading],
   );
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const onUnfavorite = useCallback(
     async id => {
       setLoading(true);
@@ -266,6 +359,7 @@ export function ProfileList() {
     [apiService, setLoading],
   );
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const onDuplicate = useCallback(
     async id => {
       setLoading(true);
@@ -359,7 +453,7 @@ export function ProfileList() {
       </div>
 
       <div className='grid grid-cols-1 gap-4 lg:grid-cols-12' role='list' aria-label='Profile list'>
-        {profiles.map(data => (
+    {profiles.map((data, idx) => (
           <ProfileCard
             key={data.id}
             data={data}
@@ -370,6 +464,10 @@ export function ProfileList() {
             onUnfavorite={onUnfavorite}
             onFavorite={onFavorite}
             onDuplicate={onDuplicate}
+      onMoveUp={moveProfileUp}
+      onMoveDown={moveProfileDown}
+      isFirst={idx === 0}
+      isLast={idx === profiles.length - 1}
           />
         ))}
 

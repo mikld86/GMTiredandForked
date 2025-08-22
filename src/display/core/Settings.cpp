@@ -1,6 +1,7 @@
 #include "Settings.h"
 
 #include <utility>
+#include <algorithm>
 
 Settings::Settings() {
     preferences.begin(PREFERENCES_KEY, true);
@@ -49,6 +50,7 @@ Settings::Settings() {
     selectedProfile = preferences.getString("sp", "");
     profilesMigrated = preferences.getBool("pm", false);
     favoritedProfiles = explode(preferences.getString("fp", ""), ',');
+    profileOrder = explode(preferences.getString("po", ""), ',');
     steamPumpPercentage = preferences.getFloat("spp", DEFAULT_STEAM_PUMP_PERCENTAGE);
     historyIndex = preferences.getInt("hi", 0);
 
@@ -314,6 +316,21 @@ void Settings::removeFavoritedProfile(String profile) {
     save();
 }
 
+void Settings::setProfileOrder(std::vector<String> profile_order) {
+    std::vector<String> cleaned;
+    cleaned.reserve(profile_order.size());
+    for (auto &id : profile_order) {
+        if (id.isEmpty()) continue;
+        if (std::find(cleaned.begin(), cleaned.end(), id) == cleaned.end()) {
+            cleaned.emplace_back(std::move(id));
+        }
+    }
+
+    profileOrder = std::move(cleaned);
+    save();
+
+}
+
 void Settings::setMainBrightness(int main_brightness) {
     mainBrightness = main_brightness;
     save();
@@ -436,6 +453,7 @@ void Settings::doSave() {
     preferences.putBool("pm", profilesMigrated);
     preferences.putBool("mb", momentaryButtons);
     preferences.putString("fp", implode(favoritedProfiles, ","));
+    preferences.putString("po", implode(profileOrder, ","));
     preferences.putFloat("spp", steamPumpPercentage);
     preferences.putInt("hi", historyIndex);
 
