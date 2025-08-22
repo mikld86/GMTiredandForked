@@ -52,6 +52,7 @@ Settings::Settings() {
     favoritedProfiles = explode(preferences.getString("fp", ""), ',');
     profileOrder = explode(preferences.getString("po", ""), ',');
     steamPumpPercentage = preferences.getFloat("spp", DEFAULT_STEAM_PUMP_PERCENTAGE);
+    steamPumpCutoff = preferences.getFloat("spc", DEFAULT_STEAM_PUMP_CUTOFF);
     historyIndex = preferences.getInt("hi", 0);
 
     // Display settings
@@ -356,6 +357,11 @@ void Settings::setSteamPumpPercentage(float steam_pump_percentage) {
     save();
 }
 
+void Settings::setSteamPumpCutoff(float steam_pump_cutoff) {
+    steamPumpCutoff = steam_pump_cutoff;
+    save();
+}
+
 void Settings::setThemeMode(int theme_mode) {
     themeMode = theme_mode;
     save();
@@ -455,6 +461,7 @@ void Settings::doSave() {
     preferences.putString("fp", implode(favoritedProfiles, ","));
     preferences.putString("po", implode(profileOrder, ","));
     preferences.putFloat("spp", steamPumpPercentage);
+    preferences.putFloat("spc", steamPumpCutoff);
     preferences.putInt("hi", historyIndex);
 
     // Display settings
