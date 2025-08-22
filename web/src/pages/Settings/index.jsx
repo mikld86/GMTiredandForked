@@ -9,6 +9,9 @@ import { getStoredTheme, handleThemeChange } from '../../utils/themeManager.js';
 import { setDashboardLayout, DASHBOARD_LAYOUTS } from '../../utils/dashboardManager.js';
 import { PluginCard } from './PluginCard.jsx';
 import { downloadJson } from '../../utils/download.js';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileExport } from '@fortawesome/free-solid-svg-icons/faFileExport';
+import { faFileImport } from '@fortawesome/free-solid-svg-icons/faFileImport';
 
 const ledControl = computed(() => machine.value.capabilities.ledControl);
 
@@ -166,14 +169,14 @@ export function Settings() {
           className='btn btn-ghost btn-sm'
           title='Export Settings'
         >
-          <i className='fa fa-file-export' />
+          <FontAwesomeIcon icon={faFileExport} />
         </button>
         <label
           htmlFor='settingsImport'
           className='btn btn-ghost btn-sm cursor-pointer'
           title='Import Settings'
         >
-          <i className='fa fa-file-import' />
+          <FontAwesomeIcon icon={faFileImport} />
         </label>
         <input
           onChange={onUpload}
