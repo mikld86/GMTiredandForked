@@ -78,7 +78,7 @@ const ProcessControls = props => {
   const brewTarget = status.value.brewTarget;
   const processInfo = status.value.process;
   const active = !!processInfo?.a;
-  const finished = !!processInfo && !active;
+  const finished = !!processInfo?.e && !active;
   const apiService = useContext(ApiServiceContext);
   const [isFlushing, setIsFlushing] = useState(false);
 
@@ -161,7 +161,7 @@ const ProcessControls = props => {
           ].map(tab => (
             <button
               key={tab.id}
-              className={`flex-1 rounded-full px-1 py-1 text-sm transition-all duration-200 sm:px-4 lg:px-2 lg:py-2 ${
+              className={`flex-1 cursor-pointer rounded-full px-1 py-1 text-sm transition-all duration-200 sm:px-4 lg:px-2 lg:py-2 ${
                 mode === tab.id
                   ? 'bg-primary text-primary-content font-medium'
                   : 'text-base-content/60 hover:text-base-content'

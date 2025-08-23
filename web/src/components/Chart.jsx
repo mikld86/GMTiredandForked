@@ -62,7 +62,7 @@ export function ChartComponent({ data, className, chartClassName }) {
 
     // Add event listeners for different orientation change scenarios
     window.addEventListener('resize', handleResize);
-    
+
     // iOS PWA specific: orientationchange event
     window.addEventListener('orientationchange', () => {
       // Use a small delay to ensure the orientation change is complete

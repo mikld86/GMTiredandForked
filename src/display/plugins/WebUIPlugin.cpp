@@ -88,15 +88,14 @@ void WebUIPlugin::loop() {
             pObj["a"] = controller->isActive() ? 1 : 0;
             if (process->getType() == MODE_BREW) {
                 auto *brew = static_cast<BrewProcess *>(process);
-                unsigned long ts = millis();
-                if (!brew->isActive()) {
-                    ts = brew->finished;
-                }
+                unsigned long ts = brew->isActive() && controller->isActive() ? millis() : brew->finished;
                 pObj["s"] = brew->currentPhase.phase == PhaseType::PHASE_TYPE_BREW ? "brew" : "infusion";
                 pObj["l"] = brew->isActive() ? brew->currentPhase.name.c_str() : "Finished";
                 pObj["e"] = ts - brew->processStarted;
-                pObj["tt"] = brew->target == ProcessTarget::TIME ? "time" : "volumetric";
-                if (brew->target == ProcessTarget::VOLUMETRIC && brew->currentPhase.hasVolumetricTarget()) {
+                const bool isVolumetric = brew->target == ProcessTarget::VOLUMETRIC && brew->currentPhase.hasVolumetricTarget() &&
+                                          controller->isVolumetricAvailable();
+                pObj["tt"] = isVolumetric ? "volumetric" : "time";
+                if (isVolumetric) {
                     Target t = brew->currentPhase.getVolumetricTarget();
                     pObj["pt"] = t.value;
                     pObj["pp"] = brew->currentVolume;
@@ -231,6 +230,7 @@ void WebUIPlugin::handleWebSocketData(AsyncWebSocket *server, AsyncWebSocketClie
                     controller->activate();
                 } else if (msgType == "req:process:deactivate") {
                     controller->deactivate();
+                    controller->clear();
                 } else if (msgType == "req:process:clear") {
                     controller->clear();
                 } else if (msgType == "req:change-mode") {
