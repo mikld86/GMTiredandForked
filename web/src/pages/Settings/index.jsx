@@ -108,6 +108,7 @@ export function Settings() {
       setSubmitting(true);
       const form = formRef.current;
       const formDataToSubmit = new FormData(form);
+      formDataToSubmit.set('steamPumpPercentage', formData.steamPumpPercentage);
 
       // Ensure standbyBrightness is included even when the field is disabled
       if (!formData.standbyDisplayEnabled) {
@@ -539,17 +540,18 @@ export function Settings() {
                 id='steamPumpPercentage'
                 name='steamPumpPercentage'
                 type='number'
-                inputMode='decimal'
+                inputmode='decimal'
                 className='input input-bordered w-full'
                 placeholder={pressureAvailable.value ? '0.0 ml/s' : '0.0 %'}
                 min='0'
-                step='any'
-                value={formData.steamPumpPercentage * (pressureAvailable.value ? 0.1 : 1)}
-                onChange={e =>
+                step='0.1'
+                value={String(formData.steamPumpPercentage * (pressureAvailable.value ? 0.1 : 1))}
+                onBlur={e =>
                   setFormData({
                     ...formData,
-                    steamPumpPercentage:
-                      parseFloat(e.target.value) * (pressureAvailable.value ? 10 : 1),
+                    steamPumpPercentage: (
+                      parseFloat(e.target.value) * (pressureAvailable.value ? 10 : 1)
+                    ).toFixed(0),
                   })
                 }
               />
