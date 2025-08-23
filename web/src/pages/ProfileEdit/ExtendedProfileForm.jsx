@@ -44,6 +44,7 @@ export function ExtendedProfileForm(props) {
             duration: 0,
             adaptive: true,
           },
+          targets: [],
         },
       ],
     });

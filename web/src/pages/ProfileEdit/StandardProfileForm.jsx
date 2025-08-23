@@ -35,6 +35,7 @@ export function StandardProfileForm(props) {
           pump: 100,
           valve: 1,
           duration: 0,
+          targets: [],
         },
       ],
     });
@@ -181,7 +182,7 @@ function Phase({ phase, index, onChange, onRemove, pressureAvailable }) {
     if (value === 0) {
       onChange({
         ...phase,
-        targets: null,
+        targets: [],
       });
       return;
     }
