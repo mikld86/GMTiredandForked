@@ -399,11 +399,15 @@ export function ExtendedPhase({ phase, index, onChange, onRemove, pressureAvaila
           >
             <FontAwesomeIcon icon={faPlus} />
           </div>
-          <ul className='menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm'>
+          <ul
+            tabIndex='0'
+            className='menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm'
+          >
             {availableTargetTypes.map(t => (
               <li key={`${t.type}-${t.operator}`}>
-                <a
-                  onClick={() =>
+                <span
+                  role='button'
+                  onClick={e =>
                     onTargetAdd({
                       type: t.type,
                       operator: t.operator,
@@ -412,7 +416,7 @@ export function ExtendedPhase({ phase, index, onChange, onRemove, pressureAvaila
                   }
                 >
                   {t.label}
-                </a>
+                </span>
               </li>
             ))}
             {availableTargetTypes.length === 0 && (
