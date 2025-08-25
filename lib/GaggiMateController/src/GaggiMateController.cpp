@@ -131,7 +131,7 @@ void GaggiMateController::loop() {
         handlePingTimeout();
     }
     sendSensorData();
-    delay(100);
+    delay(250);
 }
 
 void GaggiMateController::registerBoardConfig(ControllerConfig config) { configs.push_back(config); }
