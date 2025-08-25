@@ -385,10 +385,39 @@ export function ExtendedPhase({ phase, index, onChange, onRemove, pressureAvaila
               </label>
             </div>
           </div>
+          <div className='form-control'>
+            <fieldset>
+              <legend className='mb-2 block text-sm font-medium'>Start Ramp from</legend>
+              <div className='join' role='group' aria-label='Start Ramp from'>
+                <button
+                  type='button'
+                  className={`join-item btn btn-sm ${!phase.transition?.adaptive ? 'btn-primary' : 'btn-outline'}`}
+                  onClick={() =>
+                    onFieldChange('transition', { ...phase.transition, adaptive: false })
+                  }
+                  aria-pressed={!phase.transition?.adaptive}
+                  aria-label='Start from previous setpoint'
+                >
+                  Previous target
+                </button>
+                <button
+                  type='button'
+                  className={`join-item btn btn-sm ${!!phase.transition?.adaptive ? 'btn-primary' : 'btn-outline'}`}
+                  onClick={() =>
+                    onFieldChange('transition', { ...phase.transition, adaptive: true })
+                  }
+                  aria-pressed={!!phase.transition?.adaptive}
+                  aria-label='Linear'
+                >
+                  Current value
+                </button>
+              </div>
+            </fieldset>
+          </div>
         </div>
       )}
 
-      <div className='flex flex-row gap-4'>
+      <div className='mt-2 flex flex-row gap-4'>
         <h3 className='text-lg font-medium'>Stop when</h3>
         <div className='dropdown'>
           <div
