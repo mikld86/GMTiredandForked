@@ -46,11 +46,11 @@ export class TclConverter {
 
     return {
       parser: parserType,
-      sourceProfileType: sourceProfileType,
+      sourceProfileType,
       phasesCount: profile.phases.length,
       totalMaxDuration: parseFloat(totalMaxDuration.toFixed(2)),
       brewingMaxDuration: parseFloat(brewingMaxDuration.toFixed(2)),
-      phaseSummary: phaseSummary,
+      phaseSummary,
     };
   }
 
@@ -164,7 +164,7 @@ export class TclConverter {
         if (targetType && operator && phaseData[valueKey])
           targets.push({
             type: targetType,
-            operator: operator,
+            operator,
             value: parseFloat(phaseData[valueKey]),
           });
       }
@@ -218,10 +218,6 @@ export class TclConverter {
     return resultProfile;
   }
 
-  static _validate(profile) {
-    return { isValid: true };
-  } // Simplified for brevity
-
   static toGaggiMate(text) {
     if (!text || typeof text !== 'string' || text.trim().length === 0)
       return this._fail('Input is empty or invalid.');
@@ -229,9 +225,6 @@ export class TclConverter {
 
     const profileObject = this._parseTcl(cleanText);
     if (profileObject.ok === false) return profileObject;
-
-    const validation = this._validate(profileObject);
-    if (!validation.isValid) return this._fail(`Validation Error: ${validation.message}`);
 
     try {
       return this._succeed(profileObject);
