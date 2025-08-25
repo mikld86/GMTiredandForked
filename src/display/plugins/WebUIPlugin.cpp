@@ -248,9 +248,10 @@ void WebUIPlugin::handleWebSocketData(AsyncWebSocket *server, AsyncWebSocketClie
                 } else if (msgType.startsWith("req:history")) {
                     JsonDocument resp;
                     ShotHistory.handleRequest(doc, resp);
-                    String msg;
-                    serializeJson(resp, msg);
-                    ws.text(client->id(), msg);
+                    size_t bufferSize = measureJson(resp);
+                    auto *buffer = ws.makeBuffer(bufferSize);
+                    serializeJson(resp, buffer->get(), bufferSize);
+                    client->text(buffer);
                 } else if (msgType == "req:flush:start") {
                     handleFlushStart(client->id(), doc);
                 }
@@ -350,9 +351,10 @@ void WebUIPlugin::handleProfileRequest(uint32_t clientId, JsonDocument &request)
         }
     }
 
-    String msg;
-    serializeJson(response, msg);
-    ws.text(clientId, msg);
+    size_t bufferSize = measureJson(response);
+    auto *buffer = ws.makeBuffer(bufferSize);
+    serializeJson(response, buffer->get(), bufferSize);
+    ws.text(clientId, buffer);
 }
 
 void WebUIPlugin::handleSettings(AsyncWebServerRequest *request) const {
