@@ -157,7 +157,9 @@ void Controller::setupInfos() {
 void Controller::setupWifi() {
     if (settings.getWifiSsid() != "" && settings.getWifiPassword() != "") {
         WiFi.mode(WIFI_STA);
-        WiFi.begin(settings.getWifiSsid(), settings.getWifiPassword());
+        WiFi.setSleep(false);                           // keep radio awake during join
+        WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE); // arm DHCP fresh each attempt
+        WiFi.begin(settings.getWifiSsid().c_str(), settings.getWifiPassword().c_str());
         WiFi.setTxPower(WIFI_POWER_19_5dBm);
         WiFi.setAutoReconnect(true);
         for (int attempts = 0; attempts < WIFI_CONNECT_ATTEMPTS; attempts++) {
