@@ -157,7 +157,7 @@ void Controller::setupInfos() {
 void Controller::setupWifi() {
     if (settings.getWifiSsid() != "" && settings.getWifiPassword() != "") {
         WiFi.mode(WIFI_STA);
-        WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE); // arm DHCP fresh each attempt
+        WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE);
         WiFi.begin(settings.getWifiSsid().c_str(), settings.getWifiPassword().c_str());
         WiFi.setTxPower(WIFI_POWER_19_5dBm);
         WiFi.setAutoReconnect(true);
