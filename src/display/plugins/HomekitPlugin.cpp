@@ -2,6 +2,11 @@
 #include "../core/Controller.h"
 #include "../core/constants.h"
 #include <utility>
+#include <Preferences.h>
+
+#ifndef BUILD_GIT_VERSION
+#define BUILD_GIT_VERSION "dev"
+#endif
 
 HomekitAccessory::HomekitAccessory(change_callback_t callback)
     : callback(nullptr), state(nullptr), targetState(nullptr), currentTemperature(nullptr), targetTemperature(nullptr),
@@ -55,12 +60,34 @@ void HomekitPlugin::clearAction() { actionRequired = false; }
 void HomekitPlugin::setup(Controller *controller, PluginManager *pluginManager) {
     this->controller = controller;
 
-    pluginManager->on("controller:wifi:connect", [this](Event &event) {
+    // Check stored firmware version to decide if we should flush HomeKit identity once
+    bool shouldReset = false;
+    {
+        Preferences prefs;
+        prefs.begin("homekit", false);
+        String storedVersion = prefs.getString("fw_version", "");
+        shouldReset = (storedVersion != BUILD_GIT_VERSION);
+        prefs.end();
+    }
+
+    pluginManager->on("controller:wifi:connect", [this, shouldReset](Event &event) {
         int apMode = event.getInt("AP");
         if (apMode)
             return;
+
         homeSpan.setHostNameSuffix("");
         homeSpan.setPortNum(HOMESPAN_PORT);
+
+        // If firmware changed, regenerate HomeKit Device ID and clear pairings (keep Wi-Fi)
+        if (shouldReset) {
+            Serial.printf("[HomekitPlugin] Firmware changed. Issuing HomeSpan 'H' reset. New version: %s\n", BUILD_GIT_VERSION);
+            homeSpan.processSerialCommand("H");
+            Preferences prefs;
+            prefs.begin("homekit", false);
+            prefs.putString("fw_version", BUILD_GIT_VERSION);
+            prefs.end();
+        }
+
         homeSpan.setWifiCredentials(wifiSsid.c_str(), wifiPassword.c_str());
         homeSpan.begin(Category::Thermostats, DEVICE_NAME, this->controller->getSettings().getMdnsName().c_str());
         spanAccessory = new SpanAccessory();
