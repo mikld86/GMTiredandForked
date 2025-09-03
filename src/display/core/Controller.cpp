@@ -27,6 +27,7 @@ namespace {
     volatile bool g_reconnectPending = false;
     unsigned long g_reconnectAt      = 0;
     int           g_reconnectAttempts= 0;   // reset on GOT_IP
+    bool          g_wifiEventsInstalled = false; // NEW
 }
 
 void Controller::setup() {
@@ -165,6 +166,25 @@ void Controller::setupWifi() {
     if (settings.getWifiSsid() != "" && settings.getWifiPassword() != "") {
         WiFi.persistent(false);                                   // keep config in RAM; avoid stale NVS reconnects
         WiFi.mode(WIFI_STA);
+
+        // --- Register event handlers unconditionally (before begin) ---
+        if (!g_wifiEventsInstalled) {
+            WiFi.onEvent([this](WiFiEvent_t, WiFiEventInfo_t) {
+                g_reconnectAttempts = 0;
+                pluginManager->trigger("controller:wifi:connect", "AP", 0);
+            }, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
+
+            WiFi.onEvent([this](WiFiEvent_t, WiFiEventInfo_t info) {
+                ESP_LOGI(LOG_TAG, "Lost WiFi connection. Reason: %d", info.wifi_sta_disconnected.reason);
+                pluginManager->trigger("controller:wifi:disconnect");
+                g_reconnectPending = true;
+                g_reconnectAt      = millis() + 3000;  // 3s fixed backoff
+            }, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
+
+            g_wifiEventsInstalled = true;
+        }
+        // -------------------------------------------------------------
+
         WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE);       // fresh DHCP each attempt
         WiFi.setHostname(settings.getMdnsName().c_str());         // must be before begin()
         WiFi.begin(settings.getWifiSsid().c_str(), settings.getWifiPassword().c_str());
@@ -183,19 +203,7 @@ void Controller::setupWifi() {
             ESP_LOGI(LOG_TAG, "Connected to %s with IP address %s", settings.getWifiSsid().c_str(),
                      WiFi.localIP().toString().c_str());
 
-            // Reset counter on success
-            WiFi.onEvent([this](WiFiEvent_t, WiFiEventInfo_t) {
-                g_reconnectAttempts = 0;
-                pluginManager->trigger("controller:wifi:connect", "AP", 0);
-            }, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
-
-            // Schedule a non-blocking retry ~3s after disconnect
-            WiFi.onEvent([this](WiFiEvent_t, WiFiEventInfo_t info) {
-                ESP_LOGI(LOG_TAG, "Lost WiFi connection. Reason: %d", info.wifi_sta_disconnected.reason);
-                pluginManager->trigger("controller:wifi:disconnect");
-                g_reconnectPending = true;
-                g_reconnectAt      = millis() + 3000;  // 3s fixed backoff
-            }, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
+            // (handlers already registered above)
 
         } else {
             WiFi.disconnect(true, true);
