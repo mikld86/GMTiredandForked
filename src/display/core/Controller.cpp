@@ -22,6 +22,13 @@
 
 const String LOG_TAG = F("Controller");
 
+// ===== Reconnect tracking (runtime only; not stored in NVS) =====
+namespace {
+    volatile bool g_reconnectPending = false;
+    unsigned long g_reconnectAt      = 0;
+    int           g_reconnectAttempts= 0;   // reset on GOT_IP
+}
+
 void Controller::setup() {
     mode = settings.getStartupMode();
 
@@ -156,10 +163,14 @@ void Controller::setupInfos() {
 
 void Controller::setupWifi() {
     if (settings.getWifiSsid() != "" && settings.getWifiPassword() != "") {
+        WiFi.persistent(false);                                   // keep config in RAM; avoid stale NVS reconnects
         WiFi.mode(WIFI_STA);
-        WiFi.begin(settings.getWifiSsid(), settings.getWifiPassword());
+        WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE);       // fresh DHCP each attempt
+        WiFi.setHostname(settings.getMdnsName().c_str());         // must be before begin()
+        WiFi.begin(settings.getWifiSsid().c_str(), settings.getWifiPassword().c_str());
         WiFi.setTxPower(WIFI_POWER_19_5dBm);
         WiFi.setAutoReconnect(true);
+
         for (int attempts = 0; attempts < WIFI_CONNECT_ATTEMPTS; attempts++) {
             if (WiFi.status() == WL_CONNECTED) {
                 break;
@@ -171,14 +182,21 @@ void Controller::setupWifi() {
         if (WiFi.status() == WL_CONNECTED) {
             ESP_LOGI(LOG_TAG, "Connected to %s with IP address %s", settings.getWifiSsid().c_str(),
                      WiFi.localIP().toString().c_str());
-            WiFi.onEvent([this](WiFiEvent_t, WiFiEventInfo_t) { pluginManager->trigger("controller:wifi:connect", "AP", 0); },
-                         WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
-            WiFi.onEvent(
-                [this](WiFiEvent_t, WiFiEventInfo_t info) {
-                    ESP_LOGI(LOG_TAG, "Lost WiFi connection. Reason: %d", info.wifi_sta_disconnected.reason);
-                    pluginManager->trigger("controller:wifi:disconnect");
-                },
-                WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
+
+            // Reset counter on success
+            WiFi.onEvent([this](WiFiEvent_t, WiFiEventInfo_t) {
+                g_reconnectAttempts = 0;
+                pluginManager->trigger("controller:wifi:connect", "AP", 0);
+            }, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
+
+            // Schedule a non-blocking retry ~3s after disconnect
+            WiFi.onEvent([this](WiFiEvent_t, WiFiEventInfo_t info) {
+                ESP_LOGI(LOG_TAG, "Lost WiFi connection. Reason: %d", info.wifi_sta_disconnected.reason);
+                pluginManager->trigger("controller:wifi:disconnect");
+                g_reconnectPending = true;
+                g_reconnectAt      = millis() + 3000;  // 3s fixed backoff
+            }, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
+
         } else {
             WiFi.disconnect(true, true);
             ESP_LOGI(LOG_TAG, "Timed out while connecting to WiFi");
@@ -207,21 +225,30 @@ void Controller::loop() {
         connect();
     }
 
-    if (clientController.isReadyForConnection()) {
-        clientController.connectToServer();
-        setupInfos();
-        pluginManager->trigger("controller:bluetooth:connect");
-        if (!loaded) {
-            loaded = true;
-            if (settings.getStartupMode() == MODE_STANDBY)
-                activateStandby();
+    // ===== Non-blocking reconnect cadence with attempt cap and AP fallback =====
+    if (g_reconnectPending && (long)(millis() - g_reconnectAt) >= 0) {
+        g_reconnectPending = false;
 
-            ESP_LOGI(LOG_TAG, "setting pressure scale to %.2f\n", settings.getPressureScaling());
-            setPressureScale();
-            clientController.sendPidSettings(settings.getPid());
-            clientController.sendPumpModelCoeffs(settings.getPumpModelCoeffs());
+        if (g_reconnectAttempts >= WIFI_CONNECT_ATTEMPTS) {
+            ESP_LOGW(LOG_TAG, "Reconnect cap (%d) reached. Switching to AP mode.", WIFI_CONNECT_ATTEMPTS);
+            isApConnection = true;
+            WiFi.mode(WIFI_AP);
+            WiFi.softAPConfig(WIFI_AP_IP, WIFI_AP_IP, WIFI_SUBNET_MASK);
+            WiFi.softAP(WIFI_AP_SSID);
+            WiFi.setTxPower(WIFI_POWER_19_5dBm);
+            pluginManager->trigger("controller:wifi:connect", "AP", 1);
+        } else {
+            ESP_LOGI(LOG_TAG, "Attempting WiFi reconnect… (%d/%d)",
+                     g_reconnectAttempts + 1, WIFI_CONNECT_ATTEMPTS);
 
-            pluginManager->trigger("controller:ready");
+            // Clean DHCP + correct hostname each retry
+            WiFi.persistent(false);
+            WiFi.disconnect(false, false);                       // drop link, keep creds
+            WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE);  // request fresh lease
+            WiFi.setHostname(settings.getMdnsName().c_str());    // ensure hostname sticks on new DORA
+            WiFi.begin(settings.getWifiSsid().c_str(), settings.getWifiPassword().c_str());
+
+            g_reconnectAttempts++;
         }
     }
 
@@ -346,7 +373,7 @@ void Controller::setTargetTemp(float temperature) {
     switch (mode) {
     case MODE_BREW:
     case MODE_GRIND:
-        // Update current profile
+        // Update current profile if needed
         break;
     case MODE_STEAM:
         settings.setTargetSteamTemp(static_cast<int>(temperature));
