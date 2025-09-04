@@ -171,6 +171,11 @@ void Controller::setupWifi() {
         if (!g_wifiEventsInstalled) {
             WiFi.onEvent([this](WiFiEvent_t, WiFiEventInfo_t) {
                 g_reconnectAttempts = 0;
+
+                // SAFELY disable modem sleep only after STA has an IP (prevents boot loops)
+                WiFi.setSleep(false);
+
+                // Fire a "Wi-Fi connect (STA)" event so net plugins can (re)start on real IP
                 pluginManager->trigger("controller:wifi:connect", "AP", 0);
             }, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
 
@@ -203,7 +208,7 @@ void Controller::setupWifi() {
             ESP_LOGI(LOG_TAG, "Connected to %s with IP address %s", settings.getWifiSsid().c_str(),
                      WiFi.localIP().toString().c_str());
 
-            // (handlers already registered above)
+            // (handlers already take care of post-connect actions)
 
         } else {
             WiFi.disconnect(true, true);
@@ -218,11 +223,15 @@ void Controller::setupWifi() {
         WiFi.softAP(WIFI_AP_SSID);
         WiFi.setTxPower(WIFI_POWER_19_5dBm);
         ESP_LOGI(LOG_TAG, "Started WiFi AP %s", WIFI_AP_SSID);
+
+        // Tell plugins AP is up (AP=1) so WebUI/mDNS can run in AP
+        pluginManager->trigger("controller:wifi:connect", "AP", 1);
     }
 
     pluginManager->on("ota:update:start", [this](Event const &) { this->updating = true; });
     pluginManager->on("ota:update:end", [this](Event const &) { this->updating = false; });
 
+    // Keep existing summary signal (optional; harmless alongside GOT_IP event)
     pluginManager->trigger("controller:wifi:connect", "AP", isApConnection ? 1 : 0);
 }
 
