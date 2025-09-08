@@ -22,12 +22,20 @@
 
 const String LOG_TAG = F("Controller");
 
-// ===== Reconnect tracking (runtime only; not stored in NVS) =====
+// ===== Reconnect & coexistence tracking (runtime only; not stored in NVS) =====
 namespace {
-    volatile bool g_reconnectPending = false;
-    unsigned long g_reconnectAt      = 0;
-    int           g_reconnectAttempts= 0;   // reset on GOT_IP
-    bool          g_wifiEventsInstalled = false; // NEW
+    volatile bool g_reconnectPending      = false;
+    unsigned long g_reconnectAt           = 0;
+    int           g_reconnectAttempts     = 0;
+    bool          g_wifiEventsInstalled   = false;
+
+    // Workaround for Arduino-ESP32 2.0.17: only do DHCP "fresh" once per reconnect sequence
+    bool          g_dhcpFreshApplied      = false;
+
+    // BLE guard to avoid RF churn during GAP handshake
+    volatile bool g_bleConnecting         = false;
+    unsigned long g_bleConnectDeadline    = 0;
+    constexpr uint32_t BLE_CONNECT_GUARD_MS = 8000;   // give BLE up to 8s of quiet
 }
 
 void Controller::setup() {
@@ -72,6 +80,7 @@ void Controller::setup() {
     pluginManager->on("profiles:profile:select", [this](Event const &event) { this->handleProfileUpdate(); });
 
 #ifndef GAGGIMATE_HEADLESS
+    ui = new DefaultUI(this, pluginManager);
     ui->init();
 #else
     this->onScreenReady();
@@ -80,7 +89,10 @@ void Controller::setup() {
     xTaskCreatePinnedToCore(loopTask, "Controller::loopControl", configMINIMAL_STACK_SIZE * 6, this, 1, &taskHandle, 1);
 }
 
-void Controller::onScreenReady() { screenReady = true; }
+void Controller::onScreenReady() {
+    screenReady = true;
+    ESP_LOGI(LOG_TAG, "onScreenReady() called, screenReady=%d", screenReady);
+}
 
 void Controller::onTargetChange(ProcessTarget target) { settings.setVolumetricTarget(target == ProcessTarget::VOLUMETRIC); }
 
@@ -164,42 +176,36 @@ void Controller::setupInfos() {
 
 void Controller::setupWifi() {
     if (settings.getWifiSsid() != "" && settings.getWifiPassword() != "") {
-        WiFi.persistent(false);                                   // keep config in RAM; avoid stale NVS reconnects
+        WiFi.persistent(false);
         WiFi.mode(WIFI_STA);
 
-        // --- Register event handlers unconditionally (before begin) ---
+        // Register event handlers once (before begin)
         if (!g_wifiEventsInstalled) {
             WiFi.onEvent([this](WiFiEvent_t, WiFiEventInfo_t) {
                 g_reconnectAttempts = 0;
-
-                // SAFELY disable modem sleep only after STA has an IP (prevents boot loops)
-                WiFi.setSleep(false);
-
-                // Fire a "Wi-Fi connect (STA)" event so net plugins can (re)start on real IP
+                g_dhcpFreshApplied  = false;   // allow fresh DHCP on next reconnect sequence
                 pluginManager->trigger("controller:wifi:connect", "AP", 0);
             }, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
 
             WiFi.onEvent([this](WiFiEvent_t, WiFiEventInfo_t info) {
                 ESP_LOGI(LOG_TAG, "Lost WiFi connection. Reason: %d", info.wifi_sta_disconnected.reason);
                 pluginManager->trigger("controller:wifi:disconnect");
-                g_reconnectPending = true;
-                g_reconnectAt      = millis() + 3000;  // 3s fixed backoff
+                g_reconnectPending  = true;
+                g_reconnectAt       = millis() + 3000;  // initial backoff
+                // keep g_dhcpFreshApplied as-is; we only reset it on GOT_IP or AP flip
             }, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
-
             g_wifiEventsInstalled = true;
         }
-        // -------------------------------------------------------------
 
-        WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE);       // fresh DHCP each attempt
-        WiFi.setHostname(settings.getMdnsName().c_str());         // must be before begin()
+        // Initial clean DHCP only once here; subsequent retries are handled in loop()
+        WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE);
+        WiFi.setHostname(settings.getMdnsName().c_str());
         WiFi.begin(settings.getWifiSsid().c_str(), settings.getWifiPassword().c_str());
         WiFi.setTxPower(WIFI_POWER_19_5dBm);
         WiFi.setAutoReconnect(true);
 
         for (int attempts = 0; attempts < WIFI_CONNECT_ATTEMPTS; attempts++) {
-            if (WiFi.status() == WL_CONNECTED) {
-                break;
-            }
+            if (WiFi.status() == WL_CONNECTED) break;
             delay(500);
             Serial.print(".");
         }
@@ -207,9 +213,7 @@ void Controller::setupWifi() {
         if (WiFi.status() == WL_CONNECTED) {
             ESP_LOGI(LOG_TAG, "Connected to %s with IP address %s", settings.getWifiSsid().c_str(),
                      WiFi.localIP().toString().c_str());
-
-            // (handlers already take care of post-connect actions)
-
+            // GOT_IP handler will trigger plugin event
         } else {
             WiFi.disconnect(true, true);
             ESP_LOGI(LOG_TAG, "Timed out while connecting to WiFi");
@@ -223,15 +227,13 @@ void Controller::setupWifi() {
         WiFi.softAP(WIFI_AP_SSID);
         WiFi.setTxPower(WIFI_POWER_19_5dBm);
         ESP_LOGI(LOG_TAG, "Started WiFi AP %s", WIFI_AP_SSID);
-
-        // Tell plugins AP is up (AP=1) so WebUI/mDNS can run in AP
         pluginManager->trigger("controller:wifi:connect", "AP", 1);
     }
 
     pluginManager->on("ota:update:start", [this](Event const &) { this->updating = true; });
     pluginManager->on("ota:update:end", [this](Event const &) { this->updating = false; });
 
-    // Keep existing summary signal (optional; harmless alongside GOT_IP event)
+    // Summary signal (harmless alongside GOT_IP event)
     pluginManager->trigger("controller:wifi:connect", "AP", isApConnection ? 1 : 0);
 }
 
@@ -242,30 +244,64 @@ void Controller::loop() {
         connect();
     }
 
-    // ===== Non-blocking reconnect cadence with attempt cap and AP fallback =====
-    if (g_reconnectPending && (long)(millis() - g_reconnectAt) >= 0) {
+    // ===== BLE connect block (quiet window for coexistence) =====
+    if (clientController.isReadyForConnection()) {
+        g_bleConnecting      = true;
+        g_bleConnectDeadline = millis() + BLE_CONNECT_GUARD_MS;
+
+        clientController.connectToServer();
+        setupInfos();
+        pluginManager->trigger("controller:bluetooth:connect");
+
+        // If you wire NimBLE success/fail callbacks, clear g_bleConnecting there.
+        // We keep the guard until deadline below as a safe default.
+    }
+
+    // Release BLE guard if the quiet window expired (prevents deadlock)
+    if (g_bleConnecting && (long)(millis() - g_bleConnectDeadline) >= 0) {
+        ESP_LOGW(LOG_TAG, "BLE connect guard expired; resuming Wi-Fi retries.");
+        g_bleConnecting = false;
+    }
+
+    // ===== Non-blocking Wi-Fi reconnect cadence (DHCP-fresh once per sequence) =====
+    if (!g_bleConnecting && g_reconnectPending && (long)(millis() - g_reconnectAt) >= 0) {
         g_reconnectPending = false;
 
         if (g_reconnectAttempts >= WIFI_CONNECT_ATTEMPTS) {
-            ESP_LOGW(LOG_TAG, "Reconnect cap (%d) reached. Switching to AP mode.", WIFI_CONNECT_ATTEMPTS);
-            isApConnection = true;
-            WiFi.mode(WIFI_AP);
-            WiFi.softAPConfig(WIFI_AP_IP, WIFI_AP_IP, WIFI_SUBNET_MASK);
-            WiFi.softAP(WIFI_AP_SSID);
-            WiFi.setTxPower(WIFI_POWER_19_5dBm);
-            pluginManager->trigger("controller:wifi:connect", "AP", 1);
+            if (loaded) { // avoid AP flip during early bring-up
+                ESP_LOGW(LOG_TAG, "Reconnect cap (%d) reached. Switching to AP mode.", WIFI_CONNECT_ATTEMPTS);
+                isApConnection = true;
+                WiFi.mode(WIFI_AP);
+                WiFi.softAPConfig(WIFI_AP_IP, WIFI_AP_IP, WIFI_SUBNET_MASK);
+                WiFi.softAP(WIFI_AP_SSID);
+                WiFi.setTxPower(WIFI_POWER_19_5dBm);
+                pluginManager->trigger("controller:wifi:connect", "AP", 1);
+                g_dhcpFreshApplied = false; // reset sequence state
+            } else {
+                // Reschedule later to avoid disrupting BLE bring-up
+                g_reconnectPending = true;
+                g_reconnectAt      = millis() + 8000;
+            }
         } else {
             ESP_LOGI(LOG_TAG, "Attempting WiFi reconnect… (%d/%d)",
                      g_reconnectAttempts + 1, WIFI_CONNECT_ATTEMPTS);
 
-            // Clean DHCP + correct hostname each retry
             WiFi.persistent(false);
-            WiFi.disconnect(false, false);                       // drop link, keep creds
-            WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE);  // request fresh lease
-            WiFi.setHostname(settings.getMdnsName().c_str());    // ensure hostname sticks on new DORA
+
+            if (!g_dhcpFreshApplied) {
+                // Do the disruptive DHCP "fresh" just once per sequence
+                WiFi.disconnect(false, false);                       // drop link, keep creds
+                WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE);  // fresh lease
+                WiFi.setHostname(settings.getMdnsName().c_str());
+                g_dhcpFreshApplied = true;
+            }
+            // Subsequent retries: just begin()
             WiFi.begin(settings.getWifiSsid().c_str(), settings.getWifiPassword().c_str());
 
             g_reconnectAttempts++;
+            // Modest backoff to reduce RF churn
+            g_reconnectPending = true;
+            g_reconnectAt      = millis() + 5000;
         }
     }
 
